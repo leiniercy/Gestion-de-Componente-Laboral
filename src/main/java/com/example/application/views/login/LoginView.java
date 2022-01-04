@@ -1,25 +1,39 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.example.application.views.login;
 
-import com.vaadin.flow.component.login.LoginI18n;
+import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.login.LoginOverlay;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterListener;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import java.util.Collections;
 
+/**
+ *
+ * @author Leinier
+ */
+@Route("login")
 @PageTitle("Login")
-@Route(value = "login")
-public class LoginView extends LoginOverlay {
+public class LoginView extends Composite<LoginOverlay> /*implements BeforeEnterListener*/ {
+
     public LoginView() {
-        setAction("login");
-
-        LoginI18n i18n = LoginI18n.createDefault();
-        i18n.setHeader(new LoginI18n.Header());
-        i18n.getHeader().setTitle("My App");
-        i18n.getHeader().setDescription("Login using user/user or admin/admin");
-        i18n.setAdditionalInformation(null);
-        setI18n(i18n);
-
-        setForgotPasswordButtonVisible(false);
-        setOpened(true);
+        getContent().setOpened(true);
+        getContent().setTitle("Almacen");
+        getContent().setDescription("Login using user/user or admin/admin");
+        getContent().setAction("login");
     }
 
+//    @Override
+//    public void beforeEnter(BeforeEnterEvent event) {
+//        if (!event.getLocation().getQueryParameters().getParameters().getOrDefault("error", Collections.emptyList()).isEmpty()) {
+//            login.setError(true);
+//        } 
+//    }
 }

@@ -5,19 +5,14 @@
  */
 package com.example.application.data.entity;
 
-import java.util.List;
-import java.util.Set;
+import com.example.application.data.AbstractEntity;
+import java.time.LocalDate;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -31,32 +26,30 @@ import lombok.ToString;
  * @author Leinier
  */
 @Data
-//@Getter
-//@Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
 @Entity
-@Table(name = "Users")
-public class User {
+@Table(name = "Persons")
+public class Person extends AbstractEntity{
 
     @EqualsAndHashCode.Include
     @ToString.Include
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @NotBlank
-    @Column(length = 100, nullable = false, unique = true)
-    private String name;
-    @NotBlank
-    @Column(length = 100, nullable = false, unique = true)
-    private String username;
-    @NotBlank
-    @Column(length = 100, nullable = false)
-    private String password;
-    @Lob
-    private String ProfilePictureUrl;
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Set<Rol> roles;
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    private Long id;
+    @Column(name = "nombre")
+    private String nombre;
+    @Column(name = "apellidos")
+    private String apellidos;
+    @Column(name = "email")
+    private String email;
+    @Column(name = "solapin")
+    private String solapin;
+    @Column(name = "ocupacion")
+    private String occupation;
+
 }

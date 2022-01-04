@@ -1,8 +1,6 @@
-package com.example.application.views.masterdetail;
+package com.example.application.views.tarea_form;
 
-import com.example.application.data.entity.SamplePerson;
-import com.example.application.data.service.SamplePersonService;
-import com.example.application.views.MainLayout;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.UI;
@@ -20,6 +18,8 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
@@ -29,41 +29,43 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import java.util.Optional;
-import javax.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import com.example.application.data.entity.Tarea;
+import com.example.application.data.service.TareaService;
+import com.example.application.views.MainLayout;
+import com.vaadin.flow.component.textfield.NumberField;
+import com.vaadin.flow.router.RouteAlias;
+import com.vaadin.flow.server.auth.AnonymousAllowed;
+import javax.annotation.security.RolesAllowed;
 
-@PageTitle("Master-Detail")
-@Route(value = "master-detail/:samplePersonID?/:action?(edit)", layout = MainLayout.class)
-@RolesAllowed("user")
+@PageTitle("Tarea")
+@Route(value = "tarea-form/:tareaID?/:action?(edit)", layout = MainLayout.class)
 @Uses(Icon.class)
-public class MasterDetailView extends Div implements BeforeEnterObserver {
+@RolesAllowed("admin")
+public class TareaFormView extends Div implements BeforeEnterObserver {
 
-    private final String SAMPLEPERSON_ID = "samplePersonID";
-    private final String SAMPLEPERSON_EDIT_ROUTE_TEMPLATE = "master-detail/%d/edit";
+    private final String TAREA_ID = "tareaID";
+    private final String TAREA_EDIT_ROUTE_TEMPLATE = "tarea-form/%d/edit";
 
-    private Grid<SamplePerson> grid = new Grid<>(SamplePerson.class, false);
+    private Grid<Tarea> grid = new Grid<>(Tarea.class, false);
 
-    private TextField firstName;
-    private TextField lastName;
-    private TextField email;
-    private TextField phone;
-    private DatePicker dateOfBirth;
-    private TextField occupation;
-    private Checkbox important;
-
+    private TextField nombre;
+    private TextArea descripcion;
+    private IntegerField duracion;
+    
     private Button cancel = new Button("Cancel");
     private Button save = new Button("Save");
 
-    private BeanValidationBinder<SamplePerson> binder;
+    private BeanValidationBinder<Tarea> binder;
 
-    private SamplePerson samplePerson;
+    private Tarea tarea;
 
-    private SamplePersonService samplePersonService;
+    private TareaService tareaService;
 
-    public MasterDetailView(@Autowired SamplePersonService samplePersonService) {
-        this.samplePersonService = samplePersonService;
-        addClassNames("master-detail-view", "flex", "flex-col", "h-full");
+    public TareaFormView(@Autowired TareaService tareaService) {
+        this.tareaService = tareaService;
+        addClassNames("tarea-form-view", "flex", "flex-col", "h-full");
 
         // Create UI
         SplitLayout splitLayout = new SplitLayout();
@@ -75,18 +77,12 @@ public class MasterDetailView extends Div implements BeforeEnterObserver {
         add(splitLayout);
 
         // Configure Grid
-        grid.addColumn("firstName").setAutoWidth(true);
-        grid.addColumn("lastName").setAutoWidth(true);
-        grid.addColumn("email").setAutoWidth(true);
-        grid.addColumn("phone").setAutoWidth(true);
-        grid.addColumn("dateOfBirth").setAutoWidth(true);
-        grid.addColumn("occupation").setAutoWidth(true);
-        TemplateRenderer<SamplePerson> importantRenderer = TemplateRenderer.<SamplePerson>of(
-                "<vaadin-icon hidden='[[!item.important]]' icon='vaadin:check' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></vaadin-icon><vaadin-icon hidden='[[item.important]]' icon='vaadin:minus' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></vaadin-icon>")
-                .withProperty("important", SamplePerson::isImportant);
-        grid.addColumn(importantRenderer).setHeader("Important").setAutoWidth(true);
-
-        grid.setItems(query -> samplePersonService.list(
+        grid.setVerticalScrollingEnabled(true);
+        grid.addColumn("nombre").setAutoWidth(true);
+        grid.addColumn("descripcion").setAutoWidth(true);
+        grid.addColumn("duracion").setAutoWidth(true);
+        
+        grid.setItems(query -> tareaService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
@@ -95,15 +91,15 @@ public class MasterDetailView extends Div implements BeforeEnterObserver {
         // when a row is selected or deselected, populate form
         grid.asSingleSelect().addValueChangeListener(event -> {
             if (event.getValue() != null) {
-                UI.getCurrent().navigate(String.format(SAMPLEPERSON_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
+                UI.getCurrent().navigate(String.format(TAREA_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
             } else {
                 clearForm();
-                UI.getCurrent().navigate(MasterDetailView.class);
+                UI.getCurrent().navigate(TareaFormView.class);
             }
         });
 
         // Configure Form
-        binder = new BeanValidationBinder<>(SamplePerson.class);
+        binder = new BeanValidationBinder<>(Tarea.class);
 
         // Bind fields. This where you'd define e.g. validation rules
 
@@ -116,18 +112,18 @@ public class MasterDetailView extends Div implements BeforeEnterObserver {
 
         save.addClickListener(e -> {
             try {
-                if (this.samplePerson == null) {
-                    this.samplePerson = new SamplePerson();
+                if (this.tarea == null) {
+                    this.tarea = new Tarea();
                 }
-                binder.writeBean(this.samplePerson);
+                binder.writeBean(this.tarea);
 
-                samplePersonService.update(this.samplePerson);
+                tareaService.update(this.tarea);
                 clearForm();
                 refreshGrid();
                 Notification.show("SamplePerson details stored.");
-                UI.getCurrent().navigate(MasterDetailView.class);
+                UI.getCurrent().navigate(TareaFormView.class);
             } catch (ValidationException validationException) {
-                Notification.show("An exception happened while trying to store the samplePerson details.");
+                Notification.show("An exception happened while trying to store the tarea details.");
             }
         });
 
@@ -135,19 +131,19 @@ public class MasterDetailView extends Div implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        Optional<Integer> samplePersonId = event.getRouteParameters().getInteger(SAMPLEPERSON_ID);
-        if (samplePersonId.isPresent()) {
-            Optional<SamplePerson> samplePersonFromBackend = samplePersonService.get(samplePersonId.get());
-            if (samplePersonFromBackend.isPresent()) {
-                populateForm(samplePersonFromBackend.get());
+        Optional<Integer> tareaId = event.getRouteParameters().getInteger(TAREA_ID);
+        if (tareaId.isPresent()) {
+            Optional<Tarea> tareaFromBackend = tareaService.get(tareaId.get());
+            if (tareaFromBackend.isPresent()) {
+                populateForm(tareaFromBackend.get());
             } else {
                 Notification.show(
-                        String.format("The requested samplePerson was not found, ID = %d", samplePersonId.get()), 3000,
+                        String.format("The requested tarea was not found, ID = %d", tareaId.get()), 3000,
                         Notification.Position.BOTTOM_START);
                 // when a row is selected but the data is no longer available,
                 // refresh grid
                 refreshGrid();
-                event.forwardTo(MasterDetailView.class);
+                event.forwardTo(TareaFormView.class);
             }
         }
     }
@@ -162,15 +158,10 @@ public class MasterDetailView extends Div implements BeforeEnterObserver {
         editorLayoutDiv.add(editorDiv);
 
         FormLayout formLayout = new FormLayout();
-        firstName = new TextField("First Name");
-        lastName = new TextField("Last Name");
-        email = new TextField("Email");
-        phone = new TextField("Phone");
-        dateOfBirth = new DatePicker("Date Of Birth");
-        occupation = new TextField("Occupation");
-        important = new Checkbox("Important");
-        important.getStyle().set("padding-top", "var(--lumo-space-m)");
-        Component[] fields = new Component[]{firstName, lastName, email, phone, dateOfBirth, occupation, important};
+        nombre = new TextField("Nombre");
+        descripcion = new TextArea("Descripcion");
+        duracion = new IntegerField("Duración");
+        Component[] fields = new Component[]{nombre, descripcion,duracion};
 
         for (Component field : fields) {
             ((HasStyle) field).addClassName("full-width");
@@ -209,9 +200,9 @@ public class MasterDetailView extends Div implements BeforeEnterObserver {
         populateForm(null);
     }
 
-    private void populateForm(SamplePerson value) {
-        this.samplePerson = value;
-        binder.readBean(this.samplePerson);
+    private void populateForm(Tarea value) {
+        this.tarea = value;
+        binder.readBean(this.tarea);
 
     }
 }

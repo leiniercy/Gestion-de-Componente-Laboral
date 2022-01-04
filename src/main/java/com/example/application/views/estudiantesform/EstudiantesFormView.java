@@ -1,4 +1,5 @@
-package com.example.application.views.personform;
+package com.example.application.views.estudiantesform;
+
 
 import com.example.application.data.entity.SamplePerson;
 import com.example.application.data.service.SamplePersonService;
@@ -21,13 +22,14 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import javax.annotation.security.PermitAll;
+import com.vaadin.flow.server.auth.AnonymousAllowed;
+import javax.annotation.security.RolesAllowed;
 
-@PageTitle("Person Form")
-@Route(value = "person-form", layout = MainLayout.class)
-@PermitAll
+@PageTitle("Estudiantes-Form")
+@Route(value = "estudiantes-form", layout = MainLayout.class)
 @Uses(Icon.class)
-public class PersonFormView extends Div {
+@RolesAllowed("admin")
+public class EstudiantesFormView extends Div {
 
     private TextField firstName = new TextField("First name");
     private TextField lastName = new TextField("Last name");
@@ -41,8 +43,8 @@ public class PersonFormView extends Div {
 
     private Binder<SamplePerson> binder = new Binder(SamplePerson.class);
 
-    public PersonFormView(SamplePersonService personService) {
-        addClassName("person-form-view");
+    public EstudiantesFormView(SamplePersonService personService) {
+        addClassName("estudiantes-form-view");
 
         add(createTitle());
         add(createFormLayout());
@@ -83,7 +85,7 @@ public class PersonFormView extends Div {
         return buttonLayout;
     }
 
-    private static class PhoneNumberField extends CustomField<String> {
+     private static class PhoneNumberField extends CustomField<String> {
         private ComboBox<String> countryCode = new ComboBox<>();
         private TextField number = new TextField();
 

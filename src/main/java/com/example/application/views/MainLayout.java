@@ -2,11 +2,15 @@ package com.example.application.views;
 
 import com.example.application.data.entity.User;
 import com.example.application.security.AuthenticatedUser;
-import com.example.application.views.about.AboutView;
-import com.example.application.views.helloworld.HelloWorldView;
-import com.example.application.views.imagelist.ImageListView;
-import com.example.application.views.masterdetail.MasterDetailView;
-import com.example.application.views.personform.PersonFormView;
+import com.example.application.views.profesor.ProfesorFromView;
+import com.example.application.views.tarea_form.TareaFormView;
+import com.example.application.views.listadetareas.ListadeTareasView;
+import com.example.application.views.evaluaciones.EvaluacionesView;
+import com.example.application.views.estudiantesform.EstudiantesFormView;
+import com.example.application.views.estudiantes.EstudiantesView;
+import com.example.application.views.area.AreaView;
+import com.example.application.views.dashboard.DashboardView;
+import com.example.application.views.pruebas.PruebasView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -69,7 +73,6 @@ public class MainLayout extends AppLayout {
     public MainLayout(AuthenticatedUser authenticatedUser, AccessAnnotationChecker accessChecker) {
         this.authenticatedUser = authenticatedUser;
         this.accessChecker = accessChecker;
-
         setPrimarySection(Section.DRAWER);
         addToNavbar(true, createHeaderContent());
         addToDrawer(createDrawerContent());
@@ -91,7 +94,7 @@ public class MainLayout extends AppLayout {
     }
 
     private Component createDrawerContent() {
-        H2 appName = new H2("My App");
+        H2 appName = new H2("Menu");
         appName.addClassNames("flex", "items-center", "h-xl", "m-0", "px-m", "text-m");
 
         com.vaadin.flow.component.html.Section section = new com.vaadin.flow.component.html.Section(appName,
@@ -118,24 +121,23 @@ public class MainLayout extends AppLayout {
     }
 
     private List<RouterLink> createLinks() {
-        MenuItemInfo[] menuItems = new MenuItemInfo[]{ //
-                new MenuItemInfo("Hello World", "la la-globe", HelloWorldView.class), //
-
-                new MenuItemInfo("About", "la la-file", AboutView.class), //
-
-                new MenuItemInfo("Person Form", "la la-user", PersonFormView.class), //
-
-                new MenuItemInfo("Master-Detail", "la la-columns", MasterDetailView.class), //
-
-                new MenuItemInfo("Image List", "la la-th-list", ImageListView.class), //
-
+        MenuItemInfo[] menuItems;
+        menuItems = new MenuItemInfo[]{ //
+            new MenuItemInfo("Dashboard", "la la-file", DashboardView.class), //       
+            new MenuItemInfo("Lista Estudiantes", "la la-file", EstudiantesView.class), //       
+            new MenuItemInfo("Estudiante", "la la-file", EstudiantesFormView.class), //       
+            new MenuItemInfo("Area", "la la-file", AreaView.class), //
+            new MenuItemInfo("Evaluacion", "la la-file", EvaluacionesView.class), //
+            new MenuItemInfo("Tarea", "la la-file", TareaFormView.class), //
+            new MenuItemInfo("Lista Tarea", "la la-file", ListadeTareasView.class), //
+            new MenuItemInfo("Profesor", "la la-file", ProfesorFromView.class), //
+            new MenuItemInfo("Prueba", "la la-file", PruebasView.class), //
         };
         List<RouterLink> links = new ArrayList<>();
         for (MenuItemInfo menuItemInfo : menuItems) {
             if (accessChecker.hasAccess(menuItemInfo.getView())) {
                 links.add(createLink(menuItemInfo));
             }
-
         }
         return links;
     }
@@ -161,12 +163,11 @@ public class MainLayout extends AppLayout {
     private Footer createFooter() {
         Footer layout = new Footer();
         layout.addClassNames("flex", "items-center", "my-s", "px-m", "py-xs");
-
-        Optional<User> maybeUser = authenticatedUser.get();
+         Optional<User> maybeUser = authenticatedUser.get();
         if (maybeUser.isPresent()) {
             User user = maybeUser.get();
 
-            Avatar avatar = new Avatar(user.getName(), user.getProfilePictureUrl());
+            Avatar avatar = new Avatar(user.getUsername(), user.getProfilePictureUrl());
             avatar.addClassNames("me-xs");
 
             ContextMenu userMenu = new ContextMenu(avatar);
@@ -183,7 +184,6 @@ public class MainLayout extends AppLayout {
             Anchor loginLink = new Anchor("login", "Sign in");
             layout.add(loginLink);
         }
-
         return layout;
     }
 

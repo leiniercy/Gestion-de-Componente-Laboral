@@ -5,44 +5,50 @@
  */
 package com.example.application.data.service;
 
-import com.example.application.data.entity.User;
-import com.example.application.data.repository.UserRepository;
+import com.example.application.data.entity.Evaluacion;
+import com.example.application.data.repository.EvaluacionRepository;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.vaadin.crudui.crud.CrudListener;
 
 /**
  *
  * @author Leinier
  */
 @Service
-public class UserService {
-    
-     private UserRepository repository;
 
-    public UserService(@Autowired UserRepository repository) {
+public class EvaluacionService {
+
+    private EvaluacionRepository repository;
+
+    public EvaluacionService(@Autowired EvaluacionRepository repository) {
         this.repository = repository;
     }
 
-    public Optional<User> get(Long id) {
+    public Optional<Evaluacion> get(Integer id) {
         return repository.findById(id);
     }
 
-    public User update(User entity) {
+    public Evaluacion update(Evaluacion entity) {
         return repository.save(entity);
     }
 
-    public void delete(Long id) {
+    public void delete(Integer id) {
         repository.deleteById(id);
     }
 
-    public Page<User> list(Pageable pageable) {
+    public Page<Evaluacion> list(Pageable pageable) {
         return repository.findAll(pageable);
     }
 
     public int count() {
         return (int) repository.count();
     }
+
 }
