@@ -25,9 +25,9 @@ import org.vaadin.crudui.crud.CrudListener;
 public class EstudianteService{
 
     private  EstudianteRepository repository;
-    
-    public EstudianteService(@Autowired EstudianteRepository repository) {
-        this.repository = repository;
+
+    public EstudianteService(@Autowired EstudianteRepository estudianteRepository) {
+        this.repository = estudianteRepository;
     }
 
     public Optional<Estudiante> get(Integer id) {
