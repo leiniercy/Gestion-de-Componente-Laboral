@@ -14,6 +14,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -39,16 +42,23 @@ public class Tarea extends AbstractEntity{
 
     @EqualsAndHashCode.Include
     @ToString.Include
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Integer id;
-    @Column(name = "nombre")
+    
+    @NotEmpty
+    @NotBlank(message = "campo vacío")
+    @Column(name = "nombre" ,length = 255, nullable = false)
     private String nombre;
-    @Column(name = "descripcion")
+    
+    @NotEmpty
+    @NotBlank(message = "campo vacío")
+    @Column(name = "descripcion",length = 255, nullable = false)
     private String descripcion;
+    
+    @NotNull
+    @NotEmpty
     @Column(name = "duracion")
     private int duracion;
 
+    @NotNull
     @ManyToOne
     private Estudiante e;
     

@@ -13,6 +13,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -38,17 +41,29 @@ public class Person extends AbstractEntity{
 
     @EqualsAndHashCode.Include
     @ToString.Include
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long id;
+    
+    @NotEmpty
+    @NotBlank(message = "campo vacío")
     @Column(name = "nombre")
     private String nombre;
+    
+    @NotEmpty
+    @NotBlank(message = "campo vacío")
     @Column(name = "apellidos")
     private String apellidos;
+    
+    @Email
+    @NotEmpty
+    @NotBlank(message = "campo vacío")
     @Column(name = "email")
     private String email;
+    
+    @NotEmpty
+    @NotBlank(message = "campo vacío")
     @Column(name = "solapin")
     private String solapin;
+    
+    @NotEmpty
     @Column(name = "ocupacion")
     private String occupation;
 

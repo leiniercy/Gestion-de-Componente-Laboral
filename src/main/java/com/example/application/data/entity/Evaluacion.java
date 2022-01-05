@@ -14,6 +14,9 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -39,16 +42,21 @@ public class Evaluacion extends AbstractEntity{
 
     @EqualsAndHashCode.Include
     @ToString.Include
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long id;
-    @Column(name = "nota")
+    
+    @NotEmpty
+    @NotBlank(message = "campo vacío")
+    @Column(name = "nota" ,length = 1, nullable = false)
     private String nota;
-    @Column(name = "descripcion")
+    
+    @NotEmpty
+    @NotBlank(message = "campo vacío")
+    @Column(name = "descripcion",length = 255, nullable = false)
     private String descripcion;
 
+    @NotNull
     @ManyToOne
     private Estudiante estudiante;
+    
     @OneToOne()
     private Evaluacion evaluacion;
     

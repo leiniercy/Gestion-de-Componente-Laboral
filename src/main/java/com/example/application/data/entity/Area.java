@@ -15,6 +15,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -39,16 +41,21 @@ public class Area  extends AbstractEntity{
     
     @EqualsAndHashCode.Include
     @ToString.Include
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long id;
-    @Column(name = "nombre")
+    
+    @NotEmpty
+    @NotBlank(message = "campo vacío")
+    @Column(name = "nombre",length = 100, nullable = false)
     private String nombre;
-    @Column(name = "descripcion")
+    
+    @NotEmpty
+    @NotBlank(message = "campo vacío")
+    @Column(name = "descripcion",length = 255, nullable = false)
     private String descripcion;
     
     @OneToMany(mappedBy = "a")
     private List<Profesor> profesores;
+    
     @OneToMany(mappedBy = "area")
     private List<Estudiante>estudiantes;
+    
 }

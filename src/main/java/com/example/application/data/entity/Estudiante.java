@@ -14,6 +14,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -39,15 +41,24 @@ public class Estudiante extends Person{
    
     @EqualsAndHashCode.Include
     @ToString.Include
+    
+    @NotEmpty
+    @NotNull
     @Column(name = "anno_repitencia")
     private Integer anno_repitencia;
+    
+    @NotEmpty
+    @NotNull
     @Column(name = "cantidad_asignaturas")
     private Integer cantidad_asignaturas;
     
+    @NotNull
     @ManyToOne
     private Area area;
+    
     @OneToMany(mappedBy = "estudiante")
     private List<Evaluacion> evaluaciones;
+    
     @OneToMany(mappedBy = "e")
     private List<Tarea> tareas;
 }
