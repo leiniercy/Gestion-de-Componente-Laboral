@@ -40,8 +40,12 @@ public class Profesor extends Person {
 
     @Column(name = "jefe_area")
     private boolean jefe_area;
-    
-//    @NotNull
+
+    @NotNull(message = "debe elegir un campo")
     @ManyToOne
     private Area a;
+
+    public String getStringNombreApellidos() {
+        return getNombre() + getApellidos();
+    }
 }

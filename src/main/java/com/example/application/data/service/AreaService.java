@@ -38,8 +38,12 @@ public class AreaService {
         return repository.save(entity);
     }
 
-    public void delete(Integer id) {
+    public void deleteByID(Integer id) {
         repository.deleteById(id);
+    }
+    
+    public void delete(Area area) {
+        repository.delete(area);
     }
 
     public Page<Area> list(Pageable pageable) {

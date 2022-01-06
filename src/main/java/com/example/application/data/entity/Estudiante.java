@@ -60,15 +60,19 @@ public class Estudiante extends Person{
     
     @OneToMany(mappedBy = "e")
     private List<Tarea> tareas;
-
+    
+    @ManyToOne
+    private Grupo grupo;
+    
     public Estudiante(String nombre, String apellidos, String email, String solapin, Integer anno_repitencia, Integer cantidad_asignaturas, Area area ) {
         super(nombre, apellidos, email, solapin);
         this.anno_repitencia = anno_repitencia;
         this.cantidad_asignaturas = cantidad_asignaturas;
         this.area = area;
     }
-    
-    
-    
+
+    public String getStringNombreApellidos(){
+        return getNombre() + getApellidos();
+    }
     
 }

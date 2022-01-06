@@ -1,7 +1,6 @@
 package com.example.application.data.service;
 
-import com.example.application.data.entity.SamplePerson;
-import com.example.application.data.repository.SamplePersonRepository;
+import com.example.application.data.entity.Grupo;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -12,21 +11,22 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.vaadin.crudui.crud.CrudListener;
+import com.example.application.data.repository.GrupoRepository;
 
 
 @Service
 @RequiredArgsConstructor
-public class SamplePersonService implements CrudListener<SamplePerson>{
+public class GrupoService implements CrudListener<Grupo>{
 
-    private final SamplePersonRepository repository;
+    private final GrupoRepository repository;
 
 
-    public Optional<SamplePerson> get(Integer id) {
+    public Optional<Grupo> get(Integer id) {
         return repository.findById(id);
     }
     
     @Override
-    public SamplePerson update(SamplePerson entity) {
+    public Grupo update(Grupo entity) {
         return repository.save(entity);
     }
 
@@ -34,7 +34,7 @@ public class SamplePersonService implements CrudListener<SamplePerson>{
         repository.deleteById(id);
     }
 
-    public Page<SamplePerson> list(Pageable pageable) {
+    public Page<Grupo> list(Pageable pageable) {
         return repository.findAll(pageable);
     }
 
@@ -43,17 +43,17 @@ public class SamplePersonService implements CrudListener<SamplePerson>{
     }
 
     @Override
-    public List<SamplePerson> findAll() {
+    public List<Grupo> findAll() {
         return repository.findAll();
     }
 
     @Override
-    public SamplePerson add(SamplePerson arg0) {
+    public Grupo add(Grupo arg0) {
         return repository.save(arg0);
     }
 
     @Override
-    public void delete(SamplePerson arg0) {
+    public void delete(Grupo arg0) {
         repository.delete(arg0);
     }
 

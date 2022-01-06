@@ -39,8 +39,12 @@ public class EvaluacionService {
         return repository.save(entity);
     }
 
-    public void delete(Integer id) {
+    public void deleteById(Integer id) {
         repository.deleteById(id);
+    }
+    
+    public void delete(Evaluacion evaluacion) {
+        repository.delete(evaluacion);
     }
 
     public Page<Evaluacion> list(Pageable pageable) {

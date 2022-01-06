@@ -1,13 +1,12 @@
 package com.example.application.views.tarea_form;
 
-
+import com.example.application.data.entity.Estudiante;
+import com.example.application.data.DataService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.checkbox.Checkbox;
-import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -19,10 +18,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextArea;
-import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
-import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -34,8 +31,11 @@ import org.springframework.data.domain.PageRequest;
 import com.example.application.data.entity.Tarea;
 import com.example.application.data.service.TareaService;
 import com.example.application.views.MainLayout;
-import com.vaadin.flow.component.textfield.NumberField;
-import com.vaadin.flow.data.converter.StringToDoubleConverter;
+import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.textfield.IntegerField;
+import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import javax.annotation.security.RolesAllowed;
@@ -53,10 +53,12 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
 
     private TextField nombre;
     private TextArea descripcion;
-    private TextField duracion;
-    
-    private Button cancel = new Button("Cancel");
-    private Button save = new Button("Save");
+    private IntegerField duracion;
+    private ComboBox<Estudiante> e;
+
+    private Button save = new Button("Añadir");
+    private Button cancel = new Button("Cancelar");
+    private Button delete = new Button("Eliminar");
 
     private BeanValidationBinder<Tarea> binder;
 
@@ -64,9 +66,12 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
 
     private TareaService tareaService;
 
-    public TareaFormView(@Autowired TareaService tareaService) {
+    public TareaFormView(
+            @Autowired TareaService tareaService,
+            @Autowired DataService dataService) {
+        
         this.tareaService = tareaService;
-        addClassNames("tarea-form-view", "flex", "flex-col", "h-full");
+        addClassNames("tarea-form", "flex", "flex-col", "h-full");
 
         // Create UI
         SplitLayout splitLayout = new SplitLayout();
@@ -82,7 +87,7 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
         grid.addColumn("nombre").setAutoWidth(true);
         grid.addColumn("descripcion").setAutoWidth(true);
         grid.addColumn("duracion").setAutoWidth(true);
-        
+        grid.addColumn(tarea -> tarea.getE().getStringNombreApellidos()).setHeader("Estudiante").setAutoWidth(true);
         grid.setItems(query -> tareaService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
@@ -103,16 +108,21 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
         binder = new BeanValidationBinder<>(Tarea.class);
 
         // Bind fields. This where you'd define e.g. validation rules
-
         binder.bindInstanceFields(this);
-        binder.forField(duracion).withConverter(new StringToDoubleConverter("Only numbers are allowed"))
-                .bind("duracion");
+//        binder.forField(duracion).withConverter(new StringToIntegerConverter("Only numbers are allowed"))
+//                .bind("duracion");
 
+        e.setItems(dataService.findAllEstudiante());
+        e.setItemLabelGenerator(Estudiante::getStringNombreApellidos);
+        
+        //Button
+        cancel.addClickShortcut(Key.ESCAPE);
         cancel.addClickListener(e -> {
             clearForm();
             refreshGrid();
         });
 
+        save.addClickShortcut(Key.ENTER);
         save.addClickListener(e -> {
             try {
                 if (this.tarea == null) {
@@ -123,7 +133,25 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
                 tareaService.update(this.tarea);
                 clearForm();
                 refreshGrid();
-                Notification.show("SamplePerson details stored.");
+                Notification.show("Tarea añadida.");
+                UI.getCurrent().navigate(TareaFormView.class);
+            } catch (ValidationException validationException) {
+                Notification.show("An exception happened while trying to store the tarea details.");
+            }
+        });
+        
+        delete.addClickShortcut(Key.DELETE);
+        delete.addClickListener(e -> {
+            try {
+                if (this.tarea == null) {
+                    this.tarea = new Tarea();
+                }
+                binder.writeBean(this.tarea);
+
+                tareaService.delete(this.tarea);
+                clearForm();
+                refreshGrid();
+                Notification.show("Tarea Eliminada.");
                 UI.getCurrent().navigate(TareaFormView.class);
             } catch (ValidationException validationException) {
                 Notification.show("An exception happened while trying to store the tarea details.");
@@ -163,8 +191,9 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
         FormLayout formLayout = new FormLayout();
         nombre = new TextField("Nombre");
         descripcion = new TextArea("Descripcion");
-        duracion = new TextField("Duración");
-        Component[] fields = new Component[]{nombre, descripcion,duracion};
+        duracion = new IntegerField("Duración");
+        e =  new ComboBox<>("Estudiante");
+        Component[] fields = new Component[]{nombre, descripcion, duracion,e};
 
         for (Component field : fields) {
             ((HasStyle) field).addClassName("full-width");
@@ -180,9 +209,11 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setClassName("w-full flex-wrap bg-contrast-5 py-s px-l");
         buttonLayout.setSpacing(true);
+        buttonLayout.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.BASELINE);
         cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        buttonLayout.add(save, cancel);
+        buttonLayout.add(save,delete,cancel);
         editorLayoutDiv.add(buttonLayout);
     }
 

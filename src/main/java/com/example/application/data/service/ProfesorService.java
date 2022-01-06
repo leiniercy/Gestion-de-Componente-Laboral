@@ -22,9 +22,9 @@ import org.vaadin.crudui.crud.CrudListener;
  * @author Leinier
  */
 @Service
-public class ProfesorService{
-    
-    private  ProfesorRepository repository;
+public class ProfesorService {
+
+    private ProfesorRepository repository;
 
     public ProfesorService(@Autowired ProfesorRepository repository) {
         this.repository = repository;
@@ -38,8 +38,12 @@ public class ProfesorService{
         return repository.save(entity);
     }
 
-    public void delete(Integer id) {
+    public void deletebyId(Integer id) {
         repository.deleteById(id);
+    }
+
+    public void delete(Profesor p) {
+        repository.delete(p);
     }
 
     public Page<Profesor> list(Pageable pageable) {

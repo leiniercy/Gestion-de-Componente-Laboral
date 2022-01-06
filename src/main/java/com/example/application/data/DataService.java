@@ -24,7 +24,7 @@ public class DataService {
     private EvaluacionRepository evaluacionRepository;
     private PersonRepository personRepository;
     private ProfesorRepository profesorRepository;
-    private SamplePersonRepository samplePersonRepository;
+    private GrupoRepository samplePersonRepository;
     private TareaRepository tareaRepository;
 
     public DataService(
@@ -33,7 +33,7 @@ public class DataService {
             @Autowired EvaluacionRepository evaluacionRepository,
             @Autowired PersonRepository personRepository,
             @Autowired ProfesorRepository profesorRepository,
-            @Autowired SamplePersonRepository samplePersonRepository,
+            @Autowired GrupoRepository samplePersonRepository,
             @Autowired TareaRepository tareaRepository) {
 
         this.areaRepository = areaRepository;
@@ -67,12 +67,8 @@ public class DataService {
     }
 
     //Estudiante
-    public List<Estudiante> findAllEstudiante( String stringFilter) {
-//         if (stringFilter == null || stringFilter.isEmpty()) {
+    public List<Estudiante> findAllEstudiante() {
              return estudianteRepository.findAll();
-//         }else{
-//              return estudianteRepository.search(stringFilter);
-////         } 
     }
     
     public long countEstudiante() {
@@ -155,7 +151,7 @@ public class DataService {
     }
 
     //SamplePerson
-    public List<SamplePerson> findAllSamplePerson() {
+    public List<Grupo> findAllSamplePerson() {
         return samplePersonRepository.findAll();
     }
     
@@ -163,11 +159,11 @@ public class DataService {
         return samplePersonRepository.count();
     }
 
-    public void deleteSamplePerson(SamplePerson samplePerson) {
+    public void deleteSamplePerson(Grupo samplePerson) {
         samplePersonRepository.delete(samplePerson);
     }
 
-    public void saveSamplePerson(SamplePerson samplePerson) {
+    public void saveSamplePerson(Grupo samplePerson) {
         if (samplePerson == null) {
             System.err.println("This field is null. Are you sure you have connected your form to the application?");
             return;

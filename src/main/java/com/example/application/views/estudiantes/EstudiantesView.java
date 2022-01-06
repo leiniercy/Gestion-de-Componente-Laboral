@@ -26,10 +26,15 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.grid.Grid.SelectionMode;
+import com.vaadin.flow.component.grid.HeaderRow;
+import com.vaadin.flow.component.grid.dataview.GridListDataView;
+import com.vaadin.flow.component.gridpro.GridPro;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.converter.StringToIntegerConverter;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -37,10 +42,12 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import com.vaadin.flow.shared.Registration;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.security.RolesAllowed;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 
@@ -60,11 +67,11 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
     private TextField solapin;
     private TextField anno_repitencia;
     private TextField cantidad_asignaturas;
-    private ComboBox<Area>area;
+    private ComboBox<Area> area;
 
-    private Button save = new Button("Save");
-    private Button cancel = new Button("Cancel");
-    private Button delete = new Button("Delete");
+    private Button save = new Button("Añadir");
+    private Button cancel = new Button("Cancelar");
+    private Button delete = new Button("Eliminar");
 
     private BeanValidationBinder<Estudiante> binder;
 
@@ -74,8 +81,9 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
 
     public EstudiantesView(
             @Autowired EstudianteService estudianteService,
-            @Autowired DataService dataService) {
-        
+            @Autowired DataService dataService
+    ) {
+
         this.estudianteService = estudianteService;
         addClassNames("estudiantes-view", "flex", "flex-col", "h-full");
 
@@ -89,14 +97,14 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         add(splitLayout);
 
         // Configure Grid
+
         grid.addColumn("nombre").setAutoWidth(true);
         grid.addColumn("apellidos").setAutoWidth(true);
         grid.addColumn("email").setAutoWidth(true);
         grid.addColumn("solapin").setAutoWidth(true);
         grid.addColumn("anno_repitencia").setAutoWidth(true);
         grid.addColumn("cantidad_asignaturas").setAutoWidth(true);
-        grid.addColumn(estudiante -> estudiante.getArea().getNombre())
-                .setHeader("Area").setAutoWidth(true);
+        grid.addColumn(estudiante -> estudiante.getArea().getNombre()).setHeader("Area").setAutoWidth(true);
         grid.setItems(query -> estudianteService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
@@ -123,10 +131,10 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
                 .bind("cantidad_asignaturas");
 
         binder.bindInstanceFields(this);
-        
+
         area.setItems(dataService.findAllArea());
         area.setItemLabelGenerator(Area::getNombre);
-        
+
         //Button
         save.addClickShortcut(Key.ENTER);
         save.addClickListener(e -> {
@@ -144,16 +152,16 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
                 Notification.show("An exception happened while trying to store the estudiante details.");
             }
         });
-        
+
         cancel.addClickShortcut(Key.ESCAPE);
         cancel.addClickListener(e -> {
             clearForm();
             refreshGrid();
         });
-        
+
         delete.addClickShortcut(Key.DELETE);
-        delete.addClickListener(e ->{
-          try {
+        delete.addClickListener(e -> {
+            try {
                 if (this.estudiante == null) {
                     this.estudiante = new Estudiante();
                 }
@@ -205,7 +213,7 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         anno_repitencia = new TextField("Año de repitencia");
         cantidad_asignaturas = new TextField("Cantidad de asignaturas");
         area = new ComboBox<>("Area");
-        Component[] fields = new Component[]{nombre, apellidos,email, solapin, anno_repitencia, cantidad_asignaturas,area};
+        Component[] fields = new Component[]{nombre, apellidos, email, solapin, anno_repitencia, cantidad_asignaturas, area};
 
         for (Component field : fields) {
             ((HasStyle) field).addClassName("full-width");
@@ -225,7 +233,7 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        buttonLayout.add(save,delete,cancel);
+        buttonLayout.add(save, delete, cancel);
         editorLayoutDiv.add(buttonLayout);
     }
 
@@ -251,48 +259,65 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         binder.readBean(this.estudiante);
 
     }
-    
-    // Events
-//    public static abstract class EstudianteFormEvent extends ComponentEvent<EstudiantesView> {
+
+    // Configururacion de los filtros
+ 
+//    private void addFiltersToGrid(@Autowired EstudianteService service) {
 //
-//        private Estudiante estudiante;
+//        HeaderRow filterRow = grid.appendHeaderRow();
 //
-//        protected EstudianteFormEvent(EstudiantesView source, Estudiante estudiante) {
-//            super(source, false);
-//            this.estudiante = estudiante;
-//        }
+//        TextField nombreFilter = new TextField();
+//        nombreFilter.setPlaceholder("Filter");
+//        nombreFilter.setClearButtonVisible(true);
+//        nombreFilter.setWidth("100%");
+//        nombreFilter.setValueChangeMode(ValueChangeMode.LAZY);
+//        nombreFilter.addValueChangeListener(e -> 
+//                    grid.setItems(service.findEstudianteByName( nombreFilter.getValue() ) ) 
+//        );
+//        
 //
-//        public Estudiante getEstudiante() {
-//            return estudiante;
-//        }
+//        TextField apellidosFilter = new TextField();
+//        apellidosFilter.setPlaceholder("Filter");
+//        apellidosFilter.setClearButtonVisible(true);
+//        apellidosFilter.setWidth("100%");
+//        apellidosFilter.setValueChangeMode(ValueChangeMode.LAZY);
+//        apellidosFilter.addValueChangeListener(e -> updateList());
+//
+//        EmailField emailFilter = new EmailField();
+//        emailFilter.setPlaceholder("Filter");
+//        emailFilter.setClearButtonVisible(true);
+//        emailFilter.setWidth("100%");
+//        emailFilter.setValueChangeMode(ValueChangeMode.LAZY);
+//        emailFilter.addValueChangeListener(e -> updateList());
+//
+//        TextField solapinFilter = new TextField();
+//        solapinFilter.setPlaceholder("Filter");
+//        solapinFilter.setClearButtonVisible(true);
+//        solapinFilter.setWidth("100%");
+//        solapinFilter.setValueChangeMode(ValueChangeMode.LAZY);
+//        solapinFilter.addValueChangeListener(e -> updateList());
+//
+//        TextField anno_repitenciaFilter = new TextField();
+//        anno_repitenciaFilter.setPlaceholder("Filter");
+//        anno_repitenciaFilter.setClearButtonVisible(true);
+//        anno_repitenciaFilter.setWidth("100%");
+//        anno_repitenciaFilter.setValueChangeMode(ValueChangeMode.LAZY);
+//        anno_repitenciaFilter.addValueChangeListener(e -> updateList());
+//
+//        TextField cantidad_asignaturasFilter = new TextField();
+//        cantidad_asignaturasFilter.setPlaceholder("Filter");
+//        cantidad_asignaturasFilter.setClearButtonVisible(true);
+//        cantidad_asignaturasFilter.setWidth("100%");
+//        cantidad_asignaturasFilter.setValueChangeMode(ValueChangeMode.LAZY);
+//        cantidad_asignaturasFilter.addValueChangeListener(e -> updateList());
+//        
+//        TextField areaFilter = new TextField();
+//        areaFilter.setPlaceholder("Filter");
+//        areaFilter.setClearButtonVisible(true);
+//        areaFilter.setWidth("100%");
+//        areaFilter.setValueChangeMode(ValueChangeMode.LAZY);
+//        areaFilter.addValueChangeListener(e -> updateList());
+//
 //    }
-//
-//    public static class SaveEvent extends EstudianteFormEvent {
-//
-//        SaveEvent(EstudiantesView source, Estudiante estudiante) {
-//            super(source, estudiante);
-//        }
-//    }
-//
-//    public static class DeleteEvent extends EstudianteFormEvent {
-//
-//        DeleteEvent(EstudiantesView source, Estudiante estudiante) {
-//            super(source, estudiante);
-//        }
-//
-//    }
-//
-//    public static class CloseEvent extends EstudianteFormEvent {
-//
-//        CloseEvent(EstudiantesView source) {
-//            super(source, null);
-//        }
-//    }
-//
-//    @Override
-//    public <T extends ComponentEvent<?>> Registration addListener(Class<T> eventType,
-//            ComponentEventListener<T> listener) {
-//        return getEventBus().addListener(eventType, listener);
-//    }
-    
+
 }

@@ -1,6 +1,6 @@
 package com.example.application.views.evaluaciones;
 
-
+import com.example.application.data.DataService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.UI;
@@ -32,8 +32,12 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import com.example.application.data.entity.Evaluacion;
+import com.example.application.data.entity.Estudiante;
 import com.example.application.data.service.EvaluacionService;
 import com.example.application.views.MainLayout;
+import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
@@ -42,21 +46,23 @@ import org.vaadin.crudui.crud.Crud;
 import org.vaadin.crudui.crud.impl.GridCrud;
 
 @PageTitle("Evaluaciones")
-@Route(value = "evaluaciones-form/:tareaID?/:action?(edit)", layout = MainLayout.class)
+@Route(value = "evaluaciones-view/:evaluaionesID?/:action?(edit)", layout = MainLayout.class)
 @Uses(Icon.class)
 @RolesAllowed("admin")
 public class EvaluacionesView extends Div implements BeforeEnterObserver {
 
     private final String EVALUACION_ID = "evaluaionesID";
-    private final String EVALUACION_EDIT_ROUTE_TEMPLATE = "evaluaciones-form/%d/edit";
+    private final String EVALUACION_EDIT_ROUTE_TEMPLATE = "evaluaciones-view/%d/edit";
 
     private Grid<Evaluacion> grid = new Grid<>(Evaluacion.class, false);
-    
+
     private TextField nota;
     private TextArea descripcion;
-    
-    private Button cancel = new Button("Cancel");
-    private Button save = new Button("Save");
+    private ComboBox<Estudiante>estudiante;
+
+    private Button save = new Button("Añadir");
+    private Button cancel = new Button("Cancelar");
+    private Button delete = new Button("Eliminar");
 
     private BeanValidationBinder<Evaluacion> binder;
 
@@ -64,25 +70,28 @@ public class EvaluacionesView extends Div implements BeforeEnterObserver {
 
     private EvaluacionService evaluacionService;
 
-    public EvaluacionesView(@Autowired EvaluacionService evaluacionService) {
+    public EvaluacionesView(
+            @Autowired EvaluacionService evaluacionService,
+            @Autowired DataService dataService
+            ) {
+        
         this.evaluacionService = evaluacionService;
-        addClassNames("tarea-form-view", "flex", "flex-col", "h-full");
+        addClassNames("evaluacion-view", "flex", "flex-col", "h-full");
 
         // Create UI
         SplitLayout splitLayout = new SplitLayout();
         splitLayout.setSizeFull();
-        
+
         createGridLayout(splitLayout);
         createEditorLayout(splitLayout);
 
         add(splitLayout);
-      
+
         // Configure Grid
-        
         grid.setVerticalScrollingEnabled(true);
         grid.addColumn("nota").setAutoWidth(true);
         grid.addColumn("descripcion").setAutoWidth(true);
-        
+        grid.addColumn(evaluacion -> evaluacion.getEstudiante().getStringNombreApellidos()).setHeader("Estudiante").setAutoWidth(true);
         grid.setItems(query -> evaluacionService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
@@ -103,14 +112,19 @@ public class EvaluacionesView extends Div implements BeforeEnterObserver {
         binder = new BeanValidationBinder<>(Evaluacion.class);
 
         // Bind fields. This where you'd define e.g. validation rules
-
         binder.bindInstanceFields(this);
-
+        
+        estudiante.setItems(dataService.findAllEstudiante());
+        estudiante.setItemLabelGenerator(Estudiante:: getStringNombreApellidos);
+        
+        //Button
+        cancel.addClickShortcut(Key.ESCAPE);
         cancel.addClickListener(e -> {
             clearForm();
             refreshGrid();
         });
 
+        save.addClickShortcut(Key.ENTER);
         save.addClickListener(e -> {
             try {
                 if (this.evaluacion == null) {
@@ -121,7 +135,25 @@ public class EvaluacionesView extends Div implements BeforeEnterObserver {
                 evaluacionService.update(this.evaluacion);
                 clearForm();
                 refreshGrid();
-                Notification.show("SamplePerson details stored.");
+                Notification.show("Evaluación añadida.");
+                UI.getCurrent().navigate(EvaluacionesView.class);
+            } catch (ValidationException validationException) {
+                Notification.show("An exception happened while trying to store the tarea details.");
+            }
+        });
+        
+        delete.addClickShortcut(Key.DELETE);
+        delete.addClickListener(e -> {
+            try {
+                if (this.evaluacion == null) {
+                    this.evaluacion = new Evaluacion();
+                }
+                binder.writeBean(this.evaluacion);
+
+                evaluacionService.delete(this.evaluacion);
+                clearForm();
+                refreshGrid();
+                Notification.show("Evaluación eliminada.");
                 UI.getCurrent().navigate(EvaluacionesView.class);
             } catch (ValidationException validationException) {
                 Notification.show("An exception happened while trying to store the tarea details.");
@@ -161,7 +193,8 @@ public class EvaluacionesView extends Div implements BeforeEnterObserver {
         FormLayout formLayout = new FormLayout();
         nota = new TextField("Nota");
         descripcion = new TextArea("Descripcion");
-        Component[] fields = new Component[]{nota, descripcion};
+        estudiante = new ComboBox<>("Estudiante");
+        Component[] fields = new Component[]{nota, descripcion,estudiante};
 
         for (Component field : fields) {
             ((HasStyle) field).addClassName("full-width");
@@ -177,9 +210,11 @@ public class EvaluacionesView extends Div implements BeforeEnterObserver {
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setClassName("w-full flex-wrap bg-contrast-5 py-s px-l");
         buttonLayout.setSpacing(true);
+        buttonLayout.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.BASELINE);
         cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        buttonLayout.add(save, cancel);
+        buttonLayout.add(save, delete, cancel);
         editorLayoutDiv.add(buttonLayout);
     }
 

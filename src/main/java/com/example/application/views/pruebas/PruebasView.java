@@ -6,8 +6,8 @@
 package com.example.application.views.pruebas;
 
 import com.example.application.data.entity.Evaluacion;
-import com.example.application.data.entity.SamplePerson;
-import com.example.application.data.service.SamplePersonService;
+import com.example.application.data.entity.Grupo;
+import com.example.application.data.service.GrupoService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -31,9 +31,9 @@ import org.vaadin.crudui.crud.impl.GridCrud;
 public class PruebasView extends Div {
 
     
-    public PruebasView(SamplePersonService service) {
+    public PruebasView(GrupoService service) {
 
-        var crud = new GridCrud<>(SamplePerson.class, service);
+        var crud = new GridCrud<>(Grupo.class, service);
         crud.getGrid().setColumns("firstName", "lastName", "email", "phone", "dateOfBirth", "occupation", "important");
         crud.getCrudFormFactory().setVisibleProperties("firstName", "lastName", "email", "phone", "dateOfBirth", "occupation", "important");
 //        crud.setAddOperationVisible(false);

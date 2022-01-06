@@ -9,7 +9,6 @@ import com.example.application.views.evaluaciones.EvaluacionesView;
 import com.example.application.views.estudiantes.EstudiantesView;
 import com.example.application.views.area.AreaView;
 import com.example.application.views.dashboard.DashboardView;
-import com.example.application.views.pruebas.PruebasView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -128,8 +127,7 @@ public class MainLayout extends AppLayout {
             new MenuItemInfo("Evaluacion", "la la-file", EvaluacionesView.class), //
             new MenuItemInfo("Tarea", "la la-file", TareaFormView.class), //
             new MenuItemInfo("Lista Tarea", "la la-file", ListadeTareasView.class), //
-            new MenuItemInfo("Profesor", "la la-file", ProfesorFromView.class), //
-            new MenuItemInfo("Prueba", "la la-file", PruebasView.class), //
+            new MenuItemInfo("Profesor", "la la-file", ProfesorFromView.class) //
         };
         List<RouterLink> links = new ArrayList<>();
         for (MenuItemInfo menuItemInfo : menuItems) {

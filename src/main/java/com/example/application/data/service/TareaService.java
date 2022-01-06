@@ -38,8 +38,12 @@ public class TareaService {
         return repository.save(entity);
     }
 
-    public void delete(Integer id) {
+    public void deleteById(Integer id) {
         repository.deleteById(id);
+    }
+    
+    public void delete(Tarea tarea) {
+        repository.delete(tarea);
     }
 
     public Page<Tarea> list(Pageable pageable) {
