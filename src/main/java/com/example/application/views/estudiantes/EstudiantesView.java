@@ -1,5 +1,7 @@
 package com.example.application.views.estudiantes;
 
+import com.example.application.data.DataService;
+import com.example.application.data.entity.Area;
 import com.example.application.data.entity.Estudiante;
 import com.example.application.data.entity.Tarea;
 import com.example.application.data.service.EstudianteService;
@@ -24,6 +26,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.converter.StringToIntegerConverter;
@@ -42,7 +45,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 
 @PageTitle("Estudiantes")
-@Route(value = "estudiantes/:tareaID?/:action?(edit)", layout = MainLayout.class)
+@Route(value = "estudiantes/:estudianteID?/:action?(edit)", layout = MainLayout.class)
 @RolesAllowed("admin")
 public class EstudiantesView extends Div implements BeforeEnterObserver {
 
@@ -57,6 +60,7 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
     private TextField solapin;
     private TextField anno_repitencia;
     private TextField cantidad_asignaturas;
+    private ComboBox<Area>area;
 
     private Button save = new Button("Save");
     private Button cancel = new Button("Cancel");
@@ -68,7 +72,10 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
 
     private EstudianteService estudianteService;
 
-    public EstudiantesView(@Autowired EstudianteService estudianteService) {
+    public EstudiantesView(
+            @Autowired EstudianteService estudianteService,
+            @Autowired DataService dataService) {
+        
         this.estudianteService = estudianteService;
         addClassNames("estudiantes-view", "flex", "flex-col", "h-full");
 
@@ -88,6 +95,8 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         grid.addColumn("solapin").setAutoWidth(true);
         grid.addColumn("anno_repitencia").setAutoWidth(true);
         grid.addColumn("cantidad_asignaturas").setAutoWidth(true);
+        grid.addColumn(estudiante -> estudiante.getArea().getNombre())
+                .setHeader("Area").setAutoWidth(true);
         grid.setItems(query -> estudianteService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
@@ -114,7 +123,10 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
                 .bind("cantidad_asignaturas");
 
         binder.bindInstanceFields(this);
-
+        
+        area.setItems(dataService.findAllArea());
+        area.setItemLabelGenerator(Area::getNombre);
+        
         //Button
         save.addClickShortcut(Key.ENTER);
         save.addClickListener(e -> {
@@ -140,7 +152,21 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         });
         
         delete.addClickShortcut(Key.DELETE);
-        delete.addClickListener(e -> fireEvent(new DeleteEvent(this, estudiante)));
+        delete.addClickListener(e ->{
+          try {
+                if (this.estudiante == null) {
+                    this.estudiante = new Estudiante();
+                }
+                binder.writeBean(this.estudiante);
+                estudianteService.delete(this.estudiante);
+                clearForm();
+                refreshGrid();
+                Notification.show("Estudiante eliminado correctamente.");
+                UI.getCurrent().navigate(EstudiantesView.class);
+            } catch (ValidationException validationException) {
+                Notification.show("An exception happened while trying to store the estudiante details.");
+            }
+        });
 
     }
 
@@ -178,7 +204,8 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         solapin = new TextField("Solapin");
         anno_repitencia = new TextField("Año de repitencia");
         cantidad_asignaturas = new TextField("Cantidad de asignaturas");
-        Component[] fields = new Component[]{nombre, apellidos,email, solapin, anno_repitencia, cantidad_asignaturas};
+        area = new ComboBox<>("Area");
+        Component[] fields = new Component[]{nombre, apellidos,email, solapin, anno_repitencia, cantidad_asignaturas,area};
 
         for (Component field : fields) {
             ((HasStyle) field).addClassName("full-width");
@@ -194,6 +221,7 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setClassName("w-full flex-wrap bg-contrast-5 py-s px-l");
         buttonLayout.setSpacing(true);
+        buttonLayout.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.BASELINE);
         cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -225,46 +253,46 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
     }
     
     // Events
-    public static abstract class EstudianteFormEvent extends ComponentEvent<EstudiantesView> {
-
-        private Estudiante estudiante;
-
-        protected EstudianteFormEvent(EstudiantesView source, Estudiante estudiante) {
-            super(source, false);
-            this.estudiante = estudiante;
-        }
-
-        public Estudiante getEstudiante() {
-            return estudiante;
-        }
-    }
-
-    public static class SaveEvent extends EstudianteFormEvent {
-
-        SaveEvent(EstudiantesView source, Estudiante estudiante) {
-            super(source, estudiante);
-        }
-    }
-
-    public static class DeleteEvent extends EstudianteFormEvent {
-
-        DeleteEvent(EstudiantesView source, Estudiante estudiante) {
-            super(source, estudiante);
-        }
-
-    }
-
-    public static class CloseEvent extends EstudianteFormEvent {
-
-        CloseEvent(EstudiantesView source) {
-            super(source, null);
-        }
-    }
-
-    @Override
-    public <T extends ComponentEvent<?>> Registration addListener(Class<T> eventType,
-            ComponentEventListener<T> listener) {
-        return getEventBus().addListener(eventType, listener);
-    }
+//    public static abstract class EstudianteFormEvent extends ComponentEvent<EstudiantesView> {
+//
+//        private Estudiante estudiante;
+//
+//        protected EstudianteFormEvent(EstudiantesView source, Estudiante estudiante) {
+//            super(source, false);
+//            this.estudiante = estudiante;
+//        }
+//
+//        public Estudiante getEstudiante() {
+//            return estudiante;
+//        }
+//    }
+//
+//    public static class SaveEvent extends EstudianteFormEvent {
+//
+//        SaveEvent(EstudiantesView source, Estudiante estudiante) {
+//            super(source, estudiante);
+//        }
+//    }
+//
+//    public static class DeleteEvent extends EstudianteFormEvent {
+//
+//        DeleteEvent(EstudiantesView source, Estudiante estudiante) {
+//            super(source, estudiante);
+//        }
+//
+//    }
+//
+//    public static class CloseEvent extends EstudianteFormEvent {
+//
+//        CloseEvent(EstudiantesView source) {
+//            super(source, null);
+//        }
+//    }
+//
+//    @Override
+//    public <T extends ComponentEvent<?>> Registration addListener(Class<T> eventType,
+//            ComponentEventListener<T> listener) {
+//        return getEventBus().addListener(eventType, listener);
+//    }
     
 }

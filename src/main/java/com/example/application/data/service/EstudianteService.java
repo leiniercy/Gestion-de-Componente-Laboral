@@ -5,7 +5,9 @@
  */
 package com.example.application.data.service;
 
+import com.example.application.data.entity.Area;
 import com.example.application.data.entity.Estudiante;
+import com.example.application.data.repository.AreaRepository;
 import com.example.application.data.repository.EstudianteRepository;
 import java.util.Collection;
 import java.util.List;
@@ -22,31 +24,37 @@ import org.vaadin.crudui.crud.CrudListener;
  * @author Leinier
  */
 @Service
-public class EstudianteService{
+public class EstudianteService {
 
-    private  EstudianteRepository repository;
+    private EstudianteRepository estudianteRepository;
 
-    public EstudianteService(@Autowired EstudianteRepository estudianteRepository) {
-        this.repository = estudianteRepository;
+    public EstudianteService(
+            @Autowired EstudianteRepository estudianteRepository
+           ) {
+        this.estudianteRepository = estudianteRepository;
     }
 
     public Optional<Estudiante> get(Integer id) {
-        return repository.findById(id);
+        return estudianteRepository.findById(id);
     }
 
     public Estudiante update(Estudiante entity) {
-        return repository.save(entity);
+        return estudianteRepository.save(entity);
     }
 
-    public void delete(Integer id) {
-        repository.deleteById(id);
+    public void deleteById(Integer id) {
+        estudianteRepository.deleteById(id);
+    }
+    
+    public  void delete (Estudiante estudiante){
+        estudianteRepository.delete(estudiante);
     }
 
     public Page<Estudiante> list(Pageable pageable) {
-        return repository.findAll(pageable);
+        return estudianteRepository.findAll(pageable);
     }
 
-    public int count() {
-        return (int) repository.count();
+    public long count() {
+        return  estudianteRepository.count();
     }
 }
