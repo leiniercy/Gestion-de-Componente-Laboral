@@ -28,6 +28,7 @@ import lombok.ToString;
  *
  * @author Leinier
  */
+
 @Data
 @Getter
 @Setter
@@ -42,17 +43,15 @@ public class Estudiante extends Person{
     @EqualsAndHashCode.Include
     @ToString.Include
     
-    @NotEmpty
-    @NotNull
+    @NotNull(message = "campo vacio")
     @Column(name = "anno_repitencia")
     private Integer anno_repitencia;
     
-    @NotEmpty
-    @NotNull
+    @NotNull(message = "campo vacio")
     @Column(name = "cantidad_asignaturas")
     private Integer cantidad_asignaturas;
     
-    @NotNull
+//    @NotNull(message = "debe elegir un campo")
     @ManyToOne
     private Area area;
     

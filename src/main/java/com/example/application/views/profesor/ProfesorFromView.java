@@ -33,6 +33,7 @@ import com.example.application.data.entity.SamplePerson;
 import com.example.application.data.service.ProfesorService;
 import com.example.application.data.service.SamplePersonService;
 import com.example.application.views.MainLayout;
+import com.vaadin.flow.component.textfield.EmailField;
 import javax.annotation.security.RolesAllowed;
 
 @PageTitle("Profesor")
@@ -48,7 +49,7 @@ public class ProfesorFromView extends Div implements BeforeEnterObserver {
 
     private TextField nombre;
     private TextField apellidos;
-    private TextField email;
+    private EmailField email;
     private TextField solapin;
     private Checkbox jefe_area;
 
@@ -161,7 +162,7 @@ public class ProfesorFromView extends Div implements BeforeEnterObserver {
         nombre = new TextField("First Name");
         apellidos = new TextField("Last Name");
         solapin = new TextField("Solapin");
-        email = new TextField("Email");
+        email = new EmailField("Email");
         jefe_area = new Checkbox("Jefe de Area");
         jefe_area.getStyle().set("padding-top", "var(--lumo-space-m)");
         Component[] fields = new Component[]{nombre, apellidos, email, solapin, jefe_area};

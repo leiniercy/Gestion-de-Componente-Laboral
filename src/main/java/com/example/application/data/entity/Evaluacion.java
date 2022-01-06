@@ -53,11 +53,8 @@ public class Evaluacion extends AbstractEntity{
     @Column(name = "descripcion",length = 255, nullable = false)
     private String descripcion;
 
-    @NotNull
+//    @NotNull(message = "debe elegir un campo")
     @ManyToOne
     private Estudiante estudiante;
-    
-    @OneToOne()
-    private Evaluacion evaluacion;
     
 }

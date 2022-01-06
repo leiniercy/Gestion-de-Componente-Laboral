@@ -53,12 +53,11 @@ public class Tarea extends AbstractEntity{
     @Column(name = "descripcion",length = 255, nullable = false)
     private String descripcion;
     
-    @NotNull
-    @NotEmpty
+    @NotNull(message = "")
     @Column(name = "duracion")
-    private int duracion;
+    private Double duracion;
 
-    @NotNull
+//    @NotNull(message = "debe elegir un campo")
     @ManyToOne
     private Estudiante e;
     

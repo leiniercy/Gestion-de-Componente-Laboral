@@ -35,6 +35,7 @@ import com.example.application.data.entity.Tarea;
 import com.example.application.data.service.TareaService;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.textfield.NumberField;
+import com.vaadin.flow.data.converter.StringToDoubleConverter;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import javax.annotation.security.RolesAllowed;
@@ -52,7 +53,7 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
 
     private TextField nombre;
     private TextArea descripcion;
-    private IntegerField duracion;
+    private TextField duracion;
     
     private Button cancel = new Button("Cancel");
     private Button save = new Button("Save");
@@ -104,6 +105,8 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
         // Bind fields. This where you'd define e.g. validation rules
 
         binder.bindInstanceFields(this);
+        binder.forField(duracion).withConverter(new StringToDoubleConverter("Only numbers are allowed"))
+                .bind("duracion");
 
         cancel.addClickListener(e -> {
             clearForm();
@@ -160,7 +163,7 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
         FormLayout formLayout = new FormLayout();
         nombre = new TextField("Nombre");
         descripcion = new TextArea("Descripcion");
-        duracion = new IntegerField("Duración");
+        duracion = new TextField("Duración");
         Component[] fields = new Component[]{nombre, descripcion,duracion};
 
         for (Component field : fields) {

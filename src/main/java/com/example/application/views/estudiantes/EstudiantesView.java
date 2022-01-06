@@ -5,6 +5,7 @@ import com.example.application.data.entity.Tarea;
 import com.example.application.data.service.EstudianteService;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -18,7 +19,11 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
+import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.ComponentEvent;
+import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.converter.StringToIntegerConverter;
@@ -28,6 +33,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
+import com.vaadin.flow.shared.Registration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -47,12 +53,14 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
 
     private TextField nombre;
     private TextField apellidos;
+    private EmailField email;
     private TextField solapin;
     private TextField anno_repitencia;
     private TextField cantidad_asignaturas;
 
-    private Button cancel = new Button("Cancel");
     private Button save = new Button("Save");
+    private Button cancel = new Button("Cancel");
+    private Button delete = new Button("Delete");
 
     private BeanValidationBinder<Estudiante> binder;
 
@@ -76,6 +84,7 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         // Configure Grid
         grid.addColumn("nombre").setAutoWidth(true);
         grid.addColumn("apellidos").setAutoWidth(true);
+        grid.addColumn("email").setAutoWidth(true);
         grid.addColumn("solapin").setAutoWidth(true);
         grid.addColumn("anno_repitencia").setAutoWidth(true);
         grid.addColumn("cantidad_asignaturas").setAutoWidth(true);
@@ -106,27 +115,32 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
 
         binder.bindInstanceFields(this);
 
-        cancel.addClickListener(e -> {
-            clearForm();
-            refreshGrid();
-        });
-
+        //Button
+        save.addClickShortcut(Key.ENTER);
         save.addClickListener(e -> {
             try {
                 if (this.estudiante == null) {
                     this.estudiante = new Estudiante();
                 }
                 binder.writeBean(this.estudiante);
-
                 estudianteService.update(this.estudiante);
                 clearForm();
                 refreshGrid();
-                Notification.show("Estudiante details stored.");
+                Notification.show("Estudiante añadido correctamente.");
                 UI.getCurrent().navigate(EstudiantesView.class);
             } catch (ValidationException validationException) {
                 Notification.show("An exception happened while trying to store the estudiante details.");
             }
         });
+        
+        cancel.addClickShortcut(Key.ESCAPE);
+        cancel.addClickListener(e -> {
+            clearForm();
+            refreshGrid();
+        });
+        
+        delete.addClickShortcut(Key.DELETE);
+        delete.addClickListener(e -> fireEvent(new DeleteEvent(this, estudiante)));
 
     }
 
@@ -160,10 +174,11 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         FormLayout formLayout = new FormLayout();
         nombre = new TextField("Nombre");
         apellidos = new TextField("Apellidos");
+        email = new EmailField("Email");
         solapin = new TextField("Solapin");
         anno_repitencia = new TextField("Año de repitencia");
         cantidad_asignaturas = new TextField("Cantidad de asignaturas");
-        Component[] fields = new Component[]{nombre, apellidos, solapin, anno_repitencia, cantidad_asignaturas};
+        Component[] fields = new Component[]{nombre, apellidos,email, solapin, anno_repitencia, cantidad_asignaturas};
 
         for (Component field : fields) {
             ((HasStyle) field).addClassName("full-width");
@@ -180,8 +195,9 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         buttonLayout.setClassName("w-full flex-wrap bg-contrast-5 py-s px-l");
         buttonLayout.setSpacing(true);
         cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        buttonLayout.add(save, cancel);
+        buttonLayout.add(save,delete,cancel);
         editorLayoutDiv.add(buttonLayout);
     }
 
@@ -208,5 +224,47 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
 
     }
     
+    // Events
+    public static abstract class EstudianteFormEvent extends ComponentEvent<EstudiantesView> {
+
+        private Estudiante estudiante;
+
+        protected EstudianteFormEvent(EstudiantesView source, Estudiante estudiante) {
+            super(source, false);
+            this.estudiante = estudiante;
+        }
+
+        public Estudiante getEstudiante() {
+            return estudiante;
+        }
+    }
+
+    public static class SaveEvent extends EstudianteFormEvent {
+
+        SaveEvent(EstudiantesView source, Estudiante estudiante) {
+            super(source, estudiante);
+        }
+    }
+
+    public static class DeleteEvent extends EstudianteFormEvent {
+
+        DeleteEvent(EstudiantesView source, Estudiante estudiante) {
+            super(source, estudiante);
+        }
+
+    }
+
+    public static class CloseEvent extends EstudianteFormEvent {
+
+        CloseEvent(EstudiantesView source) {
+            super(source, null);
+        }
+    }
+
+    @Override
+    public <T extends ComponentEvent<?>> Registration addListener(Class<T> eventType,
+            ComponentEventListener<T> listener) {
+        return getEventBus().addListener(eventType, listener);
+    }
     
 }

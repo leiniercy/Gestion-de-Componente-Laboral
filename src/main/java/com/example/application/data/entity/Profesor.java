@@ -41,7 +41,7 @@ public class Profesor extends Person {
     @Column(name = "jefe_area")
     private boolean jefe_area;
     
-    @NotNull
+//    @NotNull
     @ManyToOne
     private Area a;
 }

@@ -46,11 +46,11 @@ public class DataService {
     }
     
     //Area
-    public List<Area> findAllAreas() {
+    public List<Area> findAllArea() {
         return areaRepository.findAll();
     }
 
-    public long countAreas() {
+    public long countArea() {
         return areaRepository.count();
     }
 
@@ -67,15 +67,19 @@ public class DataService {
     }
 
     //Estudiante
-    public List<Estudiante> findAllEstudiantes() {
-        return estudianteRepository.findAll();
+    public List<Estudiante> findAllEstudiante( String stringFilter) {
+//         if (stringFilter == null || stringFilter.isEmpty()) {
+             return estudianteRepository.findAll();
+//         }else{
+//              return estudianteRepository.search(stringFilter);
+////         } 
     }
     
-    public long countEstudiantes() {
+    public long countEstudiante() {
         return estudianteRepository.count();
     }
 
-    public void deleteArea(Estudiante estudiante) {
+    public void deleteEstudiante(Estudiante estudiante) {
         estudianteRepository.delete(estudiante);
     }
 
@@ -88,7 +92,7 @@ public class DataService {
     }
     
     //Evaluacion
-    public List<Evaluacion> findAllEvaluaciones() {
+    public List<Evaluacion> findAllEvaluacion() {
         return evaluacionRepository.findAll();
     }
     
@@ -109,11 +113,11 @@ public class DataService {
     }
     
     //Person
-    public List<Person> findAllPersonas() {
+    public List<Person> findAllPerson() {
         return personRepository.findAll();
     }
     
-    public long countPersonas() {
+    public long countPerson() {
         return personRepository.count();
     }
 
@@ -130,15 +134,15 @@ public class DataService {
     }
     
     //Profesor
-    public List<Profesor> findAllProfesores() {
+    public List<Profesor> findAllProfesor() {
         return profesorRepository.findAll();
     }
     
-    public long countProfesores() {
+    public long countProfesor() {
         return profesorRepository.count();
     }
 
-    public void deleteProfesores(Profesor profesor) {
+    public void deleteProfesor(Profesor profesor) {
         profesorRepository.delete(profesor);
     }
 
@@ -155,7 +159,7 @@ public class DataService {
         return samplePersonRepository.findAll();
     }
     
-    public long countSamplePersons() {
+    public long countSamplePerson() {
         return samplePersonRepository.count();
     }
 
@@ -180,11 +184,11 @@ public class DataService {
         return tareaRepository.count();
     }
 
-    public void deleteArea(Tarea tarea) {
+    public void deleteTarea(Tarea tarea) {
         tareaRepository.delete(tarea);
     }
 
-    public void saveArea(Tarea tarea) {
+    public void saveTarea(Tarea tarea) {
         if (tarea == null) {
             System.err.println("This field is null. Are you sure you have connected your form to the application?");
             return;
