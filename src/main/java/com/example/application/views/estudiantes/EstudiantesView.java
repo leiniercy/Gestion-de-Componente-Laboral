@@ -3,6 +3,7 @@ package com.example.application.views.estudiantes;
 import com.example.application.data.DataService;
 import com.example.application.data.entity.Area;
 import com.example.application.data.entity.Estudiante;
+import com.example.application.data.entity.Grupo;
 import com.example.application.data.entity.Tarea;
 import com.example.application.data.service.EstudianteService;
 import com.example.application.views.MainLayout;
@@ -68,6 +69,7 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
     private TextField anno_repitencia;
     private TextField cantidad_asignaturas;
     private ComboBox<Area> area;
+    private ComboBox<Grupo> grupo;
 
     private Button save = new Button("Añadir");
     private Button cancel = new Button("Cancelar");
@@ -105,6 +107,7 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         grid.addColumn("anno_repitencia").setAutoWidth(true);
         grid.addColumn("cantidad_asignaturas").setAutoWidth(true);
         grid.addColumn(estudiante -> estudiante.getArea().getNombre()).setHeader("Area").setAutoWidth(true);
+        grid.addColumn(estudiante -> estudiante.getGrupo().getNumero()).setHeader("Grupo").setAutoWidth(true);
         grid.setItems(query -> estudianteService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
@@ -134,6 +137,9 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
 
         area.setItems(dataService.findAllArea());
         area.setItemLabelGenerator(Area::getNombre);
+        
+        grupo.setItems(dataService.findAllGrupo());
+        grupo.setItemLabelGenerator(Grupo::getNumero);
 
         //Button
         save.addClickShortcut(Key.ENTER);
@@ -212,8 +218,9 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         solapin = new TextField("Solapin");
         anno_repitencia = new TextField("Año de repitencia");
         cantidad_asignaturas = new TextField("Cantidad de asignaturas");
+        grupo =  new ComboBox<>("Grupo");
         area = new ComboBox<>("Area");
-        Component[] fields = new Component[]{nombre, apellidos, email, solapin, anno_repitencia, cantidad_asignaturas, area};
+        Component[] fields = new Component[]{nombre, apellidos, email, solapin, anno_repitencia, cantidad_asignaturas, grupo,area};
 
         for (Component field : fields) {
             ((HasStyle) field).addClassName("full-width");

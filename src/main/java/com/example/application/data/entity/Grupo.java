@@ -34,7 +34,7 @@ public class Grupo extends AbstractEntity {
     @ToString.Include
     @NotNull(message = "no puede estar vacio")
     @Column(name = "numero", unique = true)
-    private Integer numero;
+    private String numero;
 
     @OneToMany(mappedBy = "grupo")
     List<Estudiante> estudiantes;

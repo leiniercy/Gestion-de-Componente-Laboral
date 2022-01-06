@@ -24,7 +24,7 @@ public class DataService {
     private EvaluacionRepository evaluacionRepository;
     private PersonRepository personRepository;
     private ProfesorRepository profesorRepository;
-    private GrupoRepository samplePersonRepository;
+    private GrupoRepository grupoPersonRepository;
     private TareaRepository tareaRepository;
 
     public DataService(
@@ -41,7 +41,7 @@ public class DataService {
         this.evaluacionRepository = evaluacionRepository;
         this.personRepository = personRepository;
         this.profesorRepository = profesorRepository;
-        this.samplePersonRepository = samplePersonRepository;
+        this.grupoPersonRepository = samplePersonRepository;
         this.tareaRepository = tareaRepository;
     }
     
@@ -150,25 +150,25 @@ public class DataService {
         profesorRepository.save(profesor);
     }
 
-    //SamplePerson
-    public List<Grupo> findAllSamplePerson() {
-        return samplePersonRepository.findAll();
+    //Grupo
+    public List<Grupo> findAllGrupo() {
+        return grupoPersonRepository.findAll();
     }
     
-    public long countSamplePerson() {
-        return samplePersonRepository.count();
+    public long countGrupo() {
+        return grupoPersonRepository.count();
     }
 
-    public void deleteSamplePerson(Grupo samplePerson) {
-        samplePersonRepository.delete(samplePerson);
+    public void deleteGrupo(Grupo grupo) {
+        grupoPersonRepository.delete(grupo);
     }
 
-    public void saveSamplePerson(Grupo samplePerson) {
-        if (samplePerson == null) {
+    public void saveGrupo(Grupo grupo) {
+        if (grupo == null) {
             System.err.println("This field is null. Are you sure you have connected your form to the application?");
             return;
         }
-        samplePersonRepository.save(samplePerson);
+        grupoPersonRepository.save(grupo);
     }
 
     //Tarea
