@@ -196,8 +196,8 @@ public class ProfesorFromView extends Div implements BeforeEnterObserver {
         editorLayoutDiv.add(editorDiv);
 
         FormLayout formLayout = new FormLayout();
-        nombre = new TextField("First Name");
-        apellidos = new TextField("Last Name");
+        nombre = new TextField("Nombre");
+        apellidos = new TextField("Apellidos");
         solapin = new TextField("Solapin");
         email = new EmailField("Email");
         jefe_area = new Checkbox("Jefe de Area");

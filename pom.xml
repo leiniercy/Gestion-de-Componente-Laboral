@@ -136,30 +136,22 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        
-        
-        <!--Hibernate-->
-        <!--        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>5.2.10.Final</version>
-        </dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
         
-        <dependency>
+<!--        <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-        </dependency>
+        </dependency>-->
 
-<!--        <dependency>
+        <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
-        </dependency>-->
+        </dependency>
         
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
@@ -180,14 +172,6 @@
             <version>5.0.0</version>
         </dependency>
         
-        
-        <!--        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>flow-server</artifactId>
-            <version>9.0.2</version>
-            <type>jar</type>
-        </dependency>-->
-        
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
@@ -197,40 +181,6 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
-        
-        <!--        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-core</artifactId>
-        </dependency>-->
-                
-        <!--              <dependency>
-                    <groupId>org.springframework.security</groupId>
-                    <artifactId>spring-security-web</artifactId>
-                    <version>5.5.3</version>
-                </dependency>
-                
-                <dependency>
-                    <groupId>org.springframework.security</groupId>
-                    <artifactId>spring-security-config</artifactId>
-                    <version>5.5.3</version>
-                  </dependency>
-                
-        -->        
-        
-        <!--
-        
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>flow-migration</artifactId>
-            <version>3.0.0.alpha14</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>collaboration-engine-license-generator</artifactId>
-            <version>3.0-SNAPSHOT</version>
-            <type>jar</type>
-        </dependency>-->
         <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-core</artifactId>

@@ -24,7 +24,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
 @Entity
-@Table(name = "Sample_Persons")
+@Table(name = "Grupo")
 public class Grupo extends AbstractEntity {
 
     @EqualsAndHashCode.Include

@@ -46,6 +46,6 @@ public class Profesor extends Person {
     private Area a;
 
     public String getStringNombreApellidos() {
-        return getNombre() + getApellidos();
+        return getNombre() +" " +getApellidos();
     }
 }
