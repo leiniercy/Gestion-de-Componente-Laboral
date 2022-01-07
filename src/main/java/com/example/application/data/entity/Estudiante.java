@@ -61,6 +61,7 @@ public class Estudiante extends Person{
     @OneToMany(mappedBy = "e")
     private List<Tarea> tareas;
     
+    @NotNull(message = "debe elegir un campo")
     @ManyToOne
     private Grupo grupo;
     
@@ -72,7 +73,7 @@ public class Estudiante extends Person{
     }
 
     public String getStringNombreApellidos(){
-        return getNombre() + getApellidos();
+        return getNombre() + " " + getApellidos();
     }
     
 }

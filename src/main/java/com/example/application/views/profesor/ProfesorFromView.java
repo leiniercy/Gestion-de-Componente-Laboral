@@ -36,6 +36,7 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.textfield.EmailField;
 import javax.annotation.security.RolesAllowed;
+import com.vaadin.flow.data.renderer.TemplateRenderer;
 
 @PageTitle("Profesor")
 @Route(value = "profesor-view/:profesorID?/:action?(edit)", layout = MainLayout.class)
@@ -87,6 +88,12 @@ public class ProfesorFromView extends Div implements BeforeEnterObserver {
         grid.addColumn("apellidos").setAutoWidth(true);
         grid.addColumn("email").setAutoWidth(true);
         grid.addColumn("solapin").setAutoWidth(true);
+       
+//       var jefe_areaRenderer = TemplateRenderer.<Profesor>of(
+//                "<iron-icon hidden='[[!item.jefe_area]]' icon='vaadin:check' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></iron-icon><iron-icon hidden='[[item.jefe_area]]' icon='vaadin:minus' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
+//                .withProperty("jefe_area", Profesor::isJefe_area);
+//        grid.addColumn(jefe_areaRenderer).setHeader("Jefe de  Área").setAutoWidth(true);
+        
         grid.addColumn("jefe_area").setAutoWidth(true);
         grid.addColumn(profesor -> profesor.getA().getNombre()).setHeader("Area").setAutoWidth(true);
 
