@@ -60,7 +60,7 @@ public class Person extends AbstractEntity{
     
     @NotEmpty
     @NotBlank(message = "campo vacío")
-    @Column(name = "solapin")
+    @Column(name = "solapin", nullable = false, unique = true)
     private String solapin;
   
 
