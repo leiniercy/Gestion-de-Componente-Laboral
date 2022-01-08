@@ -28,7 +28,6 @@ import lombok.ToString;
  *
  * @author Leinier
  */
-
 @Data
 @Getter
 @Setter
@@ -38,42 +37,42 @@ import lombok.ToString;
 @ToString(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "Estudiantes")
-public class Estudiante extends Person{
-   
+public class Estudiante extends Person {
+
     @EqualsAndHashCode.Include
     @ToString.Include
-    
+
     @NotNull(message = "campo vacio")
-    @Column(name = "anno_repitencia")
+    @Column(name = "anno_repitencia" , nullable = false)
     private Integer anno_repitencia;
-    
+
     @NotNull(message = "campo vacio")
-    @Column(name = "cantidad_asignaturas")
+    @Column(name = "cantidad_asignaturas" , nullable = false)
     private Integer cantidad_asignaturas;
-    
+
     @NotNull(message = "debe elegir un campo")
     @ManyToOne
     private Area area;
-    
-    @OneToMany(mappedBy = "estudiante")
-    private List<Evaluacion> evaluaciones;
-    
-    @OneToMany(mappedBy = "e")
-    private List<Tarea> tareas;
-    
+
     @NotNull(message = "debe elegir un campo")
     @ManyToOne
     private Grupo grupo;
-    
-    public Estudiante(String nombre, String apellidos, String email, String solapin, Integer anno_repitencia, Integer cantidad_asignaturas, Area area ) {
+
+    @OneToMany(mappedBy = "estudiante")
+    private List<Evaluacion> evaluaciones;
+
+    @OneToMany(mappedBy = "e")
+    private List<Tarea> tareas;
+
+    public Estudiante(String nombre, String apellidos, String email, String solapin, Integer anno_repitencia, Integer cantidad_asignaturas, Area area) {
         super(nombre, apellidos, email, solapin);
         this.anno_repitencia = anno_repitencia;
         this.cantidad_asignaturas = cantidad_asignaturas;
         this.area = area;
     }
 
-    public String getStringNombreApellidos(){
+    public String getStringNombreApellidos() {
         return getNombre() + " " + getApellidos();
     }
-    
+
 }

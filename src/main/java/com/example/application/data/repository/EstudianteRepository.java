@@ -19,14 +19,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EstudianteRepository extends JpaRepository<Estudiante, Integer> {
 
-//    @Query(
-//              "select p from persons p "
-//            + "join areas a on p.id  = a.id "
-//            + "join grupo g on p.id  = g.id "
-//            + "where dtype like 'Estudiante' "
-//            + "and lower(p.nombre)"
-//            + "like lower(concat('%' ,:searchTerm, '%'))"
-//        )
-//    List<Estudiante> searchByName(@Param("searchTerm") String searchTerm);
-
 }

@@ -44,18 +44,18 @@ public class Person extends AbstractEntity{
     
     @NotEmpty
     @NotBlank(message = "campo vacío")
-    @Column(name = "nombre")
+    @Column(name = "nombre", nullable = false)
     private String nombre;
     
     @NotEmpty
     @NotBlank(message = "campo vacío")
-    @Column(name = "apellidos")
+    @Column(name = "apellidos" , nullable = false)
     private String apellidos;
     
     @Email
     @NotEmpty
     @NotBlank(message = "campo vacío")
-    @Column(name = "email")
+    @Column(name = "email" , nullable = false)
     private String email;
     
     @NotEmpty
