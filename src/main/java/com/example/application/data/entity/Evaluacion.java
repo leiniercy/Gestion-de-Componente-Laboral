@@ -17,6 +17,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -46,6 +47,7 @@ public class Evaluacion extends AbstractEntity{
     @NotEmpty
     @NotBlank(message = "campo vacío")
     @Column(name = "nota" ,length = 1, nullable = false)
+    @Size(message = "La nota es cualitativa (E,B,R,M)" ,max = 1, min = 1)
     private String nota;
     
     @NotEmpty

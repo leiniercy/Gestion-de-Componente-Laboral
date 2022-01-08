@@ -32,7 +32,7 @@ public class Grupo extends AbstractEntity {
     
     @NotBlank(message = "no puede estar vacio")
     @Column(name = "numero", unique = true)
-    @Size(max = 4, min = 4)
+    @Size(message = "solo puede contener 4 numeros ",max = 4, min = 4)
     private String numero;
 
     @OneToMany(mappedBy = "grupo")
