@@ -16,15 +16,17 @@ import org.springframework.stereotype.Repository;
  *
  * @author Leinier
  */
-
 @Repository
-public interface EstudianteRepository extends JpaRepository<Estudiante, Integer>{
+public interface EstudianteRepository extends JpaRepository<Estudiante, Integer> {
 
-//    public List<Estudiante> search(String stringFilter);
-    
-//    @Query("select p from Person p " +
-//        "where lower(p.nombre) like lower(person('%', :searchTerm, '%')) " +
-//        "or lower(p.apellidos) like lower(person('%', :searchTerm, '%'))")
-//    List<Estudiante> search(@Param("searchTerm") String searchTerm);
-    
+//    @Query(
+//              "select p from persons p "
+//            + "join areas a on p.id  = a.id "
+//            + "join grupo g on p.id  = g.id "
+//            + "where dtype like 'Estudiante' "
+//            + "and lower(p.nombre)"
+//            + "like lower(concat('%' ,:searchTerm, '%'))"
+//        )
+//    List<Estudiante> searchByName(@Param("searchTerm") String searchTerm);
+
 }

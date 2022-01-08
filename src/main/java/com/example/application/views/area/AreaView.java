@@ -1,5 +1,6 @@
 package com.example.application.views.area;
 
+import com.example.application.data.DataService;
 import com.example.application.data.entity.Area;
 import com.example.application.data.service.AreaService;
 import com.example.application.views.MainLayout;
@@ -21,6 +22,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.converter.StringToIntegerConverter;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -54,20 +56,38 @@ public class AreaView extends Div implements BeforeEnterObserver {
 
     private AreaService areaService;
 
-    public AreaView(@Autowired AreaService areaService) {
+    TextField filterText = new TextField();
+
+    public AreaView(
+            @Autowired AreaService areaService,
+            @Autowired DataService dataService
+    ) {
         this.areaService = areaService;
         addClassNames("area-view", "flex", "flex-col", "h-full");
 
         // Create UI
         SplitLayout splitLayout = new SplitLayout();
         splitLayout.setSizeFull();
+        
+        var toolbar = new HorizontalLayout();
+        toolbar.setClassName("w-full flex-wrap bg-contrast-5 py-s px-l");
+        toolbar.setSpacing(true);
+        toolbar.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.BASELINE);
+        toolbar.add(filterText);
 
         createGridLayout(splitLayout);
         createEditorLayout(splitLayout);
 
-        add(splitLayout);
+        add(toolbar,splitLayout);
 
         // Configure Grid
+        filterText.setPlaceholder("Filter by name...");
+        filterText.setClearButtonVisible(true);
+        filterText.setValueChangeMode(ValueChangeMode.LAZY);
+        filterText.addValueChangeListener(e -> {
+            grid.setItems(dataService.searchArea(filterText.getValue()));
+        });
+
         grid.addColumn("nombre").setAutoWidth(true);
         grid.addColumn("descripcion").setAutoWidth(true);
         grid.setItems(query -> areaService.list(
@@ -98,7 +118,7 @@ public class AreaView extends Div implements BeforeEnterObserver {
             clearForm();
             refreshGrid();
         });
-        
+
         save.addClickShortcut(Key.ENTER);
         save.addClickListener(e -> {
             try {
@@ -116,7 +136,7 @@ public class AreaView extends Div implements BeforeEnterObserver {
                 Notification.show("An exception happened while trying to store the area details.");
             }
         });
-        
+
         delete.addClickShortcut(Key.DELETE);
         delete.addClickListener(e -> {
             try {
@@ -124,7 +144,7 @@ public class AreaView extends Div implements BeforeEnterObserver {
                     this.area = new Area();
                 }
                 binder.writeBean(this.area);
-                
+
                 areaService.delete(this.area);
                 clearForm();
                 refreshGrid();
@@ -188,7 +208,7 @@ public class AreaView extends Div implements BeforeEnterObserver {
         cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        buttonLayout.add(save,delete,cancel);
+        buttonLayout.add(save, delete, cancel);
         editorLayoutDiv.add(buttonLayout);
     }
 

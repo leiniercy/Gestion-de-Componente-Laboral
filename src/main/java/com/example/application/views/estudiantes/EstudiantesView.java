@@ -99,6 +99,15 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         add(splitLayout);
 
         // Configure Grid
+//        var filterText =  new TextField();
+//        filterText.setPlaceholder("Filter by name...");
+//        filterText.setClearButtonVisible(true);
+//        filterText.setValueChangeMode(ValueChangeMode.LAZY);
+//        filterText.addValueChangeListener(e -> {
+//            grid.setItems( dataService.searchEstudianteByName(filterText.getValue() ));
+//        });
+//
+//        var toolbar = new HorizontalLayout(filterText);
 
         grid.addColumn("nombre").setAutoWidth(true);
         grid.addColumn("apellidos").setAutoWidth(true);
@@ -266,7 +275,7 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         binder.readBean(this.estudiante);
 
     }
-
+    
     // Configururacion de los filtros
  
 //    private void addFiltersToGrid(@Autowired EstudianteService service) {

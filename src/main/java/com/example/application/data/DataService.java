@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
  *
  * @author Leinier
  */
-
 @Service
 public class DataService {
 
@@ -44,10 +43,14 @@ public class DataService {
         this.grupoRepository = samplePersonRepository;
         this.tareaRepository = tareaRepository;
     }
-    
+
     //Area
     public List<Area> findAllArea() {
         return areaRepository.findAll();
+    }
+    
+    public List<Area> searchArea(String stringFilter) {
+        return areaRepository.search(stringFilter);
     }
 
     public long countArea() {
@@ -68,9 +71,13 @@ public class DataService {
 
     //Estudiante
     public List<Estudiante> findAllEstudiante() {
-             return estudianteRepository.findAll();
+        return estudianteRepository.findAll();
     }
-    
+
+//    public List<Estudiante> searchEstudiante(String searchTerm) {
+//        return estudianteRepository.search(searchTerm);
+//    }
+
     public long countEstudiante() {
         return estudianteRepository.count();
     }
@@ -86,17 +93,17 @@ public class DataService {
         }
         estudianteRepository.save(estudiante);
     }
-    
+
     //Evaluacion
     public List<Evaluacion> findAllEvaluacion() {
         return evaluacionRepository.findAll();
     }
-    
+
     public long countEvaluacion() {
         return evaluacionRepository.count();
     }
 
-    public void deleteEvaluacion (Evaluacion evaluacion) {
+    public void deleteEvaluacion(Evaluacion evaluacion) {
         evaluacionRepository.delete(evaluacion);
     }
 
@@ -107,12 +114,12 @@ public class DataService {
         }
         evaluacionRepository.save(evaluacion);
     }
-    
+
     //Person
     public List<Person> findAllPerson() {
         return personRepository.findAll();
     }
-    
+
     public long countPerson() {
         return personRepository.count();
     }
@@ -128,12 +135,12 @@ public class DataService {
         }
         personRepository.save(person);
     }
-    
+
     //Profesor
     public List<Profesor> findAllProfesor() {
         return profesorRepository.findAll();
     }
-    
+
     public long countProfesor() {
         return profesorRepository.count();
     }
@@ -154,7 +161,7 @@ public class DataService {
     public List<Grupo> findAllGrupo() {
         return grupoRepository.findAll();
     }
-    
+
     public long countGrupo() {
         return grupoRepository.count();
     }
@@ -175,7 +182,7 @@ public class DataService {
     public List<Tarea> findAllTareas() {
         return tareaRepository.findAll();
     }
-    
+
     public long countTarea() {
         return tareaRepository.count();
     }
