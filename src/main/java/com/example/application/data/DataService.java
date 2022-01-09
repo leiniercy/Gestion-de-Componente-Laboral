@@ -52,6 +52,14 @@ public class DataService {
     public List<Area> searchArea(String stringFilter) {
         return areaRepository.search(stringFilter);
     }
+    
+    public List<Area> searchAreaByName(String stringFilter) {
+        return areaRepository.searchByNombre(stringFilter);
+    }
+    
+    public List<Area> searchAreaByDescripcion(String stringFilter) {
+        return areaRepository.searchByDescripcion(stringFilter);
+    }
 
     public long countArea() {
         return areaRepository.count();

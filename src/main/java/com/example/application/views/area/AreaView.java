@@ -13,7 +13,10 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.grid.HeaderRow;
+import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -28,6 +31,7 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
+import java.util.List;
 import java.util.Optional;
 import javax.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +46,8 @@ public class AreaView extends Div implements BeforeEnterObserver {
     private final String AREA_EDIT_ROUTE_TEMPLATE = "area-form/%d/edit";
 
     private Grid<Area> grid = new Grid<>(Area.class, false);
+    Grid.Column<Area> nombreColumn = grid.addColumn(Area::getNombre);
+    Grid.Column<Area> descricpcionColumn = grid.addColumn(Area::getDescripcion);
 
     private TextField nombre;
     private TextField descripcion;
@@ -56,40 +62,33 @@ public class AreaView extends Div implements BeforeEnterObserver {
 
     private AreaService areaService;
 
-    TextField filterText = new TextField();
+    private DataService dataService;
 
     public AreaView(
             @Autowired AreaService areaService,
             @Autowired DataService dataService
     ) {
         this.areaService = areaService;
+        this.dataService = dataService;
         addClassNames("area-view", "flex", "flex-col", "h-full");
 
         // Create UI
         SplitLayout splitLayout = new SplitLayout();
         splitLayout.setSizeFull();
-        
-        var toolbar = new HorizontalLayout();
-        toolbar.setClassName("w-full flex-wrap bg-contrast-5 py-s px-l");
-        toolbar.setSpacing(true);
-        toolbar.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.BASELINE);
-        toolbar.add(filterText);
 
         createGridLayout(splitLayout);
         createEditorLayout(splitLayout);
 
-        add(toolbar,splitLayout);
+        add(splitLayout);
 
         // Configure Grid
-        filterText.setPlaceholder("Filter by name...");
-        filterText.setClearButtonVisible(true);
-        filterText.setValueChangeMode(ValueChangeMode.LAZY);
-        filterText.addValueChangeListener(e -> {
-            grid.setItems(dataService.searchArea(filterText.getValue()));
-        });
+        nombreColumn.setHeader("Nombre").setAutoWidth(true);
+        descricpcionColumn.setHeader("Descripción").setAutoWidth(true);
 
-        grid.addColumn("nombre").setAutoWidth(true);
-        grid.addColumn("descripcion").setAutoWidth(true);
+        HeaderRow headerRow = grid.appendHeaderRow();
+        headerRow.getCell(nombreColumn).setComponent(FiltrarNombre());
+        headerRow.getCell(descricpcionColumn).setComponent(FiltrarDescripcion());
+
         grid.setItems(query -> areaService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
@@ -234,4 +233,30 @@ public class AreaView extends Div implements BeforeEnterObserver {
         binder.readBean(this.area);
 
     }
+
+    //Filtros
+    private TextField FiltrarNombre() {
+
+        TextField filterNombre = new TextField();
+        filterNombre.setPlaceholder("Nombre..");
+        filterNombre.setClearButtonVisible(true);
+        filterNombre.setValueChangeMode(ValueChangeMode.LAZY);
+        filterNombre.addValueChangeListener(e -> {
+            grid.setItems(dataService.searchAreaByName(filterNombre.getValue()));
+        });
+
+        return filterNombre;
+    }
+
+    private TextField FiltrarDescripcion() {
+        TextField filterDescripcion = new TextField();
+        filterDescripcion.setPlaceholder("Descripción..");
+        filterDescripcion.setClearButtonVisible(true);
+        filterDescripcion.setValueChangeMode(ValueChangeMode.LAZY);
+        filterDescripcion.addValueChangeListener(e -> {
+            grid.setItems(dataService.searchAreaByDescripcion(filterDescripcion.getValue()));
+        });
+        return filterDescripcion;
+    }
+
 }
