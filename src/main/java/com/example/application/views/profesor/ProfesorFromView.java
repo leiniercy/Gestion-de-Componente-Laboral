@@ -33,10 +33,11 @@ import com.example.application.data.service.ProfesorService;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.textfield.EmailField;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import javax.annotation.security.RolesAllowed;
-import com.vaadin.flow.data.renderer.TemplateRenderer;
 
 @PageTitle("Profesor")
 @Route(value = "profesor-view/:profesorID?/:action?(edit)", layout = MainLayout.class)
@@ -66,11 +67,21 @@ public class ProfesorFromView extends Div implements BeforeEnterObserver {
 
     private ProfesorService profesorService;
 
+    private DataService dataService;
+
+    private Grid.Column<Profesor> nombreColumn = grid.addColumn(Profesor::getNombre).setHeader("Nombre").setAutoWidth(true);
+    private Grid.Column<Profesor> apellidosColumn = grid.addColumn(Profesor::getApellidos).setHeader("Apellidos").setAutoWidth(true);
+    private Grid.Column<Profesor> emailColumn = grid.addColumn(Profesor::getEmail).setHeader("Correo").setAutoWidth(true);
+    private Grid.Column<Profesor> solapinColumn = grid.addColumn(Profesor::getSolapin).setHeader("Solapín").setAutoWidth(true);
+    private Grid.Column<Profesor> jefe_areaColumn = grid.addColumn(Profesor::isJefe_area).setHeader("Jefe de Área").setAutoWidth(true);
+    private Grid.Column<Profesor> areaColumn = grid.addColumn(profesor -> profesor.getA().getNombre()).setHeader("Área").setAutoWidth(true);
+
     public ProfesorFromView(
             @Autowired ProfesorService profesorService,
             @Autowired DataService dataService) {
-        
+
         this.profesorService = profesorService;
+        this.dataService = dataService;
         addClassNames("profesor-view", "flex", "flex-col", "h-full");
 
         // Create UI
@@ -83,20 +94,13 @@ public class ProfesorFromView extends Div implements BeforeEnterObserver {
         add(splitLayout);
 
         // Configure Grid
-        grid.setVerticalScrollingEnabled(true);
-        grid.addColumn("nombre").setAutoWidth(true);
-        grid.addColumn("apellidos").setAutoWidth(true);
-        grid.addColumn("email").setAutoWidth(true);
-        grid.addColumn("solapin").setAutoWidth(true);
-       
-//       var jefe_areaRenderer = TemplateRenderer.<Profesor>of(
-//                "<iron-icon hidden='[[!item.jefe_area]]' icon='vaadin:check' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></iron-icon><iron-icon hidden='[[item.jefe_area]]' icon='vaadin:minus' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
-//                .withProperty("jefe_area", Profesor::isJefe_area);
-//        grid.addColumn(jefe_areaRenderer).setHeader("Jefe de  Área").setAutoWidth(true);
-        
-        grid.addColumn("jefe_area").setAutoWidth(true);
-        grid.addColumn(profesor -> profesor.getA().getNombre()).setHeader("Area").setAutoWidth(true);
-
+        HeaderRow headerRow = grid.appendHeaderRow();
+        headerRow.getCell(nombreColumn).setComponent(FiltrarNombre());
+        headerRow.getCell(apellidosColumn).setComponent(FiltrarApellidos());
+        headerRow.getCell(emailColumn).setComponent(FiltrarEmail());
+        headerRow.getCell(solapinColumn).setComponent(FiltrarSolapin());
+        headerRow.getCell(jefe_areaColumn).setComponent(FiltrarJefe_Area());
+        headerRow.getCell(areaColumn).setComponent(FiltrarArea());
         grid.setItems(query -> profesorService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
@@ -121,14 +125,14 @@ public class ProfesorFromView extends Div implements BeforeEnterObserver {
 
         a.setItems(dataService.findAllArea());
         a.setItemLabelGenerator(Area::getNombre);
-        
+
         //Button
         cancel.addClickShortcut(Key.ESCAPE);
         cancel.addClickListener(e -> {
             clearForm();
             refreshGrid();
         });
-        
+
         save.addClickShortcut(Key.ENTER);
         save.addClickListener(e -> {
             try {
@@ -146,7 +150,7 @@ public class ProfesorFromView extends Div implements BeforeEnterObserver {
                 Notification.show("An exception happened while trying to store the profesor details.");
             }
         });
-        
+
         delete.addClickShortcut(Key.DELETE);
         delete.addClickListener(e -> {
             try {
@@ -203,7 +207,7 @@ public class ProfesorFromView extends Div implements BeforeEnterObserver {
         jefe_area = new Checkbox("Jefe de Area");
         jefe_area.getStyle().set("padding-top", "var(--lumo-space-m)");
         a = new ComboBox<>("Area");
-        Component[] fields = new Component[]{nombre, apellidos, email, solapin, a,jefe_area};
+        Component[] fields = new Component[]{nombre, apellidos, email, solapin, a, jefe_area};
 
         for (Component field : fields) {
             ((HasStyle) field).addClassName("full-width");
@@ -223,7 +227,7 @@ public class ProfesorFromView extends Div implements BeforeEnterObserver {
         cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        buttonLayout.add(save,delete,cancel);
+        buttonLayout.add(save, delete, cancel);
         editorLayoutDiv.add(buttonLayout);
     }
 
@@ -248,5 +252,80 @@ public class ProfesorFromView extends Div implements BeforeEnterObserver {
         this.profesor = value;
         binder.readBean(this.profesor);
 
+    }
+    
+    // Filtros
+    private TextField FiltrarNombre() {
+
+        TextField filterNombre = new TextField();
+        filterNombre.setPlaceholder("Filtrar");
+        filterNombre.setClearButtonVisible(true);
+        filterNombre.setWidth("100%");
+        filterNombre.setValueChangeMode(ValueChangeMode.LAZY);
+        filterNombre.addValueChangeListener(e -> {
+//            grid.setItems(dataService.searchEstudianteByNombre(FiltrarNombre().getValue()));
+        });
+
+        return filterNombre;
+    }
+
+    private TextField FiltrarApellidos() {
+        TextField filterDescripcion = new TextField();
+        filterDescripcion.setPlaceholder("Filtrar");
+        filterDescripcion.setClearButtonVisible(true);
+        filterDescripcion.setWidth("100%");
+        filterDescripcion.setValueChangeMode(ValueChangeMode.LAZY);
+        filterDescripcion.addValueChangeListener(e -> {
+
+        });
+        return filterDescripcion;
+    }
+
+    private TextField FiltrarEmail() {
+        TextField emailFilter = new TextField();
+        emailFilter.setPlaceholder("Filtrar");
+        emailFilter.setClearButtonVisible(true);
+        emailFilter.setWidth("100%");
+        emailFilter.setValueChangeMode(ValueChangeMode.LAZY);
+        emailFilter.addValueChangeListener(e -> {
+
+        });
+        return emailFilter;
+    }
+
+    private TextField FiltrarSolapin() {
+        TextField solapinFilter = new TextField();
+        solapinFilter.setPlaceholder("Filtrar");
+        solapinFilter.setClearButtonVisible(true);
+        solapinFilter.setWidth("100%");
+        solapinFilter.setValueChangeMode(ValueChangeMode.LAZY);
+        solapinFilter.addValueChangeListener(e -> {
+
+        });
+        return solapinFilter;
+    }
+
+    private TextField FiltrarJefe_Area() {
+        TextField areaFilter = new TextField();
+        areaFilter.setPlaceholder("Filtrar");
+        areaFilter.setClearButtonVisible(true);
+        areaFilter.setWidth("100%");
+        areaFilter.setValueChangeMode(ValueChangeMode.LAZY);
+        areaFilter.addValueChangeListener(e -> {
+
+        });
+        return areaFilter;
+    }
+
+    private TextField FiltrarArea() {
+        TextField areaFilter = new TextField();
+        areaFilter.setPlaceholder("Filtrar");
+        areaFilter.setClearButtonVisible(true);
+        areaFilter.setWidth("100%");
+        areaFilter.setValueChangeMode(ValueChangeMode.LAZY);
+        areaFilter.addValueChangeListener(e -> {
+
+        });
+        return areaFilter;
     }
 }

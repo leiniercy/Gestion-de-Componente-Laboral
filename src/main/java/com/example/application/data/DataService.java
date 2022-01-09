@@ -82,9 +82,37 @@ public class DataService {
         return estudianteRepository.findAll();
     }
 
-//    public List<Estudiante> searchEstudiante(String searchTerm) {
-//        return estudianteRepository.search(searchTerm);
-//    }
+    public List<Person> searchEstudianteByNombre(String searchTerm) {
+        return personRepository.searchEstudianteNombre(searchTerm);
+    }
+    
+    public List<Person> searchEstudianteByApellidos(String searchTerm) {
+        return personRepository.searchEstudianteApellidos(searchTerm);
+    }
+    
+    public List<Person> searchEstudianteByEmail(String searchTerm) {
+        return personRepository.searchEstudianteEmail(searchTerm);
+    }
+    
+    public List<Person> searchEstudianteBySolapin(String searchTerm) {
+        return personRepository.searchEstudianteSolapin(searchTerm);
+    }
+    
+    public List<Person> searchEstudianteByAnno_repitencia(String searchTerm) {
+        return personRepository.searchEstudianteAnno_repitencia(searchTerm);
+    }
+    
+    public List<Person> searchEstudianteByCantidad_asignaturas(String searchTerm) {
+        return personRepository.searchEstudianteCantidad_asignaturas(searchTerm);
+    }
+    
+    public List<Person> searchEstudianteByArea(String searchTerm) {
+        return personRepository.searchEstudianteArea(searchTerm);
+    }
+    
+    public List<Person> searchEstudianteByGrupo(String searchTerm) {
+        return personRepository.searchEstudianteGrupo(searchTerm);
+    }
 
     public long countEstudiante() {
         return estudianteRepository.count();
@@ -105,6 +133,18 @@ public class DataService {
     //Evaluacion
     public List<Evaluacion> findAllEvaluacion() {
         return evaluacionRepository.findAll();
+    }
+    
+     public List<Evaluacion> searchEvaluacionByNota(String searchTerm) {
+        return evaluacionRepository.searchByNota(searchTerm);
+    }
+     
+     public List<Evaluacion> searchEvaluacionByDescripcion(String searchTerm) {
+        return evaluacionRepository.searchByDescripcion(searchTerm);
+    }
+     
+     public List<Evaluacion> searchEvaluacionByEstudiante(String searchTerm) {
+        return evaluacionRepository.searchByEstudiante(searchTerm);
     }
 
     public long countEvaluacion() {
@@ -148,6 +188,31 @@ public class DataService {
     public List<Profesor> findAllProfesor() {
         return profesorRepository.findAll();
     }
+    
+    public List<Person> searchProfesorByNombre(String searchTerm) {
+        return personRepository.searchProfesorNombre(searchTerm);
+    }
+    
+    public List<Person> searchProfesorByApellidos(String searchTerm) {
+        return personRepository.searchProfesorApellidos(searchTerm);
+    }
+    
+    public List<Person> searchProfesorByEmail(String searchTerm) {
+        return personRepository.searchEstudianteEmail(searchTerm);
+    }
+    
+    public List<Person> searchProfesorBySolapin(String searchTerm) {
+        return personRepository.searchEstudianteSolapin(searchTerm);
+    }
+       
+    public List<Person> searchProfesorByJefe_area(String searchTerm) {
+        return personRepository.searchProfesorJefe_area(searchTerm);
+    }
+    
+    public List<Person> searchProfesorByArea(String searchTerm) {
+        return personRepository.searchProfesorArea(searchTerm);
+    }
+    
 
     public long countProfesor() {
         return profesorRepository.count();
@@ -169,7 +234,11 @@ public class DataService {
     public List<Grupo> findAllGrupo() {
         return grupoRepository.findAll();
     }
-
+      
+    public List<Grupo> searchGrupoByNumero (String searchTerm) {
+        return grupoRepository.searchByNumero(searchTerm);
+    }
+    
     public long countGrupo() {
         return grupoRepository.count();
     }
@@ -189,6 +258,22 @@ public class DataService {
     //Tarea
     public List<Tarea> findAllTareas() {
         return tareaRepository.findAll();
+    }
+    
+    public List<Tarea> searchTareaByNombre (String searchTerm) {
+        return tareaRepository.searchByNombre(searchTerm);
+    }
+    
+    public List<Tarea> searchTareaByDescripcion (String searchTerm) {
+        return tareaRepository.searchByDescripcion(searchTerm);
+    }
+    
+    public List<Tarea> searchTareaByDuracion (String searchTerm) {
+        return tareaRepository.searchByDuracion(searchTerm);
+    }
+    
+    public List<Tarea> searchTareaByEstudiante (String searchTerm) {
+        return tareaRepository.searchByEstudiante(searchTerm);
     }
 
     public long countTarea() {

@@ -37,8 +37,10 @@ import com.example.application.data.service.EvaluacionService;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.textfield.NumberField;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import javax.annotation.security.RolesAllowed;
@@ -58,7 +60,7 @@ public class EvaluacionesView extends Div implements BeforeEnterObserver {
 
     private TextField nota;
     private TextArea descripcion;
-    private ComboBox<Estudiante>estudiante;
+    private ComboBox<Estudiante> estudiante;
 
     private Button save = new Button("Añadir");
     private Button cancel = new Button("Cancelar");
@@ -70,11 +72,17 @@ public class EvaluacionesView extends Div implements BeforeEnterObserver {
 
     private EvaluacionService evaluacionService;
 
+    private DataService dataService;
+
+    private Grid.Column<Evaluacion> notaColumn = grid.addColumn(Evaluacion::getNota).setHeader("Nota").setAutoWidth(true);
+    private Grid.Column<Evaluacion> descripcionColumn = grid.addColumn(Evaluacion::getDescripcion).setHeader("Descripción").setAutoWidth(true);
+    private Grid.Column<Evaluacion> estudianteColumn = grid.addColumn(evaluacion -> evaluacion.getEstudiante().getStringNombreApellidos()).setHeader("Estudiante").setAutoWidth(true);
+
     public EvaluacionesView(
             @Autowired EvaluacionService evaluacionService,
             @Autowired DataService dataService
-            ) {
-        
+    ) {
+        this.dataService = dataService;
         this.evaluacionService = evaluacionService;
         addClassNames("evaluacion-view", "flex", "flex-col", "h-full");
 
@@ -88,10 +96,11 @@ public class EvaluacionesView extends Div implements BeforeEnterObserver {
         add(splitLayout);
 
         // Configure Grid
-        grid.setVerticalScrollingEnabled(true);
-        grid.addColumn("nota").setAutoWidth(true);
-        grid.addColumn("descripcion").setAutoWidth(true);
-        grid.addColumn(evaluacion -> evaluacion.getEstudiante().getStringNombreApellidos()).setHeader("Estudiante").setAutoWidth(true);
+        HeaderRow headerRow = grid.appendHeaderRow();
+        headerRow.getCell(notaColumn).setComponent(FiltrarNota());
+        headerRow.getCell(descripcionColumn).setComponent(FiltrarDescripcion());
+        headerRow.getCell(estudianteColumn).setComponent(FiltrarEstudinate());
+
         grid.setItems(query -> evaluacionService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
@@ -113,10 +122,10 @@ public class EvaluacionesView extends Div implements BeforeEnterObserver {
 
         // Bind fields. This where you'd define e.g. validation rules
         binder.bindInstanceFields(this);
-        
+
         estudiante.setItems(dataService.findAllEstudiante());
-        estudiante.setItemLabelGenerator(Estudiante:: getStringNombreApellidos);
-        
+        estudiante.setItemLabelGenerator(Estudiante::getStringNombreApellidos);
+
         //Button
         cancel.addClickShortcut(Key.ESCAPE);
         cancel.addClickListener(e -> {
@@ -141,7 +150,7 @@ public class EvaluacionesView extends Div implements BeforeEnterObserver {
                 Notification.show("An exception happened while trying to store the tarea details.");
             }
         });
-        
+
         delete.addClickShortcut(Key.DELETE);
         delete.addClickListener(e -> {
             try {
@@ -194,7 +203,7 @@ public class EvaluacionesView extends Div implements BeforeEnterObserver {
         nota = new TextField("Nota");
         descripcion = new TextArea("Descripcion");
         estudiante = new ComboBox<>("Estudiante");
-        Component[] fields = new Component[]{nota, descripcion,estudiante};
+        Component[] fields = new Component[]{nota, descripcion, estudiante};
 
         for (Component field : fields) {
             ((HasStyle) field).addClassName("full-width");
@@ -240,4 +249,46 @@ public class EvaluacionesView extends Div implements BeforeEnterObserver {
         binder.readBean(this.evaluacion);
 
     }
+
+    //Filtros
+    private TextField FiltrarNota() {
+
+        TextField filterNota = new TextField();
+        filterNota.setPlaceholder("Filtrar");
+        filterNota.setClearButtonVisible(true);
+        filterNota.setWidth("100%");
+        filterNota.setValueChangeMode(ValueChangeMode.LAZY);
+        filterNota.addValueChangeListener(e -> {
+            grid.setItems(dataService.searchEvaluacionByNota(filterNota.getValue()));
+        });
+
+        return filterNota;
+    }
+
+    private TextField FiltrarDescripcion() {
+
+        TextField filterDescripcion = new TextField();
+        filterDescripcion.setPlaceholder("Filtrar");
+        filterDescripcion.setClearButtonVisible(true);
+        filterDescripcion.setWidth("100%");
+        filterDescripcion.setValueChangeMode(ValueChangeMode.LAZY);
+        filterDescripcion.addValueChangeListener(e -> {
+            grid.setItems(dataService.searchEvaluacionByDescripcion(filterDescripcion.getValue()));
+        });
+        return filterDescripcion;
+    }
+
+    private TextField FiltrarEstudinate() {
+
+        TextField filterEstudiante = new TextField();
+        filterEstudiante.setPlaceholder("Filtrar");
+        filterEstudiante.setClearButtonVisible(true);
+        filterEstudiante.setWidth("100%");
+        filterEstudiante.setValueChangeMode(ValueChangeMode.LAZY);
+        filterEstudiante.addValueChangeListener(e -> {
+            grid.setItems(dataService.searchEvaluacionByEstudiante(filterEstudiante.getValue()));
+        });
+        return filterEstudiante;
+    }
+
 }

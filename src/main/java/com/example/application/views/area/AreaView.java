@@ -46,8 +46,6 @@ public class AreaView extends Div implements BeforeEnterObserver {
     private final String AREA_EDIT_ROUTE_TEMPLATE = "area-form/%d/edit";
 
     private Grid<Area> grid = new Grid<>(Area.class, false);
-    Grid.Column<Area> nombreColumn = grid.addColumn(Area::getNombre);
-    Grid.Column<Area> descricpcionColumn = grid.addColumn(Area::getDescripcion);
 
     private TextField nombre;
     private TextField descripcion;
@@ -63,6 +61,9 @@ public class AreaView extends Div implements BeforeEnterObserver {
     private AreaService areaService;
 
     private DataService dataService;
+
+    private Grid.Column<Area> nombreColumn = grid.addColumn(Area::getNombre).setHeader("Nombre").setAutoWidth(true);
+    private Grid.Column<Area> descripcionColumn = grid.addColumn(Area::getDescripcion).setHeader("Descripción").setAutoWidth(true);
 
     public AreaView(
             @Autowired AreaService areaService,
@@ -82,12 +83,9 @@ public class AreaView extends Div implements BeforeEnterObserver {
         add(splitLayout);
 
         // Configure Grid
-        nombreColumn.setHeader("Nombre").setAutoWidth(true);
-        descricpcionColumn.setHeader("Descripción").setAutoWidth(true);
-
         HeaderRow headerRow = grid.appendHeaderRow();
         headerRow.getCell(nombreColumn).setComponent(FiltrarNombre());
-        headerRow.getCell(descricpcionColumn).setComponent(FiltrarDescripcion());
+        headerRow.getCell(descripcionColumn).setComponent(FiltrarDescripcion());
 
         grid.setItems(query -> areaService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
@@ -238,8 +236,9 @@ public class AreaView extends Div implements BeforeEnterObserver {
     private TextField FiltrarNombre() {
 
         TextField filterNombre = new TextField();
-        filterNombre.setPlaceholder("Nombre..");
+        filterNombre.setPlaceholder("Filtrar");
         filterNombre.setClearButtonVisible(true);
+        filterNombre.setWidth("100%");
         filterNombre.setValueChangeMode(ValueChangeMode.LAZY);
         filterNombre.addValueChangeListener(e -> {
             grid.setItems(dataService.searchAreaByName(filterNombre.getValue()));
@@ -250,8 +249,9 @@ public class AreaView extends Div implements BeforeEnterObserver {
 
     private TextField FiltrarDescripcion() {
         TextField filterDescripcion = new TextField();
-        filterDescripcion.setPlaceholder("Descripción..");
+        filterDescripcion.setPlaceholder("Filtrar");
         filterDescripcion.setClearButtonVisible(true);
+        filterDescripcion.setWidth("100%");
         filterDescripcion.setValueChangeMode(ValueChangeMode.LAZY);
         filterDescripcion.addValueChangeListener(e -> {
             grid.setItems(dataService.searchAreaByDescripcion(filterDescripcion.getValue()));

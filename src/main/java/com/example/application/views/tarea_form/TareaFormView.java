@@ -33,9 +33,11 @@ import com.example.application.data.service.TareaService;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.data.converter.StringToIntegerConverter;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import javax.annotation.security.RolesAllowed;
@@ -66,10 +68,17 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
 
     private TareaService tareaService;
 
+    private DataService dataService;
+
+    private Grid.Column<Tarea> nombreColumn = grid.addColumn(Tarea::getNombre).setHeader("Nombre").setAutoWidth(true);
+    private Grid.Column<Tarea> descripcionColumn = grid.addColumn(Tarea::getDescripcion).setHeader("Descripción").setAutoWidth(true);
+    private Grid.Column<Tarea> duracionColumn = grid.addColumn(Tarea::getDuracion).setHeader("Duración").setAutoWidth(true);
+    private Grid.Column<Tarea> estudianteColumn = grid.addColumn(tarea -> tarea.getE().getStringNombreApellidos()).setHeader("Estudiante").setAutoWidth(true);
+
     public TareaFormView(
             @Autowired TareaService tareaService,
             @Autowired DataService dataService) {
-        
+        this.dataService = dataService;
         this.tareaService = tareaService;
         addClassNames("tarea-form", "flex", "flex-col", "h-full");
 
@@ -83,11 +92,12 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
         add(splitLayout);
 
         // Configure Grid
-        grid.setVerticalScrollingEnabled(true);
-        grid.addColumn("nombre").setAutoWidth(true);
-        grid.addColumn("descripcion").setAutoWidth(true);
-        grid.addColumn("duracion").setAutoWidth(true);
-        grid.addColumn(tarea -> tarea.getE().getStringNombreApellidos()).setHeader("Estudiante").setAutoWidth(true);
+        HeaderRow headerRow = grid.appendHeaderRow();
+        headerRow.getCell(nombreColumn).setComponent(FiltrarNombre());
+        headerRow.getCell(descripcionColumn).setComponent(FiltrarDescripcion());
+        headerRow.getCell(duracionColumn).setComponent(FiltrarDuracion());
+        headerRow.getCell(estudianteColumn).setComponent(FiltrarEstudiante());
+        
         grid.setItems(query -> tareaService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
@@ -114,7 +124,7 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
 
         e.setItems(dataService.findAllEstudiante());
         e.setItemLabelGenerator(Estudiante::getStringNombreApellidos);
-        
+
         //Button
         cancel.addClickShortcut(Key.ESCAPE);
         cancel.addClickListener(e -> {
@@ -139,7 +149,7 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
                 Notification.show("An exception happened while trying to store the tarea details.");
             }
         });
-        
+
         delete.addClickShortcut(Key.DELETE);
         delete.addClickListener(e -> {
             try {
@@ -192,8 +202,8 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
         nombre = new TextField("Nombre");
         descripcion = new TextArea("Descripcion");
         duracion = new IntegerField("Duración");
-        e =  new ComboBox<>("Estudiante");
-        Component[] fields = new Component[]{nombre, descripcion, duracion,e};
+        e = new ComboBox<>("Estudiante");
+        Component[] fields = new Component[]{nombre, descripcion, duracion, e};
 
         for (Component field : fields) {
             ((HasStyle) field).addClassName("full-width");
@@ -213,7 +223,7 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
         cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        buttonLayout.add(save,delete,cancel);
+        buttonLayout.add(save, delete, cancel);
         editorLayoutDiv.add(buttonLayout);
     }
 
@@ -238,5 +248,56 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
         this.tarea = value;
         binder.readBean(this.tarea);
 
+    }
+    //Filtros
+
+    private TextField FiltrarNombre() {
+
+        TextField filterNombre = new TextField();
+        filterNombre.setPlaceholder("Filtrar");
+        filterNombre.setClearButtonVisible(true);
+        filterNombre.setWidth("100%");
+        filterNombre.setValueChangeMode(ValueChangeMode.LAZY);
+        filterNombre.addValueChangeListener(e -> {
+            grid.setItems(dataService.searchTareaByNombre(filterNombre.getValue()));
+        });
+
+        return filterNombre;
+    }
+
+    private TextField FiltrarDescripcion() {
+        TextField filterDescripcion = new TextField();
+        filterDescripcion.setPlaceholder("Filtrar");
+        filterDescripcion.setClearButtonVisible(true);
+        filterDescripcion.setWidth("100%");
+        filterDescripcion.setValueChangeMode(ValueChangeMode.LAZY);
+        filterDescripcion.addValueChangeListener(e -> {
+            grid.setItems(dataService.searchTareaByDescripcion(filterDescripcion.getValue()));
+        });
+        return filterDescripcion;
+    }
+
+    private TextField FiltrarDuracion() {
+        TextField filterDuracion = new TextField();
+        filterDuracion.setPlaceholder("Filtrar");
+        filterDuracion.setClearButtonVisible(true);
+        filterDuracion.setWidth("100%");
+        filterDuracion.setValueChangeMode(ValueChangeMode.LAZY);
+        filterDuracion.addValueChangeListener(e -> {
+            grid.setItems(dataService.searchTareaByDuracion(filterDuracion.getValue()));
+        });
+        return filterDuracion;
+    }
+
+    private TextField FiltrarEstudiante() {
+        TextField EstudianteDuracion = new TextField();
+        EstudianteDuracion.setPlaceholder("Filtrar");
+        EstudianteDuracion.setClearButtonVisible(true);
+        EstudianteDuracion.setWidth("100%");
+        EstudianteDuracion.setValueChangeMode(ValueChangeMode.LAZY);
+        EstudianteDuracion.addValueChangeListener(e -> {
+            grid.setItems(dataService.searchTareaByEstudiante(EstudianteDuracion.getValue()));
+        });
+        return EstudianteDuracion;
     }
 }

@@ -81,12 +81,24 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
 
     private EstudianteService estudianteService;
 
+    private DataService dataService;
+
+    private Grid.Column<Estudiante> nombreColumn = grid.addColumn(Estudiante::getNombre).setHeader("Nombre").setAutoWidth(true);
+    private Grid.Column<Estudiante> apellidosColumn = grid.addColumn(Estudiante::getApellidos).setHeader("Descripción").setAutoWidth(true);
+    private Grid.Column<Estudiante> emailColumn = grid.addColumn(Estudiante::getEmail).setHeader("Correo").setAutoWidth(true);
+    private Grid.Column<Estudiante> solapinColumn = grid.addColumn(Estudiante::getSolapin).setHeader("Solapín").setAutoWidth(true);
+    private Grid.Column<Estudiante> anno_repitenciaColumn = grid.addColumn(Estudiante::getAnno_repitencia).setHeader("Año de repitencia").setAutoWidth(true);
+    private Grid.Column<Estudiante> cantidad_asignaturasColumn = grid.addColumn(Estudiante::getCantidad_asignaturas).setHeader("Cantidad de asignaturas").setAutoWidth(true);
+    private Grid.Column<Estudiante> areaColumn = grid.addColumn(estudiante -> estudiante.getArea().getNombre()).setHeader("Área").setAutoWidth(true);
+    private Grid.Column<Estudiante> grupoColumn = grid.addColumn(estudiante -> estudiante.getArea().getNombre()).setHeader("Grupo").setAutoWidth(true);
+
     public EstudiantesView(
             @Autowired EstudianteService estudianteService,
             @Autowired DataService dataService
     ) {
 
         this.estudianteService = estudianteService;
+        this.dataService = dataService;
         addClassNames("estudiantes-view", "flex", "flex-col", "h-full");
 
         // Create UI
@@ -99,24 +111,16 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         add(splitLayout);
 
         // Configure Grid
-//        var filterText =  new TextField();
-//        filterText.setPlaceholder("Filter by name...");
-//        filterText.setClearButtonVisible(true);
-//        filterText.setValueChangeMode(ValueChangeMode.LAZY);
-//        filterText.addValueChangeListener(e -> {
-//            grid.setItems( dataService.searchEstudianteByName(filterText.getValue() ));
-//        });
-//
-//        var toolbar = new HorizontalLayout(filterText);
+        HeaderRow headerRow = grid.appendHeaderRow();
+        headerRow.getCell(nombreColumn).setComponent(FiltrarNombre());
+        headerRow.getCell(apellidosColumn).setComponent(FiltrarApellidos());
+        headerRow.getCell(emailColumn).setComponent(FiltrarEmail());
+        headerRow.getCell(solapinColumn).setComponent(FiltrarSolapin());
+        headerRow.getCell(anno_repitenciaColumn).setComponent(FiltrarAnno_repitencia());
+        headerRow.getCell(cantidad_asignaturasColumn).setComponent(FiltrarCantidad_asignaturas());
+        headerRow.getCell(areaColumn).setComponent(FiltrarArea());
+        headerRow.getCell(grupoColumn).setComponent(FiltrarGrupo());
 
-        grid.addColumn("nombre").setAutoWidth(true);
-        grid.addColumn("apellidos").setAutoWidth(true);
-        grid.addColumn("email").setAutoWidth(true);
-        grid.addColumn("solapin").setAutoWidth(true);
-        grid.addColumn("anno_repitencia").setAutoWidth(true);
-        grid.addColumn("cantidad_asignaturas").setAutoWidth(true);
-        grid.addColumn(estudiante -> estudiante.getArea().getNombre()).setHeader("Area").setAutoWidth(true);
-        grid.addColumn(estudiante -> estudiante.getGrupo().getNumero()).setHeader("Grupo").setAutoWidth(true);
         grid.setItems(query -> estudianteService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
@@ -146,7 +150,7 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
 
         area.setItems(dataService.findAllArea());
         area.setItemLabelGenerator(Area::getNombre);
-        
+
         grupo.setItems(dataService.findAllGrupo());
         grupo.setItemLabelGenerator(Grupo::getNumero);
 
@@ -227,9 +231,9 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         solapin = new TextField("Solapin");
         anno_repitencia = new TextField("Año de repitencia");
         cantidad_asignaturas = new TextField("Cantidad de asignaturas");
-        grupo =  new ComboBox<>("Grupo");
+        grupo = new ComboBox<>("Grupo");
         area = new ComboBox<>("Area");
-        Component[] fields = new Component[]{nombre, apellidos, email, solapin, anno_repitencia, cantidad_asignaturas, grupo,area};
+        Component[] fields = new Component[]{nombre, apellidos, email, solapin, anno_repitencia, cantidad_asignaturas, grupo, area};
 
         for (Component field : fields) {
             ((HasStyle) field).addClassName("full-width");
@@ -275,65 +279,104 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         binder.readBean(this.estudiante);
 
     }
-    
-    // Configururacion de los filtros
- 
-//    private void addFiltersToGrid(@Autowired EstudianteService service) {
-//
-//        HeaderRow filterRow = grid.appendHeaderRow();
-//
-//        TextField nombreFilter = new TextField();
-//        nombreFilter.setPlaceholder("Filter");
-//        nombreFilter.setClearButtonVisible(true);
-//        nombreFilter.setWidth("100%");
-//        nombreFilter.setValueChangeMode(ValueChangeMode.LAZY);
-//        nombreFilter.addValueChangeListener(e -> 
-//                    grid.setItems(service.findEstudianteByName( nombreFilter.getValue() ) ) 
-//        );
-//        
-//
-//        TextField apellidosFilter = new TextField();
-//        apellidosFilter.setPlaceholder("Filter");
-//        apellidosFilter.setClearButtonVisible(true);
-//        apellidosFilter.setWidth("100%");
-//        apellidosFilter.setValueChangeMode(ValueChangeMode.LAZY);
-//        apellidosFilter.addValueChangeListener(e -> updateList());
-//
-//        EmailField emailFilter = new EmailField();
-//        emailFilter.setPlaceholder("Filter");
-//        emailFilter.setClearButtonVisible(true);
-//        emailFilter.setWidth("100%");
-//        emailFilter.setValueChangeMode(ValueChangeMode.LAZY);
-//        emailFilter.addValueChangeListener(e -> updateList());
-//
-//        TextField solapinFilter = new TextField();
-//        solapinFilter.setPlaceholder("Filter");
-//        solapinFilter.setClearButtonVisible(true);
-//        solapinFilter.setWidth("100%");
-//        solapinFilter.setValueChangeMode(ValueChangeMode.LAZY);
-//        solapinFilter.addValueChangeListener(e -> updateList());
-//
-//        TextField anno_repitenciaFilter = new TextField();
-//        anno_repitenciaFilter.setPlaceholder("Filter");
-//        anno_repitenciaFilter.setClearButtonVisible(true);
-//        anno_repitenciaFilter.setWidth("100%");
-//        anno_repitenciaFilter.setValueChangeMode(ValueChangeMode.LAZY);
-//        anno_repitenciaFilter.addValueChangeListener(e -> updateList());
-//
-//        TextField cantidad_asignaturasFilter = new TextField();
-//        cantidad_asignaturasFilter.setPlaceholder("Filter");
-//        cantidad_asignaturasFilter.setClearButtonVisible(true);
-//        cantidad_asignaturasFilter.setWidth("100%");
-//        cantidad_asignaturasFilter.setValueChangeMode(ValueChangeMode.LAZY);
-//        cantidad_asignaturasFilter.addValueChangeListener(e -> updateList());
-//        
-//        TextField areaFilter = new TextField();
-//        areaFilter.setPlaceholder("Filter");
-//        areaFilter.setClearButtonVisible(true);
-//        areaFilter.setWidth("100%");
-//        areaFilter.setValueChangeMode(ValueChangeMode.LAZY);
-//        areaFilter.addValueChangeListener(e -> updateList());
-//
-//    }
+
+    // Filtros
+    private TextField FiltrarNombre() {
+
+        TextField filterNombre = new TextField();
+        filterNombre.setPlaceholder("Filtrar");
+        filterNombre.setClearButtonVisible(true);
+        filterNombre.setWidth("100%");
+        filterNombre.setValueChangeMode(ValueChangeMode.LAZY);
+        filterNombre.addValueChangeListener(e -> {
+//            grid.setItems(dataService.searchEstudianteByNombre(FiltrarNombre().getValue()));
+        });
+
+        return filterNombre;
+    }
+
+    private TextField FiltrarApellidos() {
+        TextField filterDescripcion = new TextField();
+        filterDescripcion.setPlaceholder("Filtrar");
+        filterDescripcion.setClearButtonVisible(true);
+        filterDescripcion.setWidth("100%");
+        filterDescripcion.setValueChangeMode(ValueChangeMode.LAZY);
+        filterDescripcion.addValueChangeListener(e -> {
+
+        });
+        return filterDescripcion;
+    }
+
+    private TextField FiltrarEmail() {
+        TextField emailFilter = new TextField();
+        emailFilter.setPlaceholder("Filtrar");
+        emailFilter.setClearButtonVisible(true);
+        emailFilter.setWidth("100%");
+        emailFilter.setValueChangeMode(ValueChangeMode.LAZY);
+        emailFilter.addValueChangeListener(e -> {
+
+        });
+        return emailFilter;
+    }
+
+    private TextField FiltrarSolapin() {
+        TextField solapinFilter = new TextField();
+        solapinFilter.setPlaceholder("Filtrar");
+        solapinFilter.setClearButtonVisible(true);
+        solapinFilter.setWidth("100%");
+        solapinFilter.setValueChangeMode(ValueChangeMode.LAZY);
+        solapinFilter.addValueChangeListener(e -> {
+
+        });
+        return solapinFilter;
+    }
+
+    private TextField FiltrarAnno_repitencia() {
+        TextField anno_repitenciaFilter = new TextField();
+        anno_repitenciaFilter.setPlaceholder("Filtrar");
+        anno_repitenciaFilter.setClearButtonVisible(true);
+        anno_repitenciaFilter.setWidth("100%");
+        anno_repitenciaFilter.setValueChangeMode(ValueChangeMode.LAZY);
+        anno_repitenciaFilter.addValueChangeListener(e -> {
+
+        });
+        return anno_repitenciaFilter;
+    }
+
+    private TextField FiltrarCantidad_asignaturas() {
+        TextField cantidad_asignaturasFilter = new TextField();
+        cantidad_asignaturasFilter.setPlaceholder("Filtrar");
+        cantidad_asignaturasFilter.setClearButtonVisible(true);
+        cantidad_asignaturasFilter.setWidth("100%");
+        cantidad_asignaturasFilter.setValueChangeMode(ValueChangeMode.LAZY);
+        cantidad_asignaturasFilter.addValueChangeListener(e -> {
+
+        });
+        return cantidad_asignaturasFilter;
+    }
+
+    private TextField FiltrarArea() {
+        TextField areaFilter = new TextField();
+        areaFilter.setPlaceholder("Filtrar");
+        areaFilter.setClearButtonVisible(true);
+        areaFilter.setWidth("100%");
+        areaFilter.setValueChangeMode(ValueChangeMode.LAZY);
+        areaFilter.addValueChangeListener(e -> {
+
+        });
+        return areaFilter;
+    }
+
+    private TextField FiltrarGrupo() {
+        TextField grupoFilter = new TextField();
+        grupoFilter.setPlaceholder("Filtrar");
+        grupoFilter.setClearButtonVisible(true);
+        grupoFilter.setWidth("100%");
+        grupoFilter.setValueChangeMode(ValueChangeMode.LAZY);
+        grupoFilter.addValueChangeListener(e -> {
+
+        });
+        return grupoFilter;
+    }
 
 }

@@ -87,7 +87,7 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
             + "where dtype like 'Estudiante' "
             + "and lower(p.cantidad_asignaturas) like lower(concat('%', :searchTerm, '%')) "
     )
-    List<Person> searchEstudianteCantidad_asignaturas_repitencia(@Param("searchTerm") String searchTerm);
+    List<Person> searchEstudianteCantidad_asignaturas(@Param("searchTerm") String searchTerm);
 
     //filtar Estudiante por area
     @Query("select p from Person p "
