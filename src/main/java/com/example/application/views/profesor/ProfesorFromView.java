@@ -253,32 +253,32 @@ public class ProfesorFromView extends Div implements BeforeEnterObserver {
         binder.readBean(this.profesor);
 
     }
-    
+
     // Filtros
     private TextField FiltrarNombre() {
 
-        TextField filterNombre = new TextField();
-        filterNombre.setPlaceholder("Filtrar");
-        filterNombre.setClearButtonVisible(true);
-        filterNombre.setWidth("100%");
-        filterNombre.setValueChangeMode(ValueChangeMode.LAZY);
-        filterNombre.addValueChangeListener(e -> {
-//            grid.setItems(dataService.searchEstudianteByNombre(FiltrarNombre().getValue()));
+        TextField nombreFilter = new TextField();
+        nombreFilter.setPlaceholder("Filtrar");
+        nombreFilter.setClearButtonVisible(true);
+        nombreFilter.setWidth("100%");
+        nombreFilter.setValueChangeMode(ValueChangeMode.LAZY);
+        nombreFilter.addValueChangeListener(e -> {
+            grid.setItems(dataService.searchProfesorByNombre(nombreFilter.getValue()));
         });
 
-        return filterNombre;
+        return nombreFilter;
     }
 
     private TextField FiltrarApellidos() {
-        TextField filterDescripcion = new TextField();
-        filterDescripcion.setPlaceholder("Filtrar");
-        filterDescripcion.setClearButtonVisible(true);
-        filterDescripcion.setWidth("100%");
-        filterDescripcion.setValueChangeMode(ValueChangeMode.LAZY);
-        filterDescripcion.addValueChangeListener(e -> {
-
+        TextField apellidosFilter = new TextField();
+        apellidosFilter.setPlaceholder("Filtrar");
+        apellidosFilter.setClearButtonVisible(true);
+        apellidosFilter.setWidth("100%");
+        apellidosFilter.setValueChangeMode(ValueChangeMode.LAZY);
+        apellidosFilter.addValueChangeListener(e -> {
+            grid.setItems(dataService.searchProfesorByApellidos(apellidosFilter.getValue()));
         });
-        return filterDescripcion;
+        return apellidosFilter;
     }
 
     private TextField FiltrarEmail() {
@@ -288,7 +288,7 @@ public class ProfesorFromView extends Div implements BeforeEnterObserver {
         emailFilter.setWidth("100%");
         emailFilter.setValueChangeMode(ValueChangeMode.LAZY);
         emailFilter.addValueChangeListener(e -> {
-
+             grid.setItems(dataService.searchProfesorByEmail(emailFilter.getValue()));
         });
         return emailFilter;
     }
@@ -300,7 +300,7 @@ public class ProfesorFromView extends Div implements BeforeEnterObserver {
         solapinFilter.setWidth("100%");
         solapinFilter.setValueChangeMode(ValueChangeMode.LAZY);
         solapinFilter.addValueChangeListener(e -> {
-
+             grid.setItems(dataService.searchProfesorBySolapin(solapinFilter.getValue()));
         });
         return solapinFilter;
     }
@@ -312,7 +312,7 @@ public class ProfesorFromView extends Div implements BeforeEnterObserver {
         areaFilter.setWidth("100%");
         areaFilter.setValueChangeMode(ValueChangeMode.LAZY);
         areaFilter.addValueChangeListener(e -> {
-
+             grid.setItems(dataService.searchProfesorByJefe_area(areaFilter.getValue()));
         });
         return areaFilter;
     }
@@ -324,7 +324,7 @@ public class ProfesorFromView extends Div implements BeforeEnterObserver {
         areaFilter.setWidth("100%");
         areaFilter.setValueChangeMode(ValueChangeMode.LAZY);
         areaFilter.addValueChangeListener(e -> {
-
+            grid.setItems(dataService.searchProfesorByArea(areaFilter.getValue()));
         });
         return areaFilter;
     }

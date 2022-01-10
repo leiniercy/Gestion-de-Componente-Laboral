@@ -82,36 +82,36 @@ public class DataService {
         return estudianteRepository.findAll();
     }
 
-    public List<Person> searchEstudianteByNombre(String searchTerm) {
-        return personRepository.searchEstudianteNombre(searchTerm);
+    public List<Estudiante> searchEstudianteByNombre(String searchTerm) {
+        return estudianteRepository.searchEstudianteNombre(searchTerm);
     }
     
-    public List<Person> searchEstudianteByApellidos(String searchTerm) {
-        return personRepository.searchEstudianteApellidos(searchTerm);
+    public List<Estudiante> searchEstudianteByApellidos(String searchTerm) {
+        return estudianteRepository.searchEstudianteApellidos(searchTerm);
     }
     
-    public List<Person> searchEstudianteByEmail(String searchTerm) {
-        return personRepository.searchEstudianteEmail(searchTerm);
+    public List<Estudiante> searchEstudianteByEmail(String searchTerm) {
+        return estudianteRepository.searchEstudianteEmail(searchTerm);
     }
     
-    public List<Person> searchEstudianteBySolapin(String searchTerm) {
-        return personRepository.searchEstudianteSolapin(searchTerm);
+    public List<Estudiante> searchEstudianteBySolapin(String searchTerm) {
+        return estudianteRepository.searchEstudianteSolapin(searchTerm);
     }
     
-    public List<Person> searchEstudianteByAnno_repitencia(String searchTerm) {
-        return personRepository.searchEstudianteAnno_repitencia(searchTerm);
+    public List<Estudiante> searchEstudianteByAnno_repitencia(String searchTerm) {
+        return estudianteRepository.searchEstudianteAnno_repitencia(searchTerm);
     }
     
-    public List<Person> searchEstudianteByCantidad_asignaturas(String searchTerm) {
-        return personRepository.searchEstudianteCantidad_asignaturas(searchTerm);
+    public List<Estudiante> searchEstudianteByCantidad_asignaturas(String searchTerm) {
+        return estudianteRepository.searchEstudianteCantidad_asignaturas(searchTerm);
     }
     
-    public List<Person> searchEstudianteByArea(String searchTerm) {
-        return personRepository.searchEstudianteArea(searchTerm);
+    public List<Estudiante> searchEstudianteByArea(String searchTerm) {
+        return estudianteRepository.searchEstudianteArea(searchTerm);
     }
     
-    public List<Person> searchEstudianteByGrupo(String searchTerm) {
-        return personRepository.searchEstudianteGrupo(searchTerm);
+    public List<Estudiante> searchEstudianteByGrupo(String searchTerm) {
+        return estudianteRepository.searchEstudianteGrupo(searchTerm);
     }
 
     public long countEstudiante() {
@@ -189,28 +189,28 @@ public class DataService {
         return profesorRepository.findAll();
     }
     
-    public List<Person> searchProfesorByNombre(String searchTerm) {
-        return personRepository.searchProfesorNombre(searchTerm);
+    public List<Profesor> searchProfesorByNombre(String searchTerm) {
+        return profesorRepository.searchProfesorNombre(searchTerm);
     }
     
-    public List<Person> searchProfesorByApellidos(String searchTerm) {
-        return personRepository.searchProfesorApellidos(searchTerm);
+    public List<Profesor> searchProfesorByApellidos(String searchTerm) {
+        return profesorRepository.searchProfesorApellidos(searchTerm);
     }
     
-    public List<Person> searchProfesorByEmail(String searchTerm) {
-        return personRepository.searchEstudianteEmail(searchTerm);
+    public List<Profesor> searchProfesorByEmail(String searchTerm) {
+        return profesorRepository.searchProfesorEmail(searchTerm);
     }
     
-    public List<Person> searchProfesorBySolapin(String searchTerm) {
-        return personRepository.searchEstudianteSolapin(searchTerm);
+    public List<Profesor> searchProfesorBySolapin(String searchTerm) {
+        return profesorRepository.searchProfesorSolpain(searchTerm);
     }
        
-    public List<Person> searchProfesorByJefe_area(String searchTerm) {
-        return personRepository.searchProfesorJefe_area(searchTerm);
+    public List<Profesor> searchProfesorByJefe_area(String searchTerm) {
+        return profesorRepository.searchProfesorJefe_area(searchTerm);
     }
     
-    public List<Person> searchProfesorByArea(String searchTerm) {
-        return personRepository.searchProfesorArea(searchTerm);
+    public List<Profesor> searchProfesorByArea(String searchTerm) {
+        return profesorRepository.searchProfesorArea(searchTerm);
     }
     
 

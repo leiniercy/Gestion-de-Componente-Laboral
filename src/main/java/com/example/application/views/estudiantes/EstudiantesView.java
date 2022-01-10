@@ -84,13 +84,13 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
     private DataService dataService;
 
     private Grid.Column<Estudiante> nombreColumn = grid.addColumn(Estudiante::getNombre).setHeader("Nombre").setAutoWidth(true);
-    private Grid.Column<Estudiante> apellidosColumn = grid.addColumn(Estudiante::getApellidos).setHeader("Descripción").setAutoWidth(true);
+    private Grid.Column<Estudiante> apellidosColumn = grid.addColumn(Estudiante::getApellidos).setHeader("Apellidos").setAutoWidth(true);
     private Grid.Column<Estudiante> emailColumn = grid.addColumn(Estudiante::getEmail).setHeader("Correo").setAutoWidth(true);
     private Grid.Column<Estudiante> solapinColumn = grid.addColumn(Estudiante::getSolapin).setHeader("Solapín").setAutoWidth(true);
     private Grid.Column<Estudiante> anno_repitenciaColumn = grid.addColumn(Estudiante::getAnno_repitencia).setHeader("Año de repitencia").setAutoWidth(true);
     private Grid.Column<Estudiante> cantidad_asignaturasColumn = grid.addColumn(Estudiante::getCantidad_asignaturas).setHeader("Cantidad de asignaturas").setAutoWidth(true);
     private Grid.Column<Estudiante> areaColumn = grid.addColumn(estudiante -> estudiante.getArea().getNombre()).setHeader("Área").setAutoWidth(true);
-    private Grid.Column<Estudiante> grupoColumn = grid.addColumn(estudiante -> estudiante.getArea().getNombre()).setHeader("Grupo").setAutoWidth(true);
+    private Grid.Column<Estudiante> grupoColumn = grid.addColumn(estudiante -> estudiante.getGrupo().getNumero()).setHeader("Grupo").setAutoWidth(true);
 
     public EstudiantesView(
             @Autowired EstudianteService estudianteService,
@@ -283,28 +283,28 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
     // Filtros
     private TextField FiltrarNombre() {
 
-        TextField filterNombre = new TextField();
-        filterNombre.setPlaceholder("Filtrar");
-        filterNombre.setClearButtonVisible(true);
-        filterNombre.setWidth("100%");
-        filterNombre.setValueChangeMode(ValueChangeMode.LAZY);
-        filterNombre.addValueChangeListener(e -> {
-//            grid.setItems(dataService.searchEstudianteByNombre(FiltrarNombre().getValue()));
+        TextField nombreFilter = new TextField();
+        nombreFilter.setPlaceholder("Filtrar");
+        nombreFilter.setClearButtonVisible(true);
+        nombreFilter.setWidth("100%");
+        nombreFilter.setValueChangeMode(ValueChangeMode.LAZY);
+        nombreFilter.addValueChangeListener(e -> {
+            grid.setItems(dataService.searchEstudianteByNombre(nombreFilter.getValue()));
         });
 
-        return filterNombre;
+        return nombreFilter;
     }
 
     private TextField FiltrarApellidos() {
-        TextField filterDescripcion = new TextField();
-        filterDescripcion.setPlaceholder("Filtrar");
-        filterDescripcion.setClearButtonVisible(true);
-        filterDescripcion.setWidth("100%");
-        filterDescripcion.setValueChangeMode(ValueChangeMode.LAZY);
-        filterDescripcion.addValueChangeListener(e -> {
-
+        TextField apellidosFilter = new TextField();
+        apellidosFilter.setPlaceholder("Filtrar");
+        apellidosFilter.setClearButtonVisible(true);
+        apellidosFilter.setWidth("100%");
+        apellidosFilter.setValueChangeMode(ValueChangeMode.LAZY);
+        apellidosFilter.addValueChangeListener(e -> {
+            grid.setItems(dataService.searchEstudianteByApellidos(apellidosFilter.getValue()));
         });
-        return filterDescripcion;
+        return apellidosFilter;
     }
 
     private TextField FiltrarEmail() {
@@ -314,7 +314,7 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         emailFilter.setWidth("100%");
         emailFilter.setValueChangeMode(ValueChangeMode.LAZY);
         emailFilter.addValueChangeListener(e -> {
-
+            grid.setItems(dataService.searchEstudianteByEmail(emailFilter.getValue()));
         });
         return emailFilter;
     }
@@ -326,7 +326,7 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         solapinFilter.setWidth("100%");
         solapinFilter.setValueChangeMode(ValueChangeMode.LAZY);
         solapinFilter.addValueChangeListener(e -> {
-
+            grid.setItems(dataService.searchEstudianteBySolapin(solapinFilter.getValue()));
         });
         return solapinFilter;
     }
@@ -338,7 +338,7 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         anno_repitenciaFilter.setWidth("100%");
         anno_repitenciaFilter.setValueChangeMode(ValueChangeMode.LAZY);
         anno_repitenciaFilter.addValueChangeListener(e -> {
-
+            grid.setItems(dataService.searchEstudianteByAnno_repitencia(anno_repitenciaFilter.getValue()));
         });
         return anno_repitenciaFilter;
     }
@@ -350,7 +350,7 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         cantidad_asignaturasFilter.setWidth("100%");
         cantidad_asignaturasFilter.setValueChangeMode(ValueChangeMode.LAZY);
         cantidad_asignaturasFilter.addValueChangeListener(e -> {
-
+            grid.setItems(dataService.searchEstudianteByCantidad_asignaturas(cantidad_asignaturasFilter.getValue()));
         });
         return cantidad_asignaturasFilter;
     }
@@ -362,7 +362,7 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         areaFilter.setWidth("100%");
         areaFilter.setValueChangeMode(ValueChangeMode.LAZY);
         areaFilter.addValueChangeListener(e -> {
-
+            grid.setItems(dataService.searchEstudianteByArea(areaFilter.getValue()));
         });
         return areaFilter;
     }
@@ -374,7 +374,7 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         grupoFilter.setWidth("100%");
         grupoFilter.setValueChangeMode(ValueChangeMode.LAZY);
         grupoFilter.addValueChangeListener(e -> {
-
+            grid.setItems(dataService.searchEstudianteByGrupo(grupoFilter.getValue()));
         });
         return grupoFilter;
     }

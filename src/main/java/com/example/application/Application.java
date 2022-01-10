@@ -40,42 +40,42 @@ public class Application extends SpringBootServletInitializer implements AppShel
         SpringApplication.run(Application.class, args);
     }
 
-//   @Autowired
-//    private UserRepository userRepository;
-//
-//    @Autowired
-//    private PasswordEncoder passwordEncoder;
-//
-//    @EventListener(ApplicationReadyEvent.class)
-//    public void fillDB() {
-//        Logger logger = LoggerFactory.getLogger(getClass());
-//         if (userRepository.count() != 0L) {
-//                logger.info("Using existing database");
-//                return;
-//            }
-//            logger.info("Generating demo data");
-//            logger.info("... generating 2 User entities...");
-//        createUser1("Leinier","admin", "admin");
-//        createUser2("Otro","user", "user");
-//    }
-//
-//    private User createUser1(String name, String username, String password ) {
-//        User user = new User();
-//        user.setName(name);
-//        user.setUsername(username);
-//        user.setPassword(passwordEncoder.encode(password));
-//        user.setRoles(Stream.of(Rol.USER, Rol.ADMIN).collect(Collectors.toSet()));
-//        userRepository.saveAndFlush(user);
-//        return user;
-//    }
-//    private User createUser2(String name, String username, String password ) {
-//        User user = new User();
-//        user.setName(name);
-//        user.setUsername(username);
-//        user.setPassword(passwordEncoder.encode(password));
-//        user.setRoles(Collections.singleton(Rol.USER));
-//        userRepository.saveAndFlush(user);
-//        return user;
-//    }
+   @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void fillDB() {
+        Logger logger = LoggerFactory.getLogger(getClass());
+         if (userRepository.count() != 0L) {
+                logger.info("Using existing database");
+                return;
+            }
+            logger.info("Generating demo data");
+            logger.info("... generating 2 User entities...");
+        createUser1("Leinier","admin", "admin");
+        createUser2("Otro","user", "user");
+    }
+
+    private User createUser1(String name, String username, String password ) {
+        User user = new User();
+        user.setName(name);
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setRoles(Stream.of(Rol.USER, Rol.ADMIN).collect(Collectors.toSet()));
+        userRepository.saveAndFlush(user);
+        return user;
+    }
+    private User createUser2(String name, String username, String password ) {
+        User user = new User();
+        user.setName(name);
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setRoles(Collections.singleton(Rol.USER));
+        userRepository.saveAndFlush(user);
+        return user;
+    }
 
 }

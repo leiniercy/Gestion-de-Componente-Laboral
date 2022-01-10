@@ -14,8 +14,10 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -42,13 +44,15 @@ public class Estudiante extends Person {
     @EqualsAndHashCode.Include
     @ToString.Include
 
-    @NotNull(message = "campo vacio")
+    @NotBlank(message = "campo vacio")
     @Column(name = "anno_repitencia" , nullable = false)
-    private Integer anno_repitencia;
+    @Size(message = "número no valido" , max = 1, min=1)
+    private String anno_repitencia;
 
-    @NotNull(message = "campo vacio")
+    @NotBlank(message = "campo vacio")
     @Column(name = "cantidad_asignaturas" , nullable = false)
-    private Integer cantidad_asignaturas;
+    @Size(message = "número no valido" , max = 1, min=1)
+    private String cantidad_asignaturas;
 
     @NotNull(message = "debe elegir un campo")
     @ManyToOne
@@ -63,13 +67,6 @@ public class Estudiante extends Person {
 
     @OneToMany(mappedBy = "e")
     private List<Tarea> tareas;
-
-    public Estudiante(String nombre, String apellidos, String email, String solapin, Integer anno_repitencia, Integer cantidad_asignaturas, Area area) {
-        super(nombre, apellidos, email, solapin);
-        this.anno_repitencia = anno_repitencia;
-        this.cantidad_asignaturas = cantidad_asignaturas;
-        this.area = area;
-    }
 
     public String getStringNombreApellidos() {
         return getNombre() + " " + getApellidos();
