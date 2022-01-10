@@ -45,12 +45,12 @@ public class Estudiante extends Person {
     @ToString.Include
 
     @NotBlank(message = "campo vacio")
-    @Column(name = "anno_repitencia" , nullable = false)
+    @Column(name = "anno_repitencia")
     @Size(message = "número no valido" , max = 1, min=1)
-    private String anno_repitencia;
+        private String anno_repitencia;
 
     @NotBlank(message = "campo vacio")
-    @Column(name = "cantidad_asignaturas" , nullable = false)
+    @Column(name = "cantidad_asignaturas")
     @Size(message = "número no valido" , max = 1, min=1)
     private String cantidad_asignaturas;
 

@@ -17,6 +17,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -55,7 +56,8 @@ public class Tarea extends AbstractEntity{
     
     @NotNull(message = "campo vacío")
     @Column(name = "duracion")
-    private Integer duracion;
+    @Size(message = "campo no válido", max = 6, min=6)
+    private String duracion;
 
     @NotNull(message = "debe elegir un campo")
     @ManyToOne

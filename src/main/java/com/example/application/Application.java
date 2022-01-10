@@ -1,6 +1,5 @@
 package com.example.application;
 
-
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.server.PWA;
@@ -12,9 +11,9 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.event.EventListener;
 
-import com.example.application.data.repository.UserRepository;
-import com.example.application.data.entity.User;
-import com.example.application.data.entity.Rol;
+import com.example.application.data.repository.*;
+import com.example.application.data.entity.*;
+import com.example.application.data.entity.*;
 
 import java.util.Collections;
 import java.util.stream.Collectors;
@@ -40,8 +39,9 @@ public class Application extends SpringBootServletInitializer implements AppShel
         SpringApplication.run(Application.class, args);
     }
 
-   @Autowired
+    @Autowired
     private UserRepository userRepository;
+
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -49,17 +49,17 @@ public class Application extends SpringBootServletInitializer implements AppShel
     @EventListener(ApplicationReadyEvent.class)
     public void fillDB() {
         Logger logger = LoggerFactory.getLogger(getClass());
-         if (userRepository.count() != 0L) {
-                logger.info("Using existing database");
-                return;
-            }
-            logger.info("Generating demo data");
-            logger.info("... generating 2 User entities...");
-        createUser1("Leinier","admin", "admin");
-        createUser2("Otro","user", "user");
+        if (userRepository.count() != 0L) {
+            logger.info("Using existing database");
+            return;
+        }
+        logger.info("Generating demo data");
+        logger.info("... generating 2 User entities...");
+        createUser1("Leinier", "admin", "admin");
+        createUser2("Otro", "user", "user");
     }
 
-    private User createUser1(String name, String username, String password ) {
+    private User createUser1(String name, String username, String password) {
         User user = new User();
         user.setName(name);
         user.setUsername(username);
@@ -68,7 +68,8 @@ public class Application extends SpringBootServletInitializer implements AppShel
         userRepository.saveAndFlush(user);
         return user;
     }
-    private User createUser2(String name, String username, String password ) {
+
+    private User createUser2(String name, String username, String password) {
         User user = new User();
         user.setName(name);
         user.setUsername(username);

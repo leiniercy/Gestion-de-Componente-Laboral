@@ -55,7 +55,7 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
 
     private TextField nombre;
     private TextArea descripcion;
-    private IntegerField duracion;
+    private TextField duracion;
     private ComboBox<Estudiante> e;
 
     private Button save = new Button("Añadir");
@@ -119,8 +119,7 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
 
         // Bind fields. This where you'd define e.g. validation rules
         binder.bindInstanceFields(this);
-//        binder.forField(duracion).withConverter(new StringToIntegerConverter("Only numbers are allowed"))
-//                .bind("duracion");
+
 
         e.setItems(dataService.findAllEstudiante());
         e.setItemLabelGenerator(Estudiante::getStringNombreApellidos);
@@ -201,7 +200,7 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
         FormLayout formLayout = new FormLayout();
         nombre = new TextField("Nombre");
         descripcion = new TextArea("Descripcion");
-        duracion = new IntegerField("Duración");
+        duracion = new TextField("Duración");
         e = new ComboBox<>("Estudiante");
         Component[] fields = new Component[]{nombre, descripcion, duracion, e};
 

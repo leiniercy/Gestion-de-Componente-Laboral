@@ -141,10 +141,7 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         binder = new BeanValidationBinder<>(Estudiante.class);
 
         // Bind fields. This where you'd define e.g. validation rules
-        binder.forField(anno_repitencia).withConverter(new StringToIntegerConverter("Only numbers are allowed"))
-                .bind("anno_repitencia");
-        binder.forField(cantidad_asignaturas).withConverter(new StringToIntegerConverter("Only numbers are allowed"))
-                .bind("cantidad_asignaturas");
+
 
         binder.bindInstanceFields(this);
 

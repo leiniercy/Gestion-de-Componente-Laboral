@@ -16,7 +16,7 @@ import com.example.application.data.repository.GrupoRepository;
 
 @Service
 @RequiredArgsConstructor
-public class GrupoService implements CrudListener<Grupo>{
+public class GrupoService {
 
     private final GrupoRepository repository;
 
@@ -25,7 +25,7 @@ public class GrupoService implements CrudListener<Grupo>{
         return repository.findById(id);
     }
     
-    @Override
+    
     public Grupo update(Grupo entity) {
         return repository.save(entity);
     }
@@ -42,19 +42,5 @@ public class GrupoService implements CrudListener<Grupo>{
         return (int) repository.count();
     }
 
-    @Override
-    public List<Grupo> findAll() {
-        return repository.findAll();
-    }
-
-    @Override
-    public Grupo add(Grupo arg0) {
-        return repository.save(arg0);
-    }
-
-    @Override
-    public void delete(Grupo arg0) {
-        repository.delete(arg0);
-    }
-
+ 
 }

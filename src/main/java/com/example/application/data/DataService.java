@@ -32,7 +32,7 @@ public class DataService {
             @Autowired EvaluacionRepository evaluacionRepository,
             @Autowired PersonRepository personRepository,
             @Autowired ProfesorRepository profesorRepository,
-            @Autowired GrupoRepository samplePersonRepository,
+            @Autowired GrupoRepository grupoRepository,
             @Autowired TareaRepository tareaRepository) {
 
         this.areaRepository = areaRepository;
@@ -40,7 +40,7 @@ public class DataService {
         this.evaluacionRepository = evaluacionRepository;
         this.personRepository = personRepository;
         this.profesorRepository = profesorRepository;
-        this.grupoRepository = samplePersonRepository;
+        this.grupoRepository = grupoRepository;
         this.tareaRepository = tareaRepository;
     }
 
