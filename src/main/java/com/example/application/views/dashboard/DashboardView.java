@@ -44,6 +44,7 @@ public class DashboardView extends VerticalLayout {
 
         add(getBoard(), getGraficosPasteles());
     }
+    
 
     private Component getBoard() {
         addClassName("basic-board");
@@ -92,7 +93,46 @@ public class DashboardView extends VerticalLayout {
         stats.addClassNames("text-xl", "mt-m");
         return stats;
     }
+    
+    private Component createViewEvents() {
+        // Header
+        Select year = new Select();
+        year.setItems("2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021");
+        year.setValue("2021");
+        year.setWidth("100px");
 
+        HorizontalLayout header = createHeader("Gráfica de evaluaciones: ");
+        header.add(year);
+
+        // Chart
+        Chart chart = new Chart(ChartType.AREA);
+        Configuration conf = chart.getConfiguration();
+
+        XAxis xAxis = new XAxis();
+        xAxis.setCategories("Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiempbre", "Octubre", "Noviembre", "Diciembre");
+        conf.addxAxis(xAxis);
+
+        conf.getyAxis().setTitle("Values");
+
+        PlotOptionsArea plotOptions = new PlotOptionsArea();
+        plotOptions.setPointPlacement(PointPlacement.ON);
+        conf.addPlotOptions(plotOptions);
+
+        conf.addSeries(new ListSeries("Berlin", 189, 191, 191, 196, 201, 203, 209, 212, 229, 242, 244, 247));
+        conf.addSeries(new ListSeries("London", 138, 146, 148, 148, 152, 153, 163, 173, 178, 179, 185, 187));
+        conf.addSeries(new ListSeries("New York", 65, 65, 66, 71, 93, 102, 108, 117, 127, 129, 135, 136));
+        conf.addSeries(new ListSeries("Tokyo", 0, 11, 17, 23, 30, 42, 48, 49, 52, 54, 58, 62));
+
+        // Add it all together
+        VerticalLayout viewEvents = new VerticalLayout(header, chart);
+        viewEvents.addClassName("p-l");
+        viewEvents.setPadding(false);
+        viewEvents.setSpacing(false);
+        viewEvents.getElement().getThemeList().add("spacing-l");
+        return viewEvents;
+    }
+    
+    
     //Graficos de pasteles
     private Component getGraficosPasteles() {
         addClassName("grafics_key-board");
