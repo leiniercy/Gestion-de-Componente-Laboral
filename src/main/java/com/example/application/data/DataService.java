@@ -8,6 +8,7 @@ package com.example.application.data;
 import com.example.application.data.entity.*;
 import com.example.application.data.repository.*;
 import java.util.List;
+import org.hibernate.annotations.Formula;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -116,6 +117,50 @@ public class DataService {
 
     public long countEstudiante() {
         return estudianteRepository.count();
+    }
+    
+     //Cantidiad estudiantes evaluados de Mal 
+    @Formula("(select count(e.id) from Estudiante e  "
+            + "join Area a on e.id  = a.id"
+            + "join Grupo g on e.id  = g.id "
+            + "join Evaluacion eva on e.id  = eva.id"
+            + "where dtype like 'Estudiante' "
+            + "and ( lower(eva.nota) like lower('M')  "
+            + "or lower(eva.nota) like lower('m')  ) )" 
+    )
+    private long mal;
+    
+    public long countEstudianteEvaluadoMal() {
+        return mal;
+    }
+    
+     //Cantidiad estudiantes evaluados de Regular
+    @Formula("(select count(e.id) from Estudiante e  "
+            + "join Area a on e.id  = a.id"
+            + "join Grupo g on e.id  = g.id "
+            + "join Evaluacion eva on e.id  = eva.id"
+            + "where dtype like 'Estudiante' "
+            + "and ( lower(eva.nota) like lower('R')  "
+            + "or lower(eva.nota) like lower('r')  ) )" 
+    )
+    private long regular;
+    
+    public long countEstudianteEvaluadoRegular() {
+        return regular;
+    }
+     //Cantidiad estudiantes evaluados de Bien
+    @Formula("(select count(e.id) from Estudiante e  "
+            + "join Area a on e.id  = a.id"
+            + "join Grupo g on e.id  = g.id "
+            + "join Evaluacion eva on e.id  = eva.id"
+            + "where dtype like 'Estudiante' "
+            + "and ( lower(eva.nota) like lower('B')  "
+            + "or lower(eva.nota) like lower('b')  ) )" 
+    )
+    private long bien;
+    
+    public long countEstudianteEvaluadoBien() {
+        return bien;
     }
 
     public void deleteEstudiante(Estudiante estudiante) {
