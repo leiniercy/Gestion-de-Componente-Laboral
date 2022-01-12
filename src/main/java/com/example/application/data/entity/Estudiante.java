@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -55,10 +56,12 @@ public class Estudiante extends Person {
     private String cantidad_asignaturas;
 
     @NotNull(message = "debe elegir un campo")
+    @JoinColumn(name = "area_id")
     @ManyToOne
     private Area area;
 
     @NotNull(message = "debe elegir un campo")
+    @JoinColumn(name = "grupo_id")
     @ManyToOne
     private Grupo grupo;
 

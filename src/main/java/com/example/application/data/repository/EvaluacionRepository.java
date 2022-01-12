@@ -46,5 +46,12 @@ public interface EvaluacionRepository extends JpaRepository<Evaluacion, Integer>
             + " or lower(p.apellidos) like lower(concat('%', :searchTerm , '%')) "
     )
     List<Evaluacion> searchByEstudiante(@Param("searchTerm") String searchTerm);
+    
+    //filtrar por nombre tarea
+    @Query("SELECT e FROM Evaluacion e JOIN Person p on e.id = p.id "
+            +" JOIN Tarea t on e.id = t.id "
+            + "WHERE  lower(t.nombre) like lower(concat('%', :searchTerm , '%')) "
+    )
+    List<Evaluacion> searchByTarea(@Param("searchTerm") String searchTerm);
 
 }

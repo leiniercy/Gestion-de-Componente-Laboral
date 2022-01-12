@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import com.example.application.data.entity.Evaluacion;
 import com.example.application.data.entity.Estudiante;
+import com.example.application.data.entity.Tarea;
 import com.example.application.data.service.EvaluacionService;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Key;
@@ -61,6 +62,7 @@ public class EvaluacionesView extends Div implements BeforeEnterObserver {
     private TextField nota;
     private TextArea descripcion;
     private ComboBox<Estudiante> estudiante;
+    private ComboBox<Tarea> tarea;
 
     private Button save = new Button("Añadir");
     private Button cancel = new Button("Cancelar");
@@ -77,6 +79,7 @@ public class EvaluacionesView extends Div implements BeforeEnterObserver {
     private Grid.Column<Evaluacion> notaColumn = grid.addColumn(Evaluacion::getNota).setHeader("Nota").setAutoWidth(true);
     private Grid.Column<Evaluacion> descripcionColumn = grid.addColumn(Evaluacion::getDescripcion).setHeader("Descripción").setAutoWidth(true);
     private Grid.Column<Evaluacion> estudianteColumn = grid.addColumn(evaluacion -> evaluacion.getEstudiante().getStringNombreApellidos()).setHeader("Estudiante").setAutoWidth(true);
+    private Grid.Column<Evaluacion> tareaColumn = grid.addColumn(evaluacion -> evaluacion.getTarea().getNombre()).setHeader("Tarea").setAutoWidth(true);
 
     public EvaluacionesView(
             @Autowired EvaluacionService evaluacionService,
@@ -100,6 +103,7 @@ public class EvaluacionesView extends Div implements BeforeEnterObserver {
         headerRow.getCell(notaColumn).setComponent(FiltrarNota());
         headerRow.getCell(descripcionColumn).setComponent(FiltrarDescripcion());
         headerRow.getCell(estudianteColumn).setComponent(FiltrarEstudinate());
+        headerRow.getCell(tareaColumn).setComponent(FiltrarTarea());
 
         grid.setItems(query -> evaluacionService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
@@ -203,7 +207,8 @@ public class EvaluacionesView extends Div implements BeforeEnterObserver {
         nota = new TextField("Nota");
         descripcion = new TextArea("Descripcion");
         estudiante = new ComboBox<>("Estudiante");
-        Component[] fields = new Component[]{nota, descripcion, estudiante};
+        tarea = new ComboBox<>("Tarea");
+        Component[] fields = new Component[]{nota, descripcion, estudiante,tarea};
 
         for (Component field : fields) {
             ((HasStyle) field).addClassName("full-width");
@@ -289,6 +294,19 @@ public class EvaluacionesView extends Div implements BeforeEnterObserver {
             grid.setItems(dataService.searchEvaluacionByEstudiante(filterEstudiante.getValue()));
         });
         return filterEstudiante;
+    }
+
+    private TextField FiltrarTarea() {
+
+        TextField filterTarea = new TextField();
+        filterTarea.setPlaceholder("Filtrar");
+        filterTarea.setClearButtonVisible(true);
+        filterTarea.setWidth("100%");
+        filterTarea.setValueChangeMode(ValueChangeMode.LAZY);
+        filterTarea.addValueChangeListener(e -> {
+            grid.setItems(dataService.searchEvaluacionByTarea(filterTarea.getValue()));
+        });
+        return filterTarea;
     }
 
 }

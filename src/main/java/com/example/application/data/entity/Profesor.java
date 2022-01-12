@@ -8,6 +8,7 @@ package com.example.application.data.entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -42,6 +43,7 @@ public class Profesor extends Person {
     private boolean jefe_area;
 
     @NotNull(message = "debe elegir un campo")
+    @JoinColumn(name = "a_id")
     @ManyToOne
     private Area a;
 

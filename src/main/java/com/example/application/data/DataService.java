@@ -10,6 +10,7 @@ import com.example.application.data.repository.*;
 import java.util.List;
 import org.hibernate.annotations.Formula;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
 /**
@@ -49,15 +50,15 @@ public class DataService {
     public List<Area> findAllArea() {
         return areaRepository.findAll();
     }
-    
+
     public List<Area> searchArea(String stringFilter) {
         return areaRepository.search(stringFilter);
     }
-    
+
     public List<Area> searchAreaByName(String stringFilter) {
         return areaRepository.searchByNombre(stringFilter);
     }
-    
+
     public List<Area> searchAreaByDescripcion(String stringFilter) {
         return areaRepository.searchByDescripcion(stringFilter);
     }
@@ -86,31 +87,31 @@ public class DataService {
     public List<Estudiante> searchEstudianteByNombre(String searchTerm) {
         return estudianteRepository.searchEstudianteNombre(searchTerm);
     }
-    
+
     public List<Estudiante> searchEstudianteByApellidos(String searchTerm) {
         return estudianteRepository.searchEstudianteApellidos(searchTerm);
     }
-    
+
     public List<Estudiante> searchEstudianteByEmail(String searchTerm) {
         return estudianteRepository.searchEstudianteEmail(searchTerm);
     }
-    
+
     public List<Estudiante> searchEstudianteBySolapin(String searchTerm) {
         return estudianteRepository.searchEstudianteSolapin(searchTerm);
     }
-    
+
     public List<Estudiante> searchEstudianteByAnno_repitencia(String searchTerm) {
         return estudianteRepository.searchEstudianteAnno_repitencia(searchTerm);
     }
-    
+
     public List<Estudiante> searchEstudianteByCantidad_asignaturas(String searchTerm) {
         return estudianteRepository.searchEstudianteCantidad_asignaturas(searchTerm);
     }
-    
+
     public List<Estudiante> searchEstudianteByArea(String searchTerm) {
         return estudianteRepository.searchEstudianteArea(searchTerm);
     }
-    
+
     public List<Estudiante> searchEstudianteByGrupo(String searchTerm) {
         return estudianteRepository.searchEstudianteGrupo(searchTerm);
     }
@@ -118,50 +119,46 @@ public class DataService {
     public long countEstudiante() {
         return estudianteRepository.count();
     }
-    
-     //Cantidiad estudiantes evaluados de Mal 
-    @Formula("(select count(e.id) from Estudiante e  "
-            + "join Area a on e.id  = a.id"
-            + "join Grupo g on e.id  = g.id "
-            + "join Evaluacion eva on e.id  = eva.id"
-            + "where dtype like 'Estudiante' "
-            + "and ( lower(eva.nota) like lower('M')  "
-            + "or lower(eva.nota) like lower('m')  ) )" 
-    )
-    private long mal;
-    
-    public long countEstudianteEvaluadoMal() {
-        return mal;
+
+    //Cantidiad estudiantes evaluados de Mal/Regular/Bien 
+    public long countEstudianteEvaluaciones(String nota) {
+
+        List<Evaluacion> list = evaluacionRepository.findAll();
+        long cont = 0;
+        switch (nota) {
+            
+            case "M":
+                
+                for (int i = 0; i < list.size(); i++) {
+                    if (list.get(i).getNota().equals("m") || list.get(i).getNota().equals("M")) {
+                        cont++;
+                    }
+                }
+                
+                break;
+                
+            case "R":
+                 for (int i = 0; i < list.size(); i++) {
+                     if (list.get(i).getNota().equals("r") || list.get(i).getNota().equals("R")) {
+                     cont++;
+                    }
+                }
+                 break;
+                
+            case "B":
+                for (int i = 0; i < list.size(); i++) {
+                    if (list.get(i).getNota().equals("b") || list.get(i).getNota().equals("M")) {
+                        cont++;
+                    }
+                }
+                break;
+
+            default: cont=-1;
+
+        }
+        return cont;
     }
     
-     //Cantidiad estudiantes evaluados de Regular
-    @Formula("(select count(e.id) from Estudiante e  "
-            + "join Area a on e.id  = a.id"
-            + "join Grupo g on e.id  = g.id "
-            + "join Evaluacion eva on e.id  = eva.id"
-            + "where dtype like 'Estudiante' "
-            + "and ( lower(eva.nota) like lower('R')  "
-            + "or lower(eva.nota) like lower('r')  ) )" 
-    )
-    private long regular;
-    
-    public long countEstudianteEvaluadoRegular() {
-        return regular;
-    }
-     //Cantidiad estudiantes evaluados de Bien
-    @Formula("(select count(e.id) from Estudiante e  "
-            + "join Area a on e.id  = a.id"
-            + "join Grupo g on e.id  = g.id "
-            + "join Evaluacion eva on e.id  = eva.id"
-            + "where dtype like 'Estudiante' "
-            + "and ( lower(eva.nota) like lower('B')  "
-            + "or lower(eva.nota) like lower('b')  ) )" 
-    )
-    private long bien;
-    
-    public long countEstudianteEvaluadoBien() {
-        return bien;
-    }
 
     public void deleteEstudiante(Estudiante estudiante) {
         estudianteRepository.delete(estudiante);
@@ -179,17 +176,21 @@ public class DataService {
     public List<Evaluacion> findAllEvaluacion() {
         return evaluacionRepository.findAll();
     }
-    
-     public List<Evaluacion> searchEvaluacionByNota(String searchTerm) {
+
+    public List<Evaluacion> searchEvaluacionByNota(String searchTerm) {
         return evaluacionRepository.searchByNota(searchTerm);
     }
-     
-     public List<Evaluacion> searchEvaluacionByDescripcion(String searchTerm) {
+
+    public List<Evaluacion> searchEvaluacionByDescripcion(String searchTerm) {
         return evaluacionRepository.searchByDescripcion(searchTerm);
     }
-     
-     public List<Evaluacion> searchEvaluacionByEstudiante(String searchTerm) {
+
+    public List<Evaluacion> searchEvaluacionByEstudiante(String searchTerm) {
         return evaluacionRepository.searchByEstudiante(searchTerm);
+    }
+    
+    public List<Evaluacion> searchEvaluacionByTarea(String searchTerm) {
+        return evaluacionRepository.searchByTarea(searchTerm);
     }
 
     public long countEvaluacion() {
@@ -233,31 +234,30 @@ public class DataService {
     public List<Profesor> findAllProfesor() {
         return profesorRepository.findAll();
     }
-    
+
     public List<Profesor> searchProfesorByNombre(String searchTerm) {
         return profesorRepository.searchProfesorNombre(searchTerm);
     }
-    
+
     public List<Profesor> searchProfesorByApellidos(String searchTerm) {
         return profesorRepository.searchProfesorApellidos(searchTerm);
     }
-    
+
     public List<Profesor> searchProfesorByEmail(String searchTerm) {
         return profesorRepository.searchProfesorEmail(searchTerm);
     }
-    
+
     public List<Profesor> searchProfesorBySolapin(String searchTerm) {
         return profesorRepository.searchProfesorSolpain(searchTerm);
     }
-       
+
     public List<Profesor> searchProfesorByJefe_area(String searchTerm) {
         return profesorRepository.searchProfesorJefe_area(searchTerm);
     }
-    
+
     public List<Profesor> searchProfesorByArea(String searchTerm) {
         return profesorRepository.searchProfesorArea(searchTerm);
     }
-    
 
     public long countProfesor() {
         return profesorRepository.count();
@@ -279,11 +279,11 @@ public class DataService {
     public List<Grupo> findAllGrupo() {
         return grupoRepository.findAll();
     }
-      
-    public List<Grupo> searchGrupoByNumero (String searchTerm) {
+
+    public List<Grupo> searchGrupoByNumero(String searchTerm) {
         return grupoRepository.searchByNumero(searchTerm);
     }
-    
+
     public long countGrupo() {
         return grupoRepository.count();
     }
@@ -304,20 +304,20 @@ public class DataService {
     public List<Tarea> findAllTareas() {
         return tareaRepository.findAll();
     }
-    
-    public List<Tarea> searchTareaByNombre (String searchTerm) {
+
+    public List<Tarea> searchTareaByNombre(String searchTerm) {
         return tareaRepository.searchByNombre(searchTerm);
     }
-    
-    public List<Tarea> searchTareaByDescripcion (String searchTerm) {
+
+    public List<Tarea> searchTareaByDescripcion(String searchTerm) {
         return tareaRepository.searchByDescripcion(searchTerm);
     }
-    
-    public List<Tarea> searchTareaByDuracion (String searchTerm) {
+
+    public List<Tarea> searchTareaByDuracion(String searchTerm) {
         return tareaRepository.searchByDuracion(searchTerm);
     }
-    
-    public List<Tarea> searchTareaByEstudiante (String searchTerm) {
+
+    public List<Tarea> searchTareaByEstudiante(String searchTerm) {
         return tareaRepository.searchByEstudiante(searchTerm);
     }
 

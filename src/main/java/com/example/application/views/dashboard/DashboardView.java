@@ -162,7 +162,7 @@ public class DashboardView extends VerticalLayout {
     }
 
     private Component getEstudiante_Mal_Area() {
-        HorizontalLayout header = createHeader("Estudiantes evaluados de mal");
+        HorizontalLayout header = createHeader("Total de tareas evaluadas de mal");
 
         Chart chart = new Chart(ChartType.PIE);
 
@@ -172,7 +172,7 @@ public class DashboardView extends VerticalLayout {
         );
         chart.getConfiguration().setSeries(dataSeries);
 
-        Span stats = new Span(service.countEstudiante() + "");
+        Span stats = new Span(service.countEstudianteEvaluaciones("M")+ "");
         stats.addClassNames("text-xl", "mt-m");
 
         VerticalLayout serviceHealth = new VerticalLayout(header, stats, chart);
@@ -185,7 +185,7 @@ public class DashboardView extends VerticalLayout {
     }
 
     private Component getEstudiante_Regular_Area() {
-        HorizontalLayout header = createHeader("Estudiantes evaluados de Regular");
+        HorizontalLayout header = createHeader("Total de tareas evaluadas de regular");
 
         Chart chart = new Chart(ChartType.PIE);
 
@@ -195,7 +195,7 @@ public class DashboardView extends VerticalLayout {
         );
         chart.getConfiguration().setSeries(dataSeries);
 
-        Span stats = new Span(service.countEstudiante() + "");
+        Span stats = new Span(service.countEstudianteEvaluaciones("R")+ "");
         stats.addClassNames("text-xl", "mt-m");
 
         VerticalLayout serviceHealth = new VerticalLayout(header,stats ,chart);
@@ -209,7 +209,7 @@ public class DashboardView extends VerticalLayout {
 
     private Component getEstudiante_Bien_Area() {
 
-        HorizontalLayout header = createHeader("Estudiantes evaluados de Bien");
+        HorizontalLayout header = createHeader("Total de tareas evaluadas de Bien");
         Chart chart = new Chart(ChartType.PIE);
 
         DataSeries dataSeries = new DataSeries();
@@ -218,7 +218,7 @@ public class DashboardView extends VerticalLayout {
         );
         chart.getConfiguration().setSeries(dataSeries);
 
-        Span stats = new Span(service.countEstudiante() + "");
+        Span stats = new Span(service.countEstudianteEvaluaciones("B")+ "");
         stats.addClassNames("text-xl", "mt-m");
 
         VerticalLayout serviceHealth = new VerticalLayout(header,stats,chart);

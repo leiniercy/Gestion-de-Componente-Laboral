@@ -7,12 +7,14 @@ package com.example.application.data.entity;
 
 import com.example.application.data.AbstractEntity;
 import com.vaadin.flow.component.charts.model.Time;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -62,5 +64,8 @@ public class Tarea extends AbstractEntity{
     @NotNull(message = "debe elegir un campo")
     @ManyToOne
     private Estudiante e;
+    
+    @OneToMany(mappedBy = "tarea")
+    private List<Evaluacion> evaluaciones; 
     
 }
