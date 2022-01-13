@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 
 public enum Rol {
 
-    USER("user"), ADMIN("admin");
+    ADMIN("admin"),VICEDECANO("vicedecano"),JEFE_AREA("jefeArea"), ESTUDIANTE("estudiante");
 
     private String rolname;
 

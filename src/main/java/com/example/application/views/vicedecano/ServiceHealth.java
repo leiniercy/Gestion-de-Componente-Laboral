@@ -1,4 +1,4 @@
-package com.example.application.views.dashboard;
+package com.example.application.views.vicedecano;
 
 import com.vaadin.fusion.Nonnull;
 

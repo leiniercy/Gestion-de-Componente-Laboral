@@ -1,6 +1,5 @@
-package com.example.application.views.tarea_form;
+package com.example.application.views.jefe_area;
 
-import com.example.application.data.entity.Estudiante;
 import com.example.application.data.DataService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
@@ -28,59 +27,59 @@ import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import com.example.application.data.entity.Evaluacion;
+import com.example.application.data.entity.Estudiante;
 import com.example.application.data.entity.Tarea;
-import com.example.application.data.service.TareaService;
+import com.example.application.data.service.EvaluacionService;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
-import com.vaadin.flow.component.textfield.IntegerField;
-import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.data.value.ValueChangeMode;
-import com.vaadin.flow.router.RouteAlias;
-import com.vaadin.flow.server.auth.AnonymousAllowed;
 import javax.annotation.security.RolesAllowed;
 
-@PageTitle("Tarea")
-@Route(value = "tarea-form/:tareaID?/:action?(edit)", layout = MainLayout.class)
+
+@PageTitle("Evaluaciones")
+@Route(value = "evaluaciones-view/:evaluaionesID?/:action?(edit)", layout = MainLayout.class)
 @Uses(Icon.class)
-@RolesAllowed("admin")
-public class TareaFormView extends Div implements BeforeEnterObserver {
+@RolesAllowed("jefeArea")
+public class EvaluacionesView extends Div implements BeforeEnterObserver {
 
-    private final String TAREA_ID = "tareaID";
-    private final String TAREA_EDIT_ROUTE_TEMPLATE = "tarea-form/%d/edit";
+    private final String EVALUACION_ID = "evaluaionesID";
+    private final String EVALUACION_EDIT_ROUTE_TEMPLATE = "evaluaciones-view/%d/edit";
 
-    private Grid<Tarea> grid = new Grid<>(Tarea.class, false);
+    private Grid<Evaluacion> grid = new Grid<>(Evaluacion.class, false);
 
-    private TextField nombre;
+    private TextField nota;
     private TextArea descripcion;
-    private TextField duracion;
-    private ComboBox<Estudiante> e;
+    private ComboBox<Estudiante> estudiante;
+    private ComboBox<Tarea> tarea;
 
     private Button save = new Button("Añadir");
     private Button cancel = new Button("Cancelar");
     private Button delete = new Button("Eliminar");
 
-    private BeanValidationBinder<Tarea> binder;
+    private BeanValidationBinder<Evaluacion> binder;
 
-    private Tarea tarea;
+    private Evaluacion evaluacion;
 
-    private TareaService tareaService;
+    private EvaluacionService evaluacionService;
 
     private DataService dataService;
 
-    private Grid.Column<Tarea> nombreColumn = grid.addColumn(Tarea::getNombre).setHeader("Nombre").setAutoWidth(true);
-    private Grid.Column<Tarea> descripcionColumn = grid.addColumn(Tarea::getDescripcion).setHeader("Descripción").setAutoWidth(true);
-    private Grid.Column<Tarea> duracionColumn = grid.addColumn(Tarea::getDuracion).setHeader("Duración").setAutoWidth(true);
-    private Grid.Column<Tarea> estudianteColumn = grid.addColumn(tarea -> tarea.getE().getStringNombreApellidos()).setHeader("Estudiante").setAutoWidth(true);
+    private Grid.Column<Evaluacion> notaColumn = grid.addColumn(Evaluacion::getNota).setHeader("Nota").setAutoWidth(true);
+    private Grid.Column<Evaluacion> descripcionColumn = grid.addColumn(Evaluacion::getDescripcion).setHeader("Descripción").setAutoWidth(true);
+    private Grid.Column<Evaluacion> estudianteColumn = grid.addColumn(evaluacion -> evaluacion.getEstudiante().getStringNombreApellidos()).setHeader("Estudiante").setAutoWidth(true);
+    private Grid.Column<Evaluacion> tareaColumn = grid.addColumn(evaluacion -> evaluacion.getTarea().getNombre()).setHeader("Tarea").setAutoWidth(true);
 
-    public TareaFormView(
-            @Autowired TareaService tareaService,
-            @Autowired DataService dataService) {
+    public EvaluacionesView(
+            @Autowired EvaluacionService evaluacionService,
+            @Autowired DataService dataService
+    ) {
         this.dataService = dataService;
-        this.tareaService = tareaService;
-        addClassNames("tarea-form", "flex", "flex-col", "h-full");
+        this.evaluacionService = evaluacionService;
+        addClassNames("evaluacion-view", "flex", "flex-col", "h-full");
 
         // Create UI
         SplitLayout splitLayout = new SplitLayout();
@@ -93,12 +92,12 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
 
         // Configure Grid
         HeaderRow headerRow = grid.appendHeaderRow();
-        headerRow.getCell(nombreColumn).setComponent(FiltrarNombre());
+        headerRow.getCell(notaColumn).setComponent(FiltrarNota());
         headerRow.getCell(descripcionColumn).setComponent(FiltrarDescripcion());
-        headerRow.getCell(duracionColumn).setComponent(FiltrarDuracion());
-        headerRow.getCell(estudianteColumn).setComponent(FiltrarEstudiante());
-        
-        grid.setItems(query -> tareaService.list(
+        headerRow.getCell(estudianteColumn).setComponent(FiltrarEstudinate());
+        headerRow.getCell(tareaColumn).setComponent(FiltrarTarea());
+
+        grid.setItems(query -> evaluacionService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
@@ -107,22 +106,21 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
         // when a row is selected or deselected, populate form
         grid.asSingleSelect().addValueChangeListener(event -> {
             if (event.getValue() != null) {
-                UI.getCurrent().navigate(String.format(TAREA_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
+                UI.getCurrent().navigate(String.format(EVALUACION_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
             } else {
                 clearForm();
-                UI.getCurrent().navigate(TareaFormView.class);
+                UI.getCurrent().navigate(EvaluacionesView.class);
             }
         });
 
         // Configure Form
-        binder = new BeanValidationBinder<>(Tarea.class);
+        binder = new BeanValidationBinder<>(Evaluacion.class);
 
         // Bind fields. This where you'd define e.g. validation rules
         binder.bindInstanceFields(this);
 
-
-        e.setItems(dataService.findAllEstudiante());
-        e.setItemLabelGenerator(Estudiante::getStringNombreApellidos);
+        estudiante.setItems(dataService.findAllEstudiante());
+        estudiante.setItemLabelGenerator(Estudiante::getStringNombreApellidos);
 
         //Button
         cancel.addClickShortcut(Key.ESCAPE);
@@ -134,16 +132,16 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
         save.addClickShortcut(Key.ENTER);
         save.addClickListener(e -> {
             try {
-                if (this.tarea == null) {
-                    this.tarea = new Tarea();
+                if (this.evaluacion == null) {
+                    this.evaluacion = new Evaluacion();
                 }
-                binder.writeBean(this.tarea);
+                binder.writeBean(this.evaluacion);
 
-                tareaService.update(this.tarea);
+                evaluacionService.update(this.evaluacion);
                 clearForm();
                 refreshGrid();
-                Notification.show("Tarea añadida.");
-                UI.getCurrent().navigate(TareaFormView.class);
+                Notification.show("Evaluación añadida.");
+                UI.getCurrent().navigate(EvaluacionesView.class);
             } catch (ValidationException validationException) {
                 Notification.show("An exception happened while trying to store the tarea details.");
             }
@@ -152,16 +150,16 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
         delete.addClickShortcut(Key.DELETE);
         delete.addClickListener(e -> {
             try {
-                if (this.tarea == null) {
-                    this.tarea = new Tarea();
+                if (this.evaluacion == null) {
+                    this.evaluacion = new Evaluacion();
                 }
-                binder.writeBean(this.tarea);
+                binder.writeBean(this.evaluacion);
 
-                tareaService.delete(this.tarea);
+                evaluacionService.delete(this.evaluacion);
                 clearForm();
                 refreshGrid();
-                Notification.show("Tarea Eliminada.");
-                UI.getCurrent().navigate(TareaFormView.class);
+                Notification.show("Evaluación eliminada.");
+                UI.getCurrent().navigate(EvaluacionesView.class);
             } catch (ValidationException validationException) {
                 Notification.show("An exception happened while trying to store the tarea details.");
             }
@@ -171,19 +169,19 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        Optional<Integer> tareaId = event.getRouteParameters().getInteger(TAREA_ID);
-        if (tareaId.isPresent()) {
-            Optional<Tarea> tareaFromBackend = tareaService.get(tareaId.get());
-            if (tareaFromBackend.isPresent()) {
-                populateForm(tareaFromBackend.get());
+        Optional<Integer> evaluacionId = event.getRouteParameters().getInteger(EVALUACION_ID);
+        if (evaluacionId.isPresent()) {
+            Optional<Evaluacion> evaluacionFromBackend = evaluacionService.get(evaluacionId.get());
+            if (evaluacionFromBackend.isPresent()) {
+                populateForm(evaluacionFromBackend.get());
             } else {
                 Notification.show(
-                        String.format("The requested tarea was not found, ID = %d", tareaId.get()), 3000,
+                        String.format("The requested evaluacion was not found, ID = %d", evaluacionId.get()), 3000,
                         Notification.Position.BOTTOM_START);
                 // when a row is selected but the data is no longer available,
                 // refresh grid
                 refreshGrid();
-                event.forwardTo(TareaFormView.class);
+                event.forwardTo(EvaluacionesView.class);
             }
         }
     }
@@ -198,11 +196,11 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
         editorLayoutDiv.add(editorDiv);
 
         FormLayout formLayout = new FormLayout();
-        nombre = new TextField("Nombre");
+        nota = new TextField("Nota");
         descripcion = new TextArea("Descripcion");
-        duracion = new TextField("Duración");
-        e = new ComboBox<>("Estudiante");
-        Component[] fields = new Component[]{nombre, descripcion, duracion, e};
+        estudiante = new ComboBox<>("Estudiante");
+        tarea = new ComboBox<>("Tarea");
+        Component[] fields = new Component[]{nota, descripcion, estudiante,tarea};
 
         for (Component field : fields) {
             ((HasStyle) field).addClassName("full-width");
@@ -243,60 +241,64 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
         populateForm(null);
     }
 
-    private void populateForm(Tarea value) {
-        this.tarea = value;
-        binder.readBean(this.tarea);
+    private void populateForm(Evaluacion value) {
+        this.evaluacion = value;
+        binder.readBean(this.evaluacion);
 
     }
+
     //Filtros
+    private TextField FiltrarNota() {
 
-    private TextField FiltrarNombre() {
-
-        TextField filterNombre = new TextField();
-        filterNombre.setPlaceholder("Filtrar");
-        filterNombre.setClearButtonVisible(true);
-        filterNombre.setWidth("100%");
-        filterNombre.setValueChangeMode(ValueChangeMode.LAZY);
-        filterNombre.addValueChangeListener(e -> {
-            grid.setItems(dataService.searchTareaByNombre(filterNombre.getValue()));
+        TextField filterNota = new TextField();
+        filterNota.setPlaceholder("Filtrar");
+        filterNota.setClearButtonVisible(true);
+        filterNota.setWidth("100%");
+        filterNota.setValueChangeMode(ValueChangeMode.LAZY);
+        filterNota.addValueChangeListener(e -> {
+            grid.setItems(dataService.searchEvaluacionByNota(filterNota.getValue()));
         });
 
-        return filterNombre;
+        return filterNota;
     }
 
     private TextField FiltrarDescripcion() {
+
         TextField filterDescripcion = new TextField();
         filterDescripcion.setPlaceholder("Filtrar");
         filterDescripcion.setClearButtonVisible(true);
         filterDescripcion.setWidth("100%");
         filterDescripcion.setValueChangeMode(ValueChangeMode.LAZY);
         filterDescripcion.addValueChangeListener(e -> {
-            grid.setItems(dataService.searchTareaByDescripcion(filterDescripcion.getValue()));
+            grid.setItems(dataService.searchEvaluacionByDescripcion(filterDescripcion.getValue()));
         });
         return filterDescripcion;
     }
 
-    private TextField FiltrarDuracion() {
-        TextField filterDuracion = new TextField();
-        filterDuracion.setPlaceholder("Filtrar");
-        filterDuracion.setClearButtonVisible(true);
-        filterDuracion.setWidth("100%");
-        filterDuracion.setValueChangeMode(ValueChangeMode.LAZY);
-        filterDuracion.addValueChangeListener(e -> {
-            grid.setItems(dataService.searchTareaByDuracion(filterDuracion.getValue()));
+    private TextField FiltrarEstudinate() {
+
+        TextField filterEstudiante = new TextField();
+        filterEstudiante.setPlaceholder("Filtrar");
+        filterEstudiante.setClearButtonVisible(true);
+        filterEstudiante.setWidth("100%");
+        filterEstudiante.setValueChangeMode(ValueChangeMode.LAZY);
+        filterEstudiante.addValueChangeListener(e -> {
+            grid.setItems(dataService.searchEvaluacionByEstudiante(filterEstudiante.getValue()));
         });
-        return filterDuracion;
+        return filterEstudiante;
     }
 
-    private TextField FiltrarEstudiante() {
-        TextField EstudianteDuracion = new TextField();
-        EstudianteDuracion.setPlaceholder("Filtrar");
-        EstudianteDuracion.setClearButtonVisible(true);
-        EstudianteDuracion.setWidth("100%");
-        EstudianteDuracion.setValueChangeMode(ValueChangeMode.LAZY);
-        EstudianteDuracion.addValueChangeListener(e -> {
-            grid.setItems(dataService.searchTareaByEstudiante(EstudianteDuracion.getValue()));
+    private TextField FiltrarTarea() {
+
+        TextField filterTarea = new TextField();
+        filterTarea.setPlaceholder("Filtrar");
+        filterTarea.setClearButtonVisible(true);
+        filterTarea.setWidth("100%");
+        filterTarea.setValueChangeMode(ValueChangeMode.LAZY);
+        filterTarea.addValueChangeListener(e -> {
+            grid.setItems(dataService.searchEvaluacionByTarea(filterTarea.getValue()));
         });
-        return EstudianteDuracion;
+        return filterTarea;
     }
+
 }

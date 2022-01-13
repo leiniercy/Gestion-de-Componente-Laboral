@@ -58,7 +58,7 @@ public class Tarea extends AbstractEntity{
     
     @NotNull(message = "campo vacío")
     @Column(name = "duracion")
-    @Size(message = "campo no válido", max = 6, min=6)
+    @Size(message = "campo no válido", max = 6, min=1)
     private String duracion;
 
     @NotNull(message = "debe elegir un campo")

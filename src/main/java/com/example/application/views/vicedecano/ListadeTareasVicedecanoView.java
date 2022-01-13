@@ -1,6 +1,7 @@
-package com.example.application.views.listadetareas;
+package com.example.application.views.vicedecano;
 
 import com.example.application.views.MainLayout;
+import com.example.application.views.estudiante.Client;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.grid.Grid;
@@ -32,9 +33,9 @@ import javax.annotation.security.RolesAllowed;
 import org.apache.commons.lang3.StringUtils;
 
 @PageTitle("Lista de Tareas ")
-@Route(value = "tareas", layout = MainLayout.class)
-@RolesAllowed("user")
-public class ListadeTareasView extends Div {
+@Route(value = "list-tareas", layout = MainLayout.class)
+@RolesAllowed("vicedecano")
+public class ListadeTareasVicedecanoView extends Div {
 
     private GridPro<Client> grid;
     private GridListDataView<Client> gridListDataView;
@@ -45,8 +46,8 @@ public class ListadeTareasView extends Div {
     private Grid.Column<Client> statusColumn;
     private Grid.Column<Client> dateColumn;
 
-    public ListadeTareasView() {
-        addClassName("listade-tareas-view");
+    public ListadeTareasVicedecanoView() {
+        addClassName("lista-de-tareas-view");
         setSizeFull();
         createGrid();
         add(grid);

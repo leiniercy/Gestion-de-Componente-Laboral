@@ -1,4 +1,4 @@
-package com.example.application.views.profesor;
+package com.example.application.views.vicedecano;
 
 import com.example.application.data.DataService;
 import com.example.application.data.entity.Area;
@@ -42,7 +42,7 @@ import javax.annotation.security.RolesAllowed;
 @PageTitle("Profesor")
 @Route(value = "profesor-view/:profesorID?/:action?(edit)", layout = MainLayout.class)
 @Uses(Icon.class)
-@RolesAllowed("admin")
+@RolesAllowed("vicedecano")
 public class ProfesorFromView extends Div implements BeforeEnterObserver {
 
     private final String PROFESOR_ID = "profesorID";

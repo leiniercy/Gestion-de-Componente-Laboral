@@ -2,13 +2,16 @@ package com.example.application.views;
 
 import com.example.application.data.entity.User;
 import com.example.application.security.AuthenticatedUser;
-import com.example.application.views.profesor.ProfesorFromView;
-import com.example.application.views.tarea_form.TareaFormView;
-import com.example.application.views.listadetareas.ListadeTareasView;
-import com.example.application.views.evaluaciones.EvaluacionesView;
-import com.example.application.views.estudiantes.EstudiantesView;
-import com.example.application.views.area.AreaView;
-import com.example.application.views.dashboard.DashboardView;
+import com.example.application.views.Inicio.InicioView;
+import com.example.application.views.vicedecano.ProfesorFromView;
+import com.example.application.views.jefe_area.TareaFormView;
+import com.example.application.views.estudiante.ListadeTareasEstudianteView;
+import com.example.application.views.jefe_area.EvaluacionesView;
+import com.example.application.views.vicedecano.EstudiantesView;
+import com.example.application.views.vicedecano.AreaView;
+import com.example.application.views.vicedecano.DashboardView;
+import com.example.application.views.vicedecano.ListadeEvaluacionesVicedecanoView;
+import com.example.application.views.vicedecano.ListadeTareasVicedecanoView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -153,13 +156,23 @@ public class MainLayout extends AppLayout {
     private List<RouterLink> createLinks() {
         MenuItemInfo[] menuItems;
         menuItems = new MenuItemInfo[]{ //
+            
+            new MenuItemInfo("Inicio", "la la-file", InicioView.class), //       
+            
+            //Vicedecano
             new MenuItemInfo("Dashboard", "la la-file", DashboardView.class), //       
             new MenuItemInfo("Estudiantes", "la la-file", EstudiantesView.class), //             
             new MenuItemInfo("Area", "la la-file", AreaView.class), //
-            new MenuItemInfo("Evaluacion", "la la-file", EvaluacionesView.class), //
+            new MenuItemInfo("Lista de Evaluaciones", "la la-file",ListadeEvaluacionesVicedecanoView.class), //
+            new MenuItemInfo("Lista de Tareas", "la la-file",ListadeTareasVicedecanoView.class), //
+            
+            //Jefe de Area
             new MenuItemInfo("Tarea", "la la-file", TareaFormView.class), //
-            new MenuItemInfo("Lista Tarea", "la la-file", ListadeTareasView.class), //
-            new MenuItemInfo("Profesor", "la la-file", ProfesorFromView.class) //
+            new MenuItemInfo("Evaluacion", "la la-file", EvaluacionesView.class), //
+            
+            //Estudiante
+            new MenuItemInfo("Lista Tarea", "la la-file", ListadeTareasEstudianteView.class), //
+            
         };
         List<RouterLink> links = new ArrayList<>();
         for (MenuItemInfo menuItemInfo : menuItems) {

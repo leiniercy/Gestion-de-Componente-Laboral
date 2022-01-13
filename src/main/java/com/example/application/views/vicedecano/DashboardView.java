@@ -1,8 +1,7 @@
-package com.example.application.views.dashboard;
+package com.example.application.views.vicedecano;
 
 import com.example.application.data.DataService;
 import com.example.application.views.MainLayout;
-import com.example.application.views.dashboard.ServiceHealth.Status;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.board.Board;
 import com.vaadin.flow.component.board.Row;
@@ -27,12 +26,13 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+import javax.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @PageTitle("Dashboard")
 @Route(value = "dashboard", layout = MainLayout.class)
-@RouteAlias(value = "", layout = MainLayout.class)
-@AnonymousAllowed
+@RouteAlias(value = "dashboard", layout = MainLayout.class)
+@RolesAllowed("vicedecano")
 public class DashboardView extends VerticalLayout {
 
     DataService service;

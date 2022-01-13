@@ -54,9 +54,11 @@ public class Application extends SpringBootServletInitializer implements AppShel
             return;
         }
         logger.info("Generating demo data");
-        logger.info("... generating 2 User entities...");
+        logger.info("... generating 4 User entities...");
         createUser1("Leinier", "admin", "admin");
-        createUser2("Otro", "user", "user");
+        createUser2("Estudiante", "user", "user");
+        createUser3("JefeArea", "jefeArea", "jefeArea");
+        createUser4("Vicedecano", "vicedecano", "vicedecano");
     }
 
     private User createUser1(String name, String username, String password) {
@@ -64,7 +66,7 @@ public class Application extends SpringBootServletInitializer implements AppShel
         user.setName(name);
         user.setUsername(username);
         user.setPassword(passwordEncoder.encode(password));
-        user.setRoles(Stream.of(Rol.USER, Rol.ADMIN).collect(Collectors.toSet()));
+        user.setRoles(Stream.of(Rol.ESTUDIANTE,Rol.JEFE_AREA,Rol.VICEDECANO, Rol.ADMIN).collect(Collectors.toSet()));
         userRepository.saveAndFlush(user);
         return user;
     }
@@ -74,9 +76,30 @@ public class Application extends SpringBootServletInitializer implements AppShel
         user.setName(name);
         user.setUsername(username);
         user.setPassword(passwordEncoder.encode(password));
-        user.setRoles(Collections.singleton(Rol.USER));
+        user.setRoles(Collections.singleton(Rol.ESTUDIANTE));
         userRepository.saveAndFlush(user);
         return user;
     }
+    
+    private User createUser3(String name, String username, String password) {
+        User user = new User();
+        user.setName(name);
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setRoles(Collections.singleton(Rol.JEFE_AREA));
+        userRepository.saveAndFlush(user);
+        return user;
+    }
+    private User createUser4(String name, String username, String password) {
+        User user = new User();
+        user.setName(name);
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setRoles(Collections.singleton(Rol.VICEDECANO));
+        userRepository.saveAndFlush(user);
+        return user;
+    }
+    
+
 
 }
