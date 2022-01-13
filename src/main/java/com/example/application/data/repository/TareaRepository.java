@@ -6,6 +6,7 @@
 package com.example.application.data.repository;
 
 import com.example.application.data.entity.Tarea;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -40,11 +41,17 @@ public interface TareaRepository extends JpaRepository<Tarea, Integer> {
     )
     List<Tarea> searchByDescripcion(@Param("searchTerm") String searchTerm);
     
-    //filtrar por duracion 
-//    @Query("SELECT t from Tarea t JOIN Estudiante e on t.id = e.id "
-//            + " WHERE lower(t.duracion) like lower(concat('%', :searchTerm, '%')) "
-//    )
-//    List<Tarea> searchByDuracion(@Param("searchTerm") String searchTerm);
+    //filtrar por fecha de inicio 
+    @Query("SELECT t from Tarea t JOIN Estudiante e on t.id = e.id "
+            + " WHERE t.fecha_inicio =  :searchTerm "
+    )
+    List<Tarea> searchByFechaInicio(@Param("searchTerm") LocalDate searchTerm);
+    
+    //filtrar por fecha de fin 
+    @Query("SELECT t from Tarea t JOIN Estudiante e on t.id = e.id "
+            + " WHERE t.fecha_fin =  :searchTerm "
+    )
+    List<Tarea> searchByFechaFin(@Param("searchTerm") LocalDate searchTerm);
     
     //filtrar por Estudiante
     @Query("SELECT t from Tarea t JOIN Estudiante e on t.id = e.id "

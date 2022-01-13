@@ -98,7 +98,8 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
         HeaderRow headerRow = grid.appendHeaderRow();
         headerRow.getCell(nombreColumn).setComponent(FiltrarNombre());
         headerRow.getCell(descripcionColumn).setComponent(FiltrarDescripcion());
-//        headerRow.getCell(duracionColumn).setComponent(FiltrarDuracion());
+        headerRow.getCell(fecha_inicioColumn).setComponent(FiltrarFechaInicio());
+        headerRow.getCell(fecha_finColumn).setComponent(FiltrarFechaFin());
         headerRow.getCell(estudianteColumn).setComponent(FiltrarEstudiante());
         
         grid.setItems(query -> tareaService.list(
@@ -280,27 +281,40 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
         return filterDescripcion;
     }
 
-//    private TextField FiltrarDuracion() {
-//        TextField filterDuracion = new TextField();
-//        filterDuracion.setPlaceholder("Filtrar");
-//        filterDuracion.setClearButtonVisible(true);
-//        filterDuracion.setWidth("100%");
-//        filterDuracion.setValueChangeMode(ValueChangeMode.LAZY);
-//        filterDuracion.addValueChangeListener(e -> {
-//            grid.setItems(dataService.searchTareaByDuracion(filterDuracion.getValue()));
-//        });
-//        return filterDuracion;
-//    }
-
     private TextField FiltrarEstudiante() {
-        TextField EstudianteDuracion = new TextField();
-        EstudianteDuracion.setPlaceholder("Filtrar");
-        EstudianteDuracion.setClearButtonVisible(true);
-        EstudianteDuracion.setWidth("100%");
-        EstudianteDuracion.setValueChangeMode(ValueChangeMode.LAZY);
-        EstudianteDuracion.addValueChangeListener(e -> {
-            grid.setItems(dataService.searchTareaByEstudiante(EstudianteDuracion.getValue()));
+        TextField estudiantefilter = new TextField();
+        estudiantefilter.setPlaceholder("Filtrar");
+        estudiantefilter.setClearButtonVisible(true);
+        estudiantefilter.setWidth("100%");
+        estudiantefilter.setValueChangeMode(ValueChangeMode.LAZY);
+        estudiantefilter.addValueChangeListener(e -> {
+            grid.setItems(dataService.searchTareaByEstudiante(estudiantefilter.getValue()));
         });
-        return EstudianteDuracion;
+        return estudiantefilter;
     }
+    
+    private DatePicker FiltrarFechaInicio(){
+        DatePicker dateFilter = new DatePicker();
+        dateFilter.setPlaceholder("Filter");
+        dateFilter.setClearButtonVisible(true);
+        dateFilter.setWidth("100%");
+        dateFilter.addValueChangeListener(e -> {
+            grid.setItems(dataService.searchTareaByFechaInicio( dateFilter.getValue() ));
+        });
+        return  dateFilter;
+    }
+    
+    private DatePicker FiltrarFechaFin(){
+        DatePicker dateFilter = new DatePicker();
+        dateFilter.setPlaceholder("Filter");
+        dateFilter.setClearButtonVisible(true);
+        dateFilter.setWidth("100%");
+        dateFilter.addValueChangeListener(e -> {
+            grid.setItems(dataService.searchTareaByFechaFin( dateFilter.getValue() ));
+        });
+        return  dateFilter;
+    }
+    
+    
+    
 }

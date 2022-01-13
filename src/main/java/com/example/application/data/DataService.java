@@ -7,7 +7,9 @@ package com.example.application.data;
 
 import com.example.application.data.entity.*;
 import com.example.application.data.repository.*;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Stream;
 import org.hibernate.annotations.Formula;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Query;
@@ -241,9 +243,13 @@ public class DataService {
         return tareaRepository.searchByDescripcion(searchTerm);
     }
 
-//    public List<Tarea> searchTareaByDuracion(String searchTerm) {
-//        return tareaRepository.searchByDuracion(searchTerm);
-//    }
+    public List<Tarea> searchTareaByFechaInicio(LocalDate value) {
+    return tareaRepository.searchByFechaInicio(value);
+    }
+
+    public List<Tarea> searchTareaByFechaFin(LocalDate value) {
+        return tareaRepository.searchByFechaFin(value);
+    }
 
     public List<Tarea> searchTareaByEstudiante(String searchTerm) {
         return tareaRepository.searchByEstudiante(searchTerm);
@@ -264,5 +270,7 @@ public class DataService {
         }
         tareaRepository.save(tarea);
     }
+
+    
 
 }

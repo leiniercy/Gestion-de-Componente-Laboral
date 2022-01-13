@@ -37,8 +37,10 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.data.value.ValueChangeMode;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import javax.annotation.security.RolesAllowed;
-
 
 @PageTitle("Evaluaciones")
 @Route(value = "evaluaciones-view/:evaluaionesID?/:action?(edit)", layout = MainLayout.class)
@@ -55,6 +57,7 @@ public class EvaluacionesView extends Div implements BeforeEnterObserver {
     private TextArea descripcion;
     private ComboBox<Estudiante> estudiante;
     private ComboBox<Tarea> tarea;
+    private ComboBox<String> status;
 
     private Button save = new Button("Añadir");
     private Button cancel = new Button("Cancelar");
@@ -72,6 +75,7 @@ public class EvaluacionesView extends Div implements BeforeEnterObserver {
     private Grid.Column<Evaluacion> descripcionColumn = grid.addColumn(Evaluacion::getDescripcion).setHeader("Descripción").setAutoWidth(true);
     private Grid.Column<Evaluacion> estudianteColumn = grid.addColumn(evaluacion -> evaluacion.getEstudiante().getStringNombreApellidos()).setHeader("Estudiante").setAutoWidth(true);
     private Grid.Column<Evaluacion> tareaColumn = grid.addColumn(evaluacion -> evaluacion.getTarea().getNombre()).setHeader("Tarea").setAutoWidth(true);
+    private Grid.Column<Evaluacion> statusColumn = grid.addColumn(evaluacion -> evaluacion.getStatus()).setHeader("Status").setAutoWidth(true);
 
     public EvaluacionesView(
             @Autowired EvaluacionService evaluacionService,
@@ -96,6 +100,7 @@ public class EvaluacionesView extends Div implements BeforeEnterObserver {
         headerRow.getCell(descripcionColumn).setComponent(FiltrarDescripcion());
         headerRow.getCell(estudianteColumn).setComponent(FiltrarEstudinate());
         headerRow.getCell(tareaColumn).setComponent(FiltrarTarea());
+        headerRow.getCell(statusColumn).setComponent(FiltarStatus());
 
         grid.setItems(query -> evaluacionService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
@@ -121,6 +126,16 @@ public class EvaluacionesView extends Div implements BeforeEnterObserver {
 
         estudiante.setItems(dataService.findAllEstudiante());
         estudiante.setItemLabelGenerator(Estudiante::getStringNombreApellidos);
+
+        tarea.setItems(dataService.findAllTareas());
+        tarea.setItemLabelGenerator(Tarea::getNombre);
+
+//        List<String> list_status = new ArrayList<>();
+//        list_status.add("pendiente");
+//        list_status.add("completada");
+//        list_status.add("no completatda");
+
+        status.setItems(Arrays.asList("Pendiente", "Completada", "No Completada"));
 
         //Button
         cancel.addClickShortcut(Key.ESCAPE);
@@ -200,7 +215,8 @@ public class EvaluacionesView extends Div implements BeforeEnterObserver {
         descripcion = new TextArea("Descripcion");
         estudiante = new ComboBox<>("Estudiante");
         tarea = new ComboBox<>("Tarea");
-        Component[] fields = new Component[]{nota, descripcion, estudiante,tarea};
+        status = new ComboBox<>("Status");
+        Component[] fields = new Component[]{nota, descripcion, estudiante, tarea, status};
 
         for (Component field : fields) {
             ((HasStyle) field).addClassName("full-width");
@@ -299,6 +315,21 @@ public class EvaluacionesView extends Div implements BeforeEnterObserver {
             grid.setItems(dataService.searchEvaluacionByTarea(filterTarea.getValue()));
         });
         return filterTarea;
+    }
+
+    private ComboBox<String> FiltarStatus() {
+        
+        ComboBox<String> statusFilter = new ComboBox<>();
+        statusFilter.setItems(Arrays.asList("Pendiente", "Completada", "No Completada"));
+        statusFilter.setPlaceholder("Filter");
+        statusFilter.setClearButtonVisible(true);
+        statusFilter.setWidth("100%");
+        statusFilter.addValueChangeListener(e->{
+             grid.setItems(dataService.searchEvaluacionByTarea(status.getValue()));
+        });
+      
+        
+        return statusFilter;
     }
 
 }

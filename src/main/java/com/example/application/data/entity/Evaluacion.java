@@ -66,4 +66,9 @@ public class Evaluacion extends AbstractEntity {
     @ManyToOne()
     private Tarea tarea;
 
+    @NotEmpty
+    @NotBlank(message = "campo vacío")
+    @Column(name = "status", length = 50, nullable = false)
+    private String status;
+
 }
