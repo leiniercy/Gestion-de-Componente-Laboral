@@ -7,6 +7,7 @@ package com.example.application.data.entity;
 
 import com.example.application.data.AbstractEntity;
 import com.vaadin.flow.component.charts.model.Time;
+import java.time.LocalDate;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -56,11 +57,13 @@ public class Tarea extends AbstractEntity{
     @Column(name = "descripcion",length = 255, nullable = false)
     private String descripcion;
     
-    @NotNull(message = "campo vacío")
-    @Column(name = "duracion")
-    @Size(message = "campo no válido", max = 6, min=1)
-    private String duracion;
+   @NotNull(message = "campo vacío")
+    @Column(name = "fecha_inicio")
+    private LocalDate fecha_inicio;
 
+    @NotNull(message = "campo vacío")
+    @Column(name = "fecha_fin")
+    private LocalDate fecha_fin;
     @NotNull(message = "debe elegir un campo")
     @ManyToOne
     private Estudiante e;

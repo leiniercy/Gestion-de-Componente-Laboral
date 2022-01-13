@@ -23,7 +23,6 @@ public interface TareaRepository extends JpaRepository<Tarea, Integer> {
     @Query("SELECT t from Tarea t JOIN Estudiante e on t.id = e.id "
             + " WHERE lower(t.nombre) like lower(concat('%', :searchTerm, '%')) "
             + "or lower(t.descripcion) like lower(concat('%', :searchTerm, '%')) "
-            + "or lower(t.duracion) like lower(concat('%', :searchTerm, '%')) "
             + "or lower(e.nombre) like lower(concat('%', :searchTerm, '%')) "
             + "or lower(e.apellidos) like lower(concat('%', :searchTerm, '%')) "
     )
@@ -42,10 +41,10 @@ public interface TareaRepository extends JpaRepository<Tarea, Integer> {
     List<Tarea> searchByDescripcion(@Param("searchTerm") String searchTerm);
     
     //filtrar por duracion 
-    @Query("SELECT t from Tarea t JOIN Estudiante e on t.id = e.id "
-            + " WHERE lower(t.duracion) like lower(concat('%', :searchTerm, '%')) "
-    )
-    List<Tarea> searchByDuracion(@Param("searchTerm") String searchTerm);
+//    @Query("SELECT t from Tarea t JOIN Estudiante e on t.id = e.id "
+//            + " WHERE lower(t.duracion) like lower(concat('%', :searchTerm, '%')) "
+//    )
+//    List<Tarea> searchByDuracion(@Param("searchTerm") String searchTerm);
     
     //filtrar por Estudiante
     @Query("SELECT t from Tarea t JOIN Estudiante e on t.id = e.id "

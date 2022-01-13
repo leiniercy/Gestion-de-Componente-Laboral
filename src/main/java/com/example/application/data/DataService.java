@@ -241,9 +241,9 @@ public class DataService {
         return tareaRepository.searchByDescripcion(searchTerm);
     }
 
-    public List<Tarea> searchTareaByDuracion(String searchTerm) {
-        return tareaRepository.searchByDuracion(searchTerm);
-    }
+//    public List<Tarea> searchTareaByDuracion(String searchTerm) {
+//        return tareaRepository.searchByDuracion(searchTerm);
+//    }
 
     public List<Tarea> searchTareaByEstudiante(String searchTerm) {
         return tareaRepository.searchByEstudiante(searchTerm);

@@ -33,6 +33,7 @@ import com.example.application.data.service.TareaService;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.textfield.IntegerField;
@@ -55,7 +56,8 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
 
     private TextField nombre;
     private TextArea descripcion;
-    private TextField duracion;
+    private DatePicker fecha_inicio;
+    private DatePicker fecha_fin;
     private ComboBox<Estudiante> e;
 
     private Button save = new Button("Añadir");
@@ -72,7 +74,8 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
 
     private Grid.Column<Tarea> nombreColumn = grid.addColumn(Tarea::getNombre).setHeader("Nombre").setAutoWidth(true);
     private Grid.Column<Tarea> descripcionColumn = grid.addColumn(Tarea::getDescripcion).setHeader("Descripción").setAutoWidth(true);
-    private Grid.Column<Tarea> duracionColumn = grid.addColumn(Tarea::getDuracion).setHeader("Duración").setAutoWidth(true);
+    private Grid.Column<Tarea> fecha_inicioColumn = grid.addColumn(Tarea::getFecha_inicio).setHeader("Fecha de inicio").setAutoWidth(true);
+    private Grid.Column<Tarea> fecha_finColumn = grid.addColumn(Tarea::getFecha_fin).setHeader("Fecha de fin").setAutoWidth(true);
     private Grid.Column<Tarea> estudianteColumn = grid.addColumn(tarea -> tarea.getE().getStringNombreApellidos()).setHeader("Estudiante").setAutoWidth(true);
 
     public TareaFormView(
@@ -95,7 +98,7 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
         HeaderRow headerRow = grid.appendHeaderRow();
         headerRow.getCell(nombreColumn).setComponent(FiltrarNombre());
         headerRow.getCell(descripcionColumn).setComponent(FiltrarDescripcion());
-        headerRow.getCell(duracionColumn).setComponent(FiltrarDuracion());
+//        headerRow.getCell(duracionColumn).setComponent(FiltrarDuracion());
         headerRow.getCell(estudianteColumn).setComponent(FiltrarEstudiante());
         
         grid.setItems(query -> tareaService.list(
@@ -200,9 +203,10 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
         FormLayout formLayout = new FormLayout();
         nombre = new TextField("Nombre");
         descripcion = new TextArea("Descripcion");
-        duracion = new TextField("Duración");
+        fecha_inicio = new DatePicker("Fecha de Inicio");
+        fecha_fin = new DatePicker("Fecha de fin");
         e = new ComboBox<>("Estudiante");
-        Component[] fields = new Component[]{nombre, descripcion, duracion, e};
+        Component[] fields = new Component[]{nombre, descripcion, fecha_inicio,fecha_fin, e};
 
         for (Component field : fields) {
             ((HasStyle) field).addClassName("full-width");
@@ -276,17 +280,17 @@ public class TareaFormView extends Div implements BeforeEnterObserver {
         return filterDescripcion;
     }
 
-    private TextField FiltrarDuracion() {
-        TextField filterDuracion = new TextField();
-        filterDuracion.setPlaceholder("Filtrar");
-        filterDuracion.setClearButtonVisible(true);
-        filterDuracion.setWidth("100%");
-        filterDuracion.setValueChangeMode(ValueChangeMode.LAZY);
-        filterDuracion.addValueChangeListener(e -> {
-            grid.setItems(dataService.searchTareaByDuracion(filterDuracion.getValue()));
-        });
-        return filterDuracion;
-    }
+//    private TextField FiltrarDuracion() {
+//        TextField filterDuracion = new TextField();
+//        filterDuracion.setPlaceholder("Filtrar");
+//        filterDuracion.setClearButtonVisible(true);
+//        filterDuracion.setWidth("100%");
+//        filterDuracion.setValueChangeMode(ValueChangeMode.LAZY);
+//        filterDuracion.addValueChangeListener(e -> {
+//            grid.setItems(dataService.searchTareaByDuracion(filterDuracion.getValue()));
+//        });
+//        return filterDuracion;
+//    }
 
     private TextField FiltrarEstudiante() {
         TextField EstudianteDuracion = new TextField();
