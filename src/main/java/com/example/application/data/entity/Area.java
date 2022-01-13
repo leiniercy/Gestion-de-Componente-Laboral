@@ -52,9 +52,6 @@ public class Area  extends AbstractEntity{
     @Column(name = "descripcion",length = 255, nullable = false)
     private String descripcion;
     
-    @OneToMany(mappedBy = "a")
-    private List<Profesor> profesores;
-    
     @OneToMany(mappedBy = "area")
     private List<Estudiante>estudiantes;
     

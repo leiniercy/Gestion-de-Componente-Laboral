@@ -24,15 +24,14 @@ public interface EstudianteRepository extends JpaRepository<Estudiante, Integer>
     @Query("select e from Estudiante e "
             + "join Area a on e.id  = a.id "
             + "join Grupo g on e.id  = g.id "
-            + "where dtype like 'Estudiante' "
-            + "and (lower(e.nombre) like lower(concat('%', :searchTerm, '%')) "
+            + "where lower(e.nombre) like lower(concat('%', :searchTerm, '%')) "
             + " or lower(e.apellidos) like lower(concat('%', :searchTerm, '%'))"
             + " or lower(e.email) like lower(concat('%', :searchTerm, '%'))"
             + " or lower(e.solapin) like lower(concat('%', :searchTerm, '%'))"
             + " or lower(e.anno_repitencia) like lower(concat('%', :searchTerm, '%'))"
             + " or lower(e.cantidad_asignaturas) like lower(concat('%', :searchTerm, '%'))"
             + " or lower(a.nombre) like lower(concat('%', :searchTerm, '%'))"
-            + " or lower(g.numero) like lower(concat('%', :searchTerm, '%'))  )"
+            + " or lower(g.numero) like lower(concat('%', :searchTerm, '%')) "
     )
     List<Estudiante> searchEstudiante(@Param("searchTerm") String searchTerm);
 
@@ -40,8 +39,7 @@ public interface EstudianteRepository extends JpaRepository<Estudiante, Integer>
     @Query("select e from Estudiante e "
             + "join Area a on e.id  = a.id "
             + "join Grupo g on e.id  = g.id "
-            + "where dtype like 'Estudiante' "
-            + "and lower(e.nombre) like lower(concat('%', :searchTerm, '%')) "
+            + "where lower(e.nombre) like lower(concat('%', :searchTerm, '%')) "
     )
     List<Estudiante> searchEstudianteNombre(@Param("searchTerm") String searchTerm);
 
@@ -49,8 +47,7 @@ public interface EstudianteRepository extends JpaRepository<Estudiante, Integer>
     @Query("select e from Estudiante e "
             + "join Area a on e.id  = a.id "
             + "join Grupo g on e.id  = g.id "
-            + "where dtype like 'Estudiante' "
-            + "and lower(e.apellidos) like lower(concat('%', :searchTerm, '%')) "
+            + "where lower(e.apellidos) like lower(concat('%', :searchTerm, '%')) "
     )
     List<Estudiante> searchEstudianteApellidos(@Param("searchTerm") String searchTerm);
 
@@ -58,8 +55,7 @@ public interface EstudianteRepository extends JpaRepository<Estudiante, Integer>
     @Query("select e from Estudiante e "
             + "join Area a on e.id  = a.id "
             + "join Grupo g on e.id  = g.id "
-            + "where dtype like 'Estudiante' "
-            + "and lower(e.email) like lower(concat('%', :searchTerm, '%')) "
+            + "where lower(e.email) like lower(concat('%', :searchTerm, '%')) "
     )
     List<Estudiante> searchEstudianteEmail(@Param("searchTerm") String searchTerm);
 
@@ -67,8 +63,7 @@ public interface EstudianteRepository extends JpaRepository<Estudiante, Integer>
     @Query("select e from Estudiante e "
             + "join Area a on e.id  = a.id "
             + "join Grupo g on e.id  = g.id "
-            + "where dtype like 'Estudiante' "
-            + "and lower(e.solapin) like lower(concat('%', :searchTerm, '%')) "
+            + "where lower(e.solapin) like lower(concat('%', :searchTerm, '%')) "
     )
     List<Estudiante> searchEstudianteSolapin(@Param("searchTerm") String searchTerm);
 
@@ -76,8 +71,7 @@ public interface EstudianteRepository extends JpaRepository<Estudiante, Integer>
     @Query("select e from Estudiante e "
             + "join Area a on e.id  = a.id "
             + "join Grupo g on e.id  = g.id "
-            + "where dtype like 'Estudiante' "
-            + "and lower(e.anno_repitencia) like lower(concat('%', :searchTerm, '%')) "
+            + "where lower(e.anno_repitencia) like lower(concat('%', :searchTerm, '%')) "
     )
     List<Estudiante> searchEstudianteAnno_repitencia(@Param("searchTerm") String searchTerm);
 
@@ -85,8 +79,7 @@ public interface EstudianteRepository extends JpaRepository<Estudiante, Integer>
     @Query("select e from Estudiante e "
             + "join Area a on e.id  = a.id "
             + "join Grupo g on e.id  = g.id "
-            + "where dtype like 'Estudiante' "
-            + "and lower(e.cantidad_asignaturas) like lower(concat('%', :searchTerm, '%')) "
+            + "where lower(e.cantidad_asignaturas) like lower(concat('%', :searchTerm, '%')) "
     )
     List<Estudiante> searchEstudianteCantidad_asignaturas(@Param("searchTerm") String searchTerm);
 
@@ -94,8 +87,7 @@ public interface EstudianteRepository extends JpaRepository<Estudiante, Integer>
     @Query("select e from Estudiante e "
             + "join Area a on e.id  = a.id "
             + "join Grupo g on e.id  = g.id "
-            + "where dtype like 'Estudiante' "
-            + "and lower(a.nombre) like lower(concat('%', :searchTerm, '%')) "
+            + "where lower(a.nombre) like lower(concat('%', :searchTerm, '%')) "
     )
     List<Estudiante> searchEstudianteArea(@Param("searchTerm") String searchTerm);
 
@@ -103,8 +95,7 @@ public interface EstudianteRepository extends JpaRepository<Estudiante, Integer>
     @Query("select e from Estudiante e "
             + "join Area a on e.id  = a.id "
             + "join Grupo g on e.id  = g.id "
-            + "where dtype like 'Estudiante' "
-            + "and lower(g.numero) like lower(concat('%', :searchTerm, '%')) "
+            + "where lower(g.numero) like lower(concat('%', :searchTerm, '%')) "
     )
     List<Estudiante> searchEstudianteGrupo(@Param("searchTerm") String searchTerm);
 }

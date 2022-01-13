@@ -23,8 +23,6 @@ public class DataService {
     private AreaRepository areaRepository;
     private EstudianteRepository estudianteRepository;
     private EvaluacionRepository evaluacionRepository;
-    private PersonRepository personRepository;
-    private ProfesorRepository profesorRepository;
     private GrupoRepository grupoRepository;
     private TareaRepository tareaRepository;
 
@@ -32,16 +30,12 @@ public class DataService {
             @Autowired AreaRepository areaRepository,
             @Autowired EstudianteRepository estudianteRepository,
             @Autowired EvaluacionRepository evaluacionRepository,
-            @Autowired PersonRepository personRepository,
-            @Autowired ProfesorRepository profesorRepository,
             @Autowired GrupoRepository grupoRepository,
             @Autowired TareaRepository tareaRepository) {
 
         this.areaRepository = areaRepository;
         this.estudianteRepository = estudianteRepository;
         this.evaluacionRepository = evaluacionRepository;
-        this.personRepository = personRepository;
-        this.profesorRepository = profesorRepository;
         this.grupoRepository = grupoRepository;
         this.tareaRepository = tareaRepository;
     }
@@ -207,72 +201,6 @@ public class DataService {
             return;
         }
         evaluacionRepository.save(evaluacion);
-    }
-
-    //Person
-    public List<Person> findAllPerson() {
-        return personRepository.findAll();
-    }
-
-    public long countPerson() {
-        return personRepository.count();
-    }
-
-    public void deletePerson(Person person) {
-        personRepository.delete(person);
-    }
-
-    public void savePerson(Person person) {
-        if (person == null) {
-            System.err.println("This field is null. Are you sure you have connected your form to the application?");
-            return;
-        }
-        personRepository.save(person);
-    }
-
-    //Profesor
-    public List<Profesor> findAllProfesor() {
-        return profesorRepository.findAll();
-    }
-
-    public List<Profesor> searchProfesorByNombre(String searchTerm) {
-        return profesorRepository.searchProfesorNombre(searchTerm);
-    }
-
-    public List<Profesor> searchProfesorByApellidos(String searchTerm) {
-        return profesorRepository.searchProfesorApellidos(searchTerm);
-    }
-
-    public List<Profesor> searchProfesorByEmail(String searchTerm) {
-        return profesorRepository.searchProfesorEmail(searchTerm);
-    }
-
-    public List<Profesor> searchProfesorBySolapin(String searchTerm) {
-        return profesorRepository.searchProfesorSolpain(searchTerm);
-    }
-
-    public List<Profesor> searchProfesorByJefe_area(String searchTerm) {
-        return profesorRepository.searchProfesorJefe_area(searchTerm);
-    }
-
-    public List<Profesor> searchProfesorByArea(String searchTerm) {
-        return profesorRepository.searchProfesorArea(searchTerm);
-    }
-
-    public long countProfesor() {
-        return profesorRepository.count();
-    }
-
-    public void deleteProfesor(Profesor profesor) {
-        profesorRepository.delete(profesor);
-    }
-
-    public void saveProfesor(Profesor profesor) {
-        if (profesor == null) {
-            System.err.println("This field is null. Are you sure you have connected your form to the application?");
-            return;
-        }
-        profesorRepository.save(profesor);
     }
 
     //Grupo

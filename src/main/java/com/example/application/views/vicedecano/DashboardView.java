@@ -4,12 +4,8 @@ import com.example.application.data.DataService;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.board.Board;
-import com.vaadin.flow.component.board.Row;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.*;
-import com.vaadin.flow.component.grid.ColumnTextAlign;
-import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Main;
@@ -20,12 +16,10 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.select.Select;
-import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.component.select.Select;;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
-import com.vaadin.flow.server.auth.AnonymousAllowed;
 import javax.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -42,7 +36,7 @@ public class DashboardView extends VerticalLayout {
         addClassName("dashboard-view");
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
 
-        add(getBoard(), getGraficosPasteles());
+        add(getBoard(), createViewEvents(), getGraficosPasteles());
     }
     
 
@@ -53,7 +47,6 @@ public class DashboardView extends VerticalLayout {
         board.addRow(
                 createHighlight("", new Span()),
                 createHighlight("Estudiantes", (Span) getEstudiantes()),
-                createHighlight("Profesores", (Span) getProfesores()),
                 createHighlight("", new Span())
         );
         return board;
@@ -88,11 +81,6 @@ public class DashboardView extends VerticalLayout {
         return stats;
     }
 
-    private Component getProfesores() {
-        Span stats = new Span(service.countProfesor() + "");
-        stats.addClassNames("text-xl", "mt-m");
-        return stats;
-    }
     
     private Component createViewEvents() {
         // Header

@@ -5,6 +5,7 @@
  */
 package com.example.application.data.entity;
 
+import com.example.application.data.AbstractEntity;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,6 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -40,10 +42,32 @@ import lombok.ToString;
 @ToString(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "Estudiantes")
-public class Estudiante extends Person {
+public class Estudiante extends AbstractEntity {
 
     @EqualsAndHashCode.Include
     @ToString.Include
+    
+    @NotEmpty
+    @NotBlank(message = "campo vacío")
+    @Column(name = "nombre", nullable = false)
+    private String nombre;
+    
+    @NotEmpty
+    @NotBlank(message = "campo vacío")
+    @Column(name = "apellidos" , nullable = false)
+    private String apellidos;
+    
+    @Email
+    @NotEmpty
+    @NotBlank(message = "campo vacío")
+    @Column(name = "email" , nullable = false)
+    private String email;
+    
+    @NotEmpty
+    @NotBlank(message = "campo vacío")
+    @Column(name = "solapin", nullable = false, unique = true)
+    private String solapin;
+    
 
     @NotBlank(message = "campo vacio")
     @Column(name = "anno_repitencia")
