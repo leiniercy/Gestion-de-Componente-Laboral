@@ -30,9 +30,9 @@ public class Grupo extends AbstractEntity {
     @EqualsAndHashCode.Include
     @ToString.Include
     
-    @NotBlank(message = "no puede estar vacio")
-    @Column(name = "numero", unique = true)
-    @Size(message = "solo puede contener 4 numeros ",max = 4, min = 4)
+//    @NotBlank(message = "no puede estar vacio")
+//    @Column(name = "numero", unique = true)
+//    @Size(message = "solo puede contener 4 numeros ",max = 4, min = 4)
     private String numero;
 
     @OneToMany(mappedBy = "grupo")

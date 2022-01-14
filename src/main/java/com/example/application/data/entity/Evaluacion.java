@@ -45,30 +45,30 @@ public class Evaluacion extends AbstractEntity {
     @EqualsAndHashCode.Include
     @ToString.Include
 
-    @NotEmpty
-    @NotBlank(message = "campo vacío")
-    @Column(name = "nota", length = 1, nullable = false)
-    @Size(message = "La nota es cualitativa (E,B,R,M)", max = 1, min = 1)
+//    @NotEmpty
+//    @NotBlank(message = "campo vacío")
+//    @Column(name = "nota", length = 1, nullable = false)
+//    @Size(message = "La nota es cualitativa (E,B,R,M)", max = 1, min = 1)
     private String nota;
 
-    @NotEmpty
-    @NotBlank(message = "campo vacío")
-    @Column(name = "descripcion", length = 255, nullable = false)
+//    @NotEmpty
+//    @NotBlank(message = "campo vacío")
+//    @Column(name = "descripcion", length = 255, nullable = false)
     private String descripcion;
 
-    @NotNull(message = "debes elegir un campo")
+//    @NotNull(message = "debes elegir un campo")
     @JoinColumn(name = "estudiante_id")
     @ManyToOne()
     private Estudiante estudiante;
 
-    @NotNull(message = "debes elegir un campo")
+//    @NotNull(message = "debes elegir un campo")
     @JoinColumn(name = "tarea_id")
     @ManyToOne()
     private Tarea tarea;
 
-    @NotEmpty
-    @NotBlank(message = "campo vacío")
-    @Column(name = "status", length = 50, nullable = false)
+//    @NotEmpty
+//    @NotBlank(message = "campo vacío")
+//    @Column(name = "status", length = 50, nullable = false)
     private String status;
 
 }

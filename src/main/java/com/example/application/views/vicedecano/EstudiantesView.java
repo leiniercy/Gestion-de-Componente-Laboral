@@ -24,6 +24,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.value.ValueChangeMode;
@@ -32,6 +33,7 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
+import java.util.Arrays;
 import java.util.Optional;
 import javax.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,8 +53,8 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
     private TextField apellidos;
     private EmailField email;
     private TextField solapin;
-    private TextField anno_repitencia;
-    private TextField cantidad_asignaturas;
+    private IntegerField anno_repitencia;
+    private IntegerField cantidad_asignaturas;
     private ComboBox<Area> area;
     private ComboBox<Grupo> grupo;
 
@@ -211,8 +213,8 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         apellidos = new TextField("Apellidos");
         email = new EmailField("Email");
         solapin = new TextField("Solapin");
-        anno_repitencia = new TextField("Año de repitencia");
-        cantidad_asignaturas = new TextField("Cantidad de asignaturas");
+        anno_repitencia = new IntegerField("Año de repitencia");
+        cantidad_asignaturas = new IntegerField("Cantidad de asignaturas");
         grupo = new ComboBox<>("Grupo");
         area = new ComboBox<>("Area");
         Component[] fields = new Component[]{nombre, apellidos, email, solapin, anno_repitencia, cantidad_asignaturas, grupo, area};
@@ -313,8 +315,8 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         return solapinFilter;
     }
 
-    private TextField FiltrarAnno_repitencia() {
-        TextField anno_repitenciaFilter = new TextField();
+    private IntegerField FiltrarAnno_repitencia() {
+        IntegerField anno_repitenciaFilter = new IntegerField();
         anno_repitenciaFilter.setPlaceholder("Filtrar");
         anno_repitenciaFilter.setClearButtonVisible(true);
         anno_repitenciaFilter.setWidth("100%");
@@ -325,8 +327,8 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         return anno_repitenciaFilter;
     }
 
-    private TextField FiltrarCantidad_asignaturas() {
-        TextField cantidad_asignaturasFilter = new TextField();
+    private IntegerField FiltrarCantidad_asignaturas() {
+        IntegerField cantidad_asignaturasFilter = new IntegerField();
         cantidad_asignaturasFilter.setPlaceholder("Filtrar");
         cantidad_asignaturasFilter.setClearButtonVisible(true);
         cantidad_asignaturasFilter.setWidth("100%");
@@ -337,26 +339,27 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         return cantidad_asignaturasFilter;
     }
 
-    private TextField FiltrarArea() {
-        TextField areaFilter = new TextField();
+    private ComboBox<Area> FiltrarArea() {
+        ComboBox<Area> areaFilter = new ComboBox<>();
+        areaFilter.setItems(dataService.findAllArea());
         areaFilter.setPlaceholder("Filtrar");
         areaFilter.setClearButtonVisible(true);
         areaFilter.setWidth("100%");
-        areaFilter.setValueChangeMode(ValueChangeMode.LAZY);
         areaFilter.addValueChangeListener(e -> {
-            grid.setItems(dataService.searchEstudianteByArea(areaFilter.getValue()));
+            grid.setItems(dataService.searchEstudianteByArea( areaFilter.getValue().getNombre() ));
         });
         return areaFilter;
     }
 
-    private TextField FiltrarGrupo() {
-        TextField grupoFilter = new TextField();
+    private ComboBox<Grupo> FiltrarGrupo() {
+        ComboBox<Grupo> grupoFilter = new ComboBox<>();
+        grupoFilter.setItems(dataService.findAllGrupo());
+        grupoFilter.setItemLabelGenerator(Grupo::getNumero);
         grupoFilter.setPlaceholder("Filtrar");
         grupoFilter.setClearButtonVisible(true);
         grupoFilter.setWidth("100%");
-        grupoFilter.setValueChangeMode(ValueChangeMode.LAZY);
         grupoFilter.addValueChangeListener(e -> {
-            grid.setItems(dataService.searchEstudianteByGrupo(grupoFilter.getValue()));
+            grid.setItems(dataService.searchEstudianteByGrupo(grupoFilter.getValue().getNumero()));
         });
         return grupoFilter;
     }

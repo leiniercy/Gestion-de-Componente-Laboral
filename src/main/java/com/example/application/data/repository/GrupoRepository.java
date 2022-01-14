@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 public interface GrupoRepository extends JpaRepository<Grupo, Integer> {
      
     @Query("SELECT g FROM Grupo g "
-            + "WHERE  lower(g.numero) like lower(concat('%', :searchTerm , '%')) "
+            + "WHERE  g.numero = :searchTerm  "
     )
-    List<Grupo> searchByNumero(@Param("searchTerm") String searchTerm);
+    List<Grupo> searchByNumero(@Param("searchTerm") Integer searchTerm);
 }

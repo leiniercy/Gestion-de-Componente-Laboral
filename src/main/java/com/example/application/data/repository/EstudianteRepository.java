@@ -71,17 +71,17 @@ public interface EstudianteRepository extends JpaRepository<Estudiante, Integer>
     @Query("select e from Estudiante e "
             + "join Area a on e.id  = a.id "
             + "join Grupo g on e.id  = g.id "
-            + "where lower(e.anno_repitencia) like lower(concat('%', :searchTerm, '%')) "
+            + "where e.anno_repitencia = :searchTerm "
     )
-    List<Estudiante> searchEstudianteAnno_repitencia(@Param("searchTerm") String searchTerm);
+    List<Estudiante> searchEstudianteAnno_repitencia(@Param("searchTerm") Integer searchTerm);
 
     //filtar Estudiante por cantidad de asignaturas
     @Query("select e from Estudiante e "
             + "join Area a on e.id  = a.id "
             + "join Grupo g on e.id  = g.id "
-            + "where lower(e.cantidad_asignaturas) like lower(concat('%', :searchTerm, '%')) "
+            + "where e.cantidad_asignaturas = :searchTerm "
     )
-    List<Estudiante> searchEstudianteCantidad_asignaturas(@Param("searchTerm") String searchTerm);
+    List<Estudiante> searchEstudianteCantidad_asignaturas(@Param("searchTerm") Integer searchTerm);
 
     //filtar Estudiante por area
     @Query("select e from Estudiante e "

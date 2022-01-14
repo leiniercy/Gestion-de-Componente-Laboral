@@ -42,14 +42,14 @@ public class Area  extends AbstractEntity{
     @EqualsAndHashCode.Include
     @ToString.Include
     
-    @NotEmpty
-    @NotBlank(message = "campo vacío")
-    @Column(name = "nombre",length = 100, nullable = false)
+//    @NotEmpty
+//    @NotBlank(message = "campo vacío")
+//    @Column(name = "nombre",length = 100, nullable = false)
     private String nombre;
     
-    @NotEmpty
-    @NotBlank(message = "campo vacío")
-    @Column(name = "descripcion",length = 255, nullable = false)
+//    @NotEmpty
+//    @NotBlank(message = "campo vacío")
+//    @Column(name = "descripcion",length = 255, nullable = false)
     private String descripcion;
     
     @OneToMany(mappedBy = "area")

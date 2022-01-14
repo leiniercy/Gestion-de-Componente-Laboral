@@ -46,45 +46,45 @@ public class Estudiante extends AbstractEntity {
 
     @EqualsAndHashCode.Include
     @ToString.Include
-    
-    @NotEmpty
-    @NotBlank(message = "campo vacío")
-    @Column(name = "nombre", nullable = false)
+//    
+//    @NotEmpty
+//    @NotBlank(message = "campo vacío")
+//    @Column(name = "nombre", nullable = false)
     private String nombre;
     
-    @NotEmpty
-    @NotBlank(message = "campo vacío")
-    @Column(name = "apellidos" , nullable = false)
+//    @NotEmpty
+//    @NotBlank(message = "campo vacío")
+//    @Column(name = "apellidos" , nullable = false)
     private String apellidos;
     
-    @Email
-    @NotEmpty
-    @NotBlank(message = "campo vacío")
-    @Column(name = "email" , nullable = false)
+//    @Email
+//    @NotEmpty
+//    @NotBlank(message = "campo vacío")
+//    @Column(name = "email" , nullable = false)
     private String email;
     
-    @NotEmpty
-    @NotBlank(message = "campo vacío")
-    @Column(name = "solapin", nullable = false, unique = true)
+//    @NotEmpty
+//    @NotBlank(message = "campo vacío")
+//    @Column(name = "solapin", nullable = false, unique = true)
     private String solapin;
     
 
-    @NotBlank(message = "campo vacio")
-    @Column(name = "anno_repitencia")
-    @Size(message = "número no valido" , max = 1, min=1)
-        private String anno_repitencia;
+//    @NotBlank(message = "campo vacio")
+//    @Column(name = "anno_repitencia")
+//    @Size(message = "número no valido" , max = 1, min=1)
+        private Integer anno_repitencia;
 
-    @NotBlank(message = "campo vacio")
-    @Column(name = "cantidad_asignaturas")
-    @Size(message = "número no valido" , max = 1, min=1)
-    private String cantidad_asignaturas;
+//    @NotBlank(message = "campo vacio")
+//    @Column(name = "cantidad_asignaturas")
+//    @Size(message = "número no valido" , max = 1, min=1)
+    private Integer cantidad_asignaturas;
 
-    @NotNull(message = "debe elegir un campo")
+//    @NotNull(message = "debe elegir un campo")
     @JoinColumn(name = "area_id")
     @ManyToOne
     private Area area;
 
-    @NotNull(message = "debe elegir un campo")
+//    @NotNull(message = "debe elegir un campo")
     @JoinColumn(name = "grupo_id")
     @ManyToOne
     private Grupo grupo;

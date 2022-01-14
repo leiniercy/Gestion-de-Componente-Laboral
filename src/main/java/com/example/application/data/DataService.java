@@ -96,11 +96,11 @@ public class DataService {
         return estudianteRepository.searchEstudianteSolapin(searchTerm);
     }
 
-    public List<Estudiante> searchEstudianteByAnno_repitencia(String searchTerm) {
+    public List<Estudiante> searchEstudianteByAnno_repitencia(Integer searchTerm) {
         return estudianteRepository.searchEstudianteAnno_repitencia(searchTerm);
     }
 
-    public List<Estudiante> searchEstudianteByCantidad_asignaturas(String searchTerm) {
+    public List<Estudiante> searchEstudianteByCantidad_asignaturas(Integer searchTerm) {
         return estudianteRepository.searchEstudianteCantidad_asignaturas(searchTerm);
     }
 
@@ -188,6 +188,10 @@ public class DataService {
     public List<Evaluacion> searchEvaluacionByTarea(String searchTerm) {
         return evaluacionRepository.searchByTarea(searchTerm);
     }
+    
+      public List<Evaluacion> searchEvaluacionByStatus(String searchTerm) {
+        return evaluacionRepository.searchByStatus(searchTerm);
+    }
 
     public long countEvaluacion() {
         return evaluacionRepository.count();
@@ -210,7 +214,7 @@ public class DataService {
         return grupoRepository.findAll();
     }
 
-    public List<Grupo> searchGrupoByNumero(String searchTerm) {
+    public List<Grupo> searchGrupoByNumero(Integer searchTerm) {
         return grupoRepository.searchByNumero(searchTerm);
     }
 
