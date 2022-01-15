@@ -1,6 +1,7 @@
 package com.example.application.views.jefe_area;
 
 import com.example.application.data.DataService;
+import com.example.application.data.entity.Grupo;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.UI;
@@ -99,7 +100,7 @@ public class EvaluacionesView extends Div implements BeforeEnterObserver {
         headerRow.getCell(notaColumn).setComponent(FiltrarNota());
         headerRow.getCell(descripcionColumn).setComponent(FiltrarDescripcion());
         headerRow.getCell(estudianteColumn).setComponent(FiltrarEstudinate());
-        headerRow.getCell(tareaColumn).setComponent(FiltrarTarea());
+        headerRow.getCell(tareaColumn).setComponent(FiltarTarea());
         headerRow.getCell(statusColumn).setComponent(FiltarStatus());
 
         grid.setItems(query -> evaluacionService.list(
@@ -291,33 +292,37 @@ public class EvaluacionesView extends Div implements BeforeEnterObserver {
         return filterDescripcion;
     }
 
-    private TextField FiltrarEstudinate() {
+    private ComboBox<Estudiante> FiltrarEstudinate() {
 
-        TextField filterEstudiante = new TextField();
+        ComboBox<Estudiante> filterEstudiante = new ComboBox<>();
+        filterEstudiante.setItems(dataService.findAllEstudiante());
+        filterEstudiante.setItemLabelGenerator(Estudiante::getStringNombreApellidos);
         filterEstudiante.setPlaceholder("Filtrar");
         filterEstudiante.setClearButtonVisible(true);
         filterEstudiante.setWidth("100%");
-        filterEstudiante.setValueChangeMode(ValueChangeMode.LAZY);
         filterEstudiante.addValueChangeListener(e -> {
-            grid.setItems(dataService.searchEvaluacionByEstudiante(filterEstudiante.getValue()));
+            grid.setItems(dataService.searchEvaluacionByEstudiante(filterEstudiante.getValue().getStringNombreApellidos()));
         });
         return filterEstudiante;
     }
 
-    private TextField FiltrarTarea() {
+    private ComboBox<Tarea> FiltarTarea() {
 
-        TextField filterTarea = new TextField();
-        filterTarea.setPlaceholder("Filtrar");
+        ComboBox<Tarea> filterTarea = new ComboBox<>();
+        filterTarea.setItems(dataService.findAllTareas());
+        filterTarea.setItemLabelGenerator(Tarea::getNombre);
+        filterTarea.setPlaceholder("Filter");
         filterTarea.setClearButtonVisible(true);
         filterTarea.setWidth("100%");
-        filterTarea.setValueChangeMode(ValueChangeMode.LAZY);
-        filterTarea.addValueChangeListener(e -> {
-            grid.setItems(dataService.searchEvaluacionByTarea(filterTarea.getValue()));
+        filterTarea.addValueChangeListener(e->{
+            grid.setItems(dataService.searchEvaluacionByTarea(filterTarea.getValue().getNombre() ));
         });
+
+
         return filterTarea;
     }
 
-    private ComboBox<String> FiltarStatus() {
+     private ComboBox<String> FiltarStatus() {
         
         ComboBox<String> statusFilter = new ComboBox<>();
         statusFilter.setItems(Arrays.asList("Pendiente", "Completada", "No Completada"));
@@ -331,5 +336,9 @@ public class EvaluacionesView extends Div implements BeforeEnterObserver {
         
         return statusFilter;
     }
+
+
+
+
 
 }
