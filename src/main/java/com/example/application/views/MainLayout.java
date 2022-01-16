@@ -27,8 +27,12 @@ import com.vaadin.flow.component.html.ListItem;
 import com.vaadin.flow.component.html.Nav;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.html.UnorderedList;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.tabs.Tab;
+import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
@@ -89,6 +93,9 @@ public class MainLayout extends AppLayout {
 
         viewTitle = new H1();
         viewTitle.addClassNames("m-0", "text-l");
+        viewTitle.getStyle()
+                .set("font-size", "var(--lumo-font-size-l)")
+                .set("margin", "0");
 
 //        Button logout = new Button("Log out", e -> authenticatedUser.logout());
         HorizontalLayout layout = new HorizontalLayout();
@@ -155,23 +162,24 @@ public class MainLayout extends AppLayout {
     private List<RouterLink> createLinks() {
         MenuItemInfo[] menuItems;
         menuItems = new MenuItemInfo[]{ //
-            
-            new MenuItemInfo("Inicio", "la la-file", InicioView.class), //       
-            
+
+            new MenuItemInfo("Inicio", "la la-home", InicioView.class), //
+
             //Vicedecano
-            new MenuItemInfo("Dashboard", "la la-file", DashboardView.class), //       
-            new MenuItemInfo("Estudiantes", "la la-file", EstudiantesView.class), //             
-            new MenuItemInfo("Area", "la la-file", AreaView.class), //
-            new MenuItemInfo("Lista de Evaluaciones", "la la-file",ListadeEvaluacionesVicedecanoView.class), //
-            new MenuItemInfo("Lista de Tareas", "la la-file",ListadeTareasVicedecanoView.class), //
-            
+            new MenuItemInfo("Dashboard", "la la-chart-bar", DashboardView.class), //
+            new MenuItemInfo("Jefe de Área", "la la-user", EstudiantesView.class), //
+            new MenuItemInfo("Estudiantes", "la la-user-graduate", EstudiantesView.class), //
+            new MenuItemInfo("Area", "la la-university", AreaView.class), //
+            new MenuItemInfo("Lista de Evaluaciones", "la la-etsy",ListadeEvaluacionesVicedecanoView.class), //
+            new MenuItemInfo("Lista de Tareas", "la la-tasks",ListadeTareasVicedecanoView.class), //
+
             //Jefe de Area
-            new MenuItemInfo("Tarea", "la la-file", TareaFormView.class), //
-            new MenuItemInfo("Evaluacion", "la la-file", EvaluacionesView.class), //
-            
+            new MenuItemInfo("Tarea", "la la-th-list", TareaFormView.class), //
+            new MenuItemInfo("Evaluacion", "la la-etsy", EvaluacionesView.class), //
+
             //Estudiante
-            new MenuItemInfo("Lista Tarea", "la la-file", ListadeTareasEstudianteView.class), //
-            
+            new MenuItemInfo("Lista Tarea", "la la-tasks", ListadeTareasEstudianteView.class), //
+
         };
         List<RouterLink> links = new ArrayList<>();
         for (MenuItemInfo menuItemInfo : menuItems) {
