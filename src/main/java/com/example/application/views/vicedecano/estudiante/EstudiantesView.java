@@ -1,9 +1,10 @@
-package com.example.application.views.vicedecano;
+package com.example.application.views.vicedecano.estudiante;
 
 import com.example.application.data.DataService;
 import com.example.application.data.entity.Area;
 import com.example.application.data.entity.Estudiante;
 import com.example.application.data.entity.Grupo;
+import com.example.application.data.entity.User;
 import com.example.application.data.service.EstudianteService;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
@@ -23,6 +24,7 @@ import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.grid.HeaderRow;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
@@ -33,7 +35,7 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
-import java.util.Arrays;
+
 import java.util.Optional;
 import javax.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +53,7 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
 
     private TextField nombre;
     private TextField apellidos;
+    private ComboBox<User>user;
     private EmailField email;
     private TextField solapin;
     private IntegerField anno_repitencia;
@@ -72,6 +75,7 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
 
     private Grid.Column<Estudiante> nombreColumn = grid.addColumn(Estudiante::getNombre).setHeader("Nombre").setAutoWidth(true);
     private Grid.Column<Estudiante> apellidosColumn = grid.addColumn(Estudiante::getApellidos).setHeader("Apellidos").setAutoWidth(true);
+    private Grid.Column<Estudiante> userColumn = grid.addColumn(estudiante -> estudiante.getUser().getName()).setHeader("Grupo").setAutoWidth(true);
     private Grid.Column<Estudiante> emailColumn = grid.addColumn(Estudiante::getEmail).setHeader("Correo").setAutoWidth(true);
     private Grid.Column<Estudiante> solapinColumn = grid.addColumn(Estudiante::getSolapin).setHeader("Solapín").setAutoWidth(true);
     private Grid.Column<Estudiante> anno_repitenciaColumn = grid.addColumn(Estudiante::getAnno_repitencia).setHeader("Año de repitencia").setAutoWidth(true);
@@ -102,12 +106,13 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         headerRow.getCell(nombreColumn).setComponent(FiltrarNombre());
         headerRow.getCell(apellidosColumn).setComponent(FiltrarApellidos());
         headerRow.getCell(emailColumn).setComponent(FiltrarEmail());
+        headerRow.getCell(userColumn).setComponent(FiltrarUser());
         headerRow.getCell(solapinColumn).setComponent(FiltrarSolapin());
         headerRow.getCell(anno_repitenciaColumn).setComponent(FiltrarAnno_repitencia());
         headerRow.getCell(cantidad_asignaturasColumn).setComponent(FiltrarCantidad_asignaturas());
         headerRow.getCell(areaColumn).setComponent(FiltrarArea());
         headerRow.getCell(grupoColumn).setComponent(FiltrarGrupo());
-
+        
         grid.setItems(query -> estudianteService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
@@ -209,15 +214,38 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
         editorLayoutDiv.add(editorDiv);
 
         FormLayout formLayout = new FormLayout();
+        
         nombre = new TextField("Nombre");
+        
         apellidos = new TextField("Apellidos");
+        
+        user =  new ComboBox<>("Usuario");
+        
         email = new EmailField("Email");
+        email.setPlaceholder("usuario@estdiantes.uci.cu");
+        email.setPattern("^.+@estudiantes.uci\\.cu$");
+        email.setErrorMessage("Por favor escriba un correo válido");
+        email.setClearButtonVisible(true);
+        
         solapin = new TextField("Solapin");
+        
         anno_repitencia = new IntegerField("Año de repitencia");
+        anno_repitencia.setHelperText("Máximo 5");
+        anno_repitencia.setValue(1);
+        anno_repitencia.setHasControls(true);
+        anno_repitencia.setMin(1);   
+        anno_repitencia.setMax(5);   
+        
         cantidad_asignaturas = new IntegerField("Cantidad de asignaturas");
+        cantidad_asignaturas.setHelperText("Máximo 16");
+        cantidad_asignaturas.setValue(2);
+        cantidad_asignaturas.setHasControls(true);
+        cantidad_asignaturas.setMin(2);   
+        cantidad_asignaturas.setMax(16); 
+        
         grupo = new ComboBox<>("Grupo");
         area = new ComboBox<>("Area");
-        Component[] fields = new Component[]{nombre, apellidos, email, solapin, anno_repitencia, cantidad_asignaturas, grupo, area};
+        Component[] fields = new Component[]{nombre, apellidos, user, email, solapin, anno_repitencia, cantidad_asignaturas, grupo, area};
 
         for (Component field : fields) {
             ((HasStyle) field).addClassName("full-width");
@@ -269,6 +297,7 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
 
         TextField nombreFilter = new TextField();
         nombreFilter.setPlaceholder("Filtrar");
+        nombreFilter.setPrefixComponent(VaadinIcon.SEARCH.create());
         nombreFilter.setClearButtonVisible(true);
         nombreFilter.setWidth("100%");
         nombreFilter.setValueChangeMode(ValueChangeMode.LAZY);
@@ -282,6 +311,7 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
     private TextField FiltrarApellidos() {
         TextField apellidosFilter = new TextField();
         apellidosFilter.setPlaceholder("Filtrar");
+        apellidosFilter.setPrefixComponent(VaadinIcon.SEARCH.create());
         apellidosFilter.setClearButtonVisible(true);
         apellidosFilter.setWidth("100%");
         apellidosFilter.setValueChangeMode(ValueChangeMode.LAZY);
@@ -294,6 +324,7 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
     private TextField FiltrarEmail() {
         TextField emailFilter = new TextField();
         emailFilter.setPlaceholder("Filtrar");
+        emailFilter.setPrefixComponent(VaadinIcon.SEARCH.create());
         emailFilter.setClearButtonVisible(true);
         emailFilter.setWidth("100%");
         emailFilter.setValueChangeMode(ValueChangeMode.LAZY);
@@ -306,6 +337,7 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
     private TextField FiltrarSolapin() {
         TextField solapinFilter = new TextField();
         solapinFilter.setPlaceholder("Filtrar");
+        solapinFilter.setPrefixComponent(VaadinIcon.SEARCH.create());
         solapinFilter.setClearButtonVisible(true);
         solapinFilter.setWidth("100%");
         solapinFilter.setValueChangeMode(ValueChangeMode.LAZY);
@@ -318,6 +350,7 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
     private IntegerField FiltrarAnno_repitencia() {
         IntegerField anno_repitenciaFilter = new IntegerField();
         anno_repitenciaFilter.setPlaceholder("Filtrar");
+        anno_repitenciaFilter.setPrefixComponent(VaadinIcon.SEARCH.create());
         anno_repitenciaFilter.setClearButtonVisible(true);
         anno_repitenciaFilter.setWidth("100%");
         anno_repitenciaFilter.setValueChangeMode(ValueChangeMode.LAZY);
@@ -330,6 +363,7 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
     private IntegerField FiltrarCantidad_asignaturas() {
         IntegerField cantidad_asignaturasFilter = new IntegerField();
         cantidad_asignaturasFilter.setPlaceholder("Filtrar");
+        cantidad_asignaturasFilter.setPrefixComponent(VaadinIcon.SEARCH.create());
         cantidad_asignaturasFilter.setClearButtonVisible(true);
         cantidad_asignaturasFilter.setWidth("100%");
         cantidad_asignaturasFilter.setValueChangeMode(ValueChangeMode.LAZY);
@@ -342,6 +376,7 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
     private ComboBox<Area> FiltrarArea() {
         ComboBox<Area> areaFilter = new ComboBox<>();
         areaFilter.setItems(dataService.findAllArea());
+        areaFilter.setItemLabelGenerator(Area::getNombre);
         areaFilter.setPlaceholder("Filtrar");
         areaFilter.setClearButtonVisible(true);
         areaFilter.setWidth("100%");
@@ -362,6 +397,19 @@ public class EstudiantesView extends Div implements BeforeEnterObserver {
             grid.setItems(dataService.searchEstudianteByGrupo(grupoFilter.getValue().getNumero()));
         });
         return grupoFilter;
+    }
+
+    private ComboBox<User> FiltrarUser() {
+        ComboBox<User> userFilter = new ComboBox<>();
+//        userFilter.setItems();
+//        userFilter.setItemLabelGenerator(Grupo::getNumero);
+        userFilter.setPlaceholder("Filtrar");
+        userFilter.setClearButtonVisible(true);
+        userFilter.setWidth("100%");
+        userFilter.addValueChangeListener(e -> {
+//            grid.setItems(dataService.searchUser(userFilter.getValue().getNombre()));
+        });
+        return userFilter;
     }
 
 }

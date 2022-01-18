@@ -25,7 +25,7 @@ public class LoginView extends Composite<LoginOverlay> /*implements BeforeEnterL
 
     public LoginView() {
         getContent().setOpened(true);
-        getContent().setTitle("Almacen");
+        getContent().setTitle("GCL");
         getContent().setDescription("Login using user/user or admin/admin");
         getContent().setAction("login");
     }

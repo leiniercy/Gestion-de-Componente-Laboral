@@ -24,6 +24,7 @@ public class DataService {
 
     private AreaRepository areaRepository;
     private EstudianteRepository estudianteRepository;
+    private ProfesorRepository profesorRepository;
     private EvaluacionRepository evaluacionRepository;
     private GrupoRepository grupoRepository;
     private TareaRepository tareaRepository;
@@ -31,12 +32,14 @@ public class DataService {
     public DataService(
             @Autowired AreaRepository areaRepository,
             @Autowired EstudianteRepository estudianteRepository,
+            @Autowired ProfesorRepository profesorRepository,
             @Autowired EvaluacionRepository evaluacionRepository,
             @Autowired GrupoRepository grupoRepository,
             @Autowired TareaRepository tareaRepository) {
 
         this.areaRepository = areaRepository;
         this.estudianteRepository = estudianteRepository;
+        this.profesorRepository = profesorRepository;
         this.evaluacionRepository = evaluacionRepository;
         this.grupoRepository = grupoRepository;
         this.tareaRepository = tareaRepository;
@@ -79,7 +82,7 @@ public class DataService {
     public List<Estudiante> findAllEstudiante() {
         return estudianteRepository.findAll();
     }
-
+       
     public List<Estudiante> searchEstudianteByNombre(String searchTerm) {
         return estudianteRepository.searchEstudianteNombre(searchTerm);
     }
@@ -273,6 +276,50 @@ public class DataService {
             return;
         }
         tareaRepository.save(tarea);
+    }
+    
+    
+    
+    //Profesor
+    
+    public List<Profesor> findAllProfesor() {
+        return profesorRepository.findAll();
+    }
+    
+    public List<Profesor> searchProfesorByNombre(String searchTerm) {
+        return profesorRepository.searchProfesorNombre(searchTerm);
+    }
+
+    public List<Profesor> searchProfesorByApellidos(String searchTerm) {
+        return profesorRepository.searchProfesorApellidos(searchTerm);
+    }
+
+    public List<Profesor> searchProfesorByEmail(String searchTerm) {
+        return profesorRepository.searchProfesorEmail(searchTerm);
+    }
+
+    public List<Profesor> searchProfesorBySolapin(String searchTerm) {
+        return profesorRepository.searchProfesorSolpain(searchTerm);
+    }
+
+
+    public List<Profesor> searchProfesorByArea(String searchTerm) {
+        return profesorRepository.searchProfesorArea(searchTerm);
+    }
+     public long countProfesor() {
+        return tareaRepository.count();
+    }
+
+    public void deleteProfesor(Profesor profesor) {
+        profesorRepository.delete(profesor);
+    }
+
+    public void saveTarea(Profesor profesor) {
+        if (profesor == null) {
+            System.err.println("This field is null. Are you sure you have connected your form to the application?");
+            return;
+        }
+        profesorRepository.save(profesor);
     }
 
     

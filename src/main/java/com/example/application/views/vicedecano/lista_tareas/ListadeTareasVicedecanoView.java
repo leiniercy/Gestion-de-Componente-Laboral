@@ -1,4 +1,4 @@
-package com.example.application.views.vicedecano;
+package com.example.application.views.vicedecano.lista_tareas;
 
 import com.example.application.views.MainLayout;
 import com.example.application.views.estudiante.Client;
@@ -32,10 +32,10 @@ import java.util.Locale;
 import javax.annotation.security.RolesAllowed;
 import org.apache.commons.lang3.StringUtils;
 
-@PageTitle("Lista de Evaluaicones ")
-@Route(value = "list-evaluaicones", layout = MainLayout.class)
+@PageTitle("Lista de Tareas ")
+@Route(value = "list-tareas", layout = MainLayout.class)
 @RolesAllowed("vicedecano")
-public class ListadeEvaluacionesVicedecanoView extends Div {
+public class ListadeTareasVicedecanoView extends Div {
 
     private GridPro<Client> grid;
     private GridListDataView<Client> gridListDataView;
@@ -46,8 +46,8 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
     private Grid.Column<Client> statusColumn;
     private Grid.Column<Client> dateColumn;
 
-    public ListadeEvaluacionesVicedecanoView() {
-        addClassName("lista-de-evaluaciones-view");
+    public ListadeTareasVicedecanoView() {
+        addClassName("lista-de-tareas-view");
         setSizeFull();
         createGrid();
         add(grid);

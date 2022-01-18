@@ -6,17 +6,15 @@
 package com.example.application.data.entity;
 
 import com.example.application.data.AbstractEntity;
-import java.util.List;
+import javax.persistence.ManyToOne;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -24,6 +22,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
 /**
  *
  * @author Leinier
@@ -36,26 +35,43 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
 @Entity
-@Table(name = "Areas")
-public class Area  extends AbstractEntity{
-    
+@Table(name = "Profesor")
+public class Profesor extends AbstractEntity {
+
     @EqualsAndHashCode.Include
     @ToString.Include
-    
+//    
 //    @NotEmpty
 //    @NotBlank(message = "campo vacío")
-//    @Column(name = "nombre",length = 100, nullable = false)
+//    @Column(name = "nombre", nullable = false)
     private String nombre;
-    
+
 //    @NotEmpty
 //    @NotBlank(message = "campo vacío")
-//    @Column(name = "descripcion",length = 255, nullable = false)
-    private String descripcion;
-    
-    @OneToMany(mappedBy = "area")
-    private List<Estudiante>estudiantes;
-    
-     @OneToMany(mappedBy = "a")
-    private List<Profesor>profesores;
-    
+//    @Column(name = "apellidos" , nullable = false)
+    private String apellidos;
+
+//    @Email
+//    @NotEmpty
+//    @NotBlank(message = "campo vacío")
+//    @Column(name = "email" , nullable = false)
+    private String email;
+
+//    @NotEmpty
+//    @NotBlank(message = "campo vacío")
+//    @Column(name = "solapin", nullable = false, unique = true)
+    private String solapin;
+
+    @NotNull(message = "debe elegir un campo")
+    @JoinColumn(name = "a_id")
+    @ManyToOne
+    private Area a;
+
+    @OneToOne()
+    private User user;
+
+    public String getStringNombreApellidos() {
+        return getNombre() + " " + getApellidos();
+    }
+
 }

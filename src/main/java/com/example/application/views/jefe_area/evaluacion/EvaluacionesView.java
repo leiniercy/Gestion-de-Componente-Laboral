@@ -1,7 +1,6 @@
-package com.example.application.views.jefe_area;
+package com.example.application.views.jefe_area.evaluacion;
 
 import com.example.application.data.DataService;
-import com.example.application.data.entity.Grupo;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.UI;
@@ -38,9 +37,8 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.data.value.ValueChangeMode;
-import java.util.ArrayList;
+
 import java.util.Arrays;
-import java.util.List;
 import javax.annotation.security.RolesAllowed;
 
 @PageTitle("Evaluaciones")

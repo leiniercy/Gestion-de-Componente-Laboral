@@ -1,4 +1,4 @@
-package com.example.application.views.vicedecano;
+package com.example.application.views.vicedecano.area;
 
 import com.example.application.data.DataService;
 import com.example.application.data.entity.Area;

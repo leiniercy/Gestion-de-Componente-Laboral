@@ -1,4 +1,4 @@
-package com.example.application.views.jefe_area;
+package com.example.application.views.jefe_area.tarea;
 
 import com.example.application.data.entity.Estudiante;
 import com.example.application.data.DataService;
@@ -36,12 +36,8 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
-import com.vaadin.flow.component.textfield.IntegerField;
-import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.data.value.ValueChangeMode;
-import com.vaadin.flow.component.datetimepicker.DateTimePicker;
-import com.vaadin.flow.router.RouteAlias;
-import com.vaadin.flow.server.auth.AnonymousAllowed;
+
 import javax.annotation.security.RolesAllowed;
 
 @PageTitle("Tarea")

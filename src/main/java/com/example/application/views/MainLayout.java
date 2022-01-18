@@ -3,36 +3,32 @@ package com.example.application.views;
 import com.example.application.data.entity.User;
 import com.example.application.security.AuthenticatedUser;
 import com.example.application.views.Inicio.InicioView;
-import com.example.application.views.jefe_area.TareaFormView;
+import com.example.application.views.jefe_area.tarea.TareaFormView;
 import com.example.application.views.estudiante.ListadeTareasEstudianteView;
-import com.example.application.views.jefe_area.EvaluacionesView;
-import com.example.application.views.vicedecano.EstudiantesView;
-import com.example.application.views.vicedecano.AreaView;
+import com.example.application.views.jefe_area.EstadisticasJAView;
+import com.example.application.views.jefe_area.evaluacion.EvaluacionesView;
+import com.example.application.views.vicedecano.estudiante.EstudiantesView;
+import com.example.application.views.vicedecano.area.AreaView;
 import com.example.application.views.vicedecano.DashboardView;
-import com.example.application.views.vicedecano.ListadeEvaluacionesVicedecanoView;
-import com.example.application.views.vicedecano.ListadeTareasVicedecanoView;
+import com.example.application.views.vicedecano.lista_evaluaciones.ListadeEvaluacionesVicedecanoView;
+import com.example.application.views.vicedecano.lista_tareas.ListadeTareasVicedecanoView;
+import com.example.application.views.vicedecano.profesor.ProfesorView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Header;
 import com.vaadin.flow.component.html.ListItem;
 import com.vaadin.flow.component.html.Nav;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.html.UnorderedList;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.tabs.Tab;
-import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
@@ -122,7 +118,6 @@ public class MainLayout extends AppLayout {
             layout.add(loginLink);
         }
 
-
         HorizontalLayout header = new HorizontalLayout(toggle, viewTitle, layout);
         header.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
         header.setWidth("100%");
@@ -166,20 +161,20 @@ public class MainLayout extends AppLayout {
             new MenuItemInfo("Inicio", "la la-home", InicioView.class), //
 
             //Vicedecano
-            new MenuItemInfo("Dashboard", "la la-chart-bar", DashboardView.class), //
-            new MenuItemInfo("Jefe de Área", "la la-user", EstudiantesView.class), //
+            new MenuItemInfo("Estadisticas", "la la-chart-bar", DashboardView.class), //
+            new MenuItemInfo("Jefe de Área", "la la-user", ProfesorView.class), //
             new MenuItemInfo("Estudiantes", "la la-user-graduate", EstudiantesView.class), //
             new MenuItemInfo("Area", "la la-university", AreaView.class), //
-            new MenuItemInfo("Lista de Evaluaciones", "la la-etsy",ListadeEvaluacionesVicedecanoView.class), //
-            new MenuItemInfo("Lista de Tareas", "la la-tasks",ListadeTareasVicedecanoView.class), //
+            new MenuItemInfo("Lista de Evaluaciones", "la la-etsy", ListadeEvaluacionesVicedecanoView.class), //
+            new MenuItemInfo("Lista de Tareas", "la la-tasks", ListadeTareasVicedecanoView.class), //
 
             //Jefe de Area
+            new MenuItemInfo("Estadisticas", "la la-chart-bar", EstadisticasJAView.class), //
             new MenuItemInfo("Tarea", "la la-th-list", TareaFormView.class), //
             new MenuItemInfo("Evaluacion", "la la-etsy", EvaluacionesView.class), //
 
             //Estudiante
-            new MenuItemInfo("Lista Tarea", "la la-tasks", ListadeTareasEstudianteView.class), //
-
+            new MenuItemInfo("Lista Tareas", "la la-tasks", ListadeTareasEstudianteView.class), //
         };
         List<RouterLink> links = new ArrayList<>();
         for (MenuItemInfo menuItemInfo : menuItems) {
@@ -211,7 +206,7 @@ public class MainLayout extends AppLayout {
     private Footer createFooter() {
         Footer layout = new Footer();
         layout.addClassNames("flex", "items-center", "my-s", "px-m", "py-xs");
-       
+
         return layout;
     }
 
