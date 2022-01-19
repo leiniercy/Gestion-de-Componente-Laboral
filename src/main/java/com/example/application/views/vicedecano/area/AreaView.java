@@ -12,8 +12,10 @@ import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.HeaderRow;
+import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
@@ -24,6 +26,7 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import javax.annotation.security.RolesAllowed;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -39,11 +42,11 @@ public class AreaView extends VerticalLayout {
 
     AreaForm form;
 
-    TextField filter = new TextField();
-
     private AreaService areaService;
 
     private DataService dataService;
+
+    private GridListDataView<Area> gridListDataView;
 
     private Grid.Column<Area> nombreColumn = grid.addColumn(Area::getNombre).setHeader("Nombre").setAutoWidth(true);
     private Grid.Column<Area> descripcionColumn = grid.addColumn(Area::getDescripcion).setHeader("Descripción").setAutoWidth(true);
@@ -63,7 +66,7 @@ public class AreaView extends VerticalLayout {
         form.addListener(AreaForm.SaveEvent.class, this::saveArea);
         form.addListener(AreaForm.DeleteEvent.class, this::deleteArea);
         form.addListener(AreaForm.CloseEvent.class, e -> closeEditor());
-        
+
         FlexLayout content = new FlexLayout(grid, form);
         content.setFlexGrow(2, grid);
         content.setFlexGrow(1, form);
@@ -85,6 +88,7 @@ public class AreaView extends VerticalLayout {
         headerRow.getCell(nombreColumn).setComponent(FiltrarNombre());
         headerRow.getCell(descripcionColumn).setComponent(FiltrarDescripcion());
 
+        gridListDataView = grid.setItems(dataService.findAllArea());
         grid.addClassNames("estudiante-grid");
         grid.setSizeFull();
         grid.setHeightFull();
@@ -94,17 +98,16 @@ public class AreaView extends VerticalLayout {
     private HorizontalLayout getToolbar() {
 
         addClassName("menu-items");
-        Html total = new Html("<span>Total: <b>" + dataService.countArea()+ "</b> areas</span>");
+        Html total = new Html("<span>Total: <b>" + dataService.countArea() + "</b> areas</span>");
 
         Button addButton = new Button("Añadir Área", VaadinIcon.USER.create());
         addButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         addButton.addClickListener(click -> addArea());
 
         HorizontalLayout toolbar = new HorizontalLayout(total, addButton);
-        toolbar.setAlignItems(FlexComponent.Alignment.CENTER);
-        toolbar.setFlexGrow(1, toolbar);
-        toolbar.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
-        toolbar.setSpacing(false);
+        toolbar.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
+        toolbar.setWidth("100%");
+        toolbar.expand(total);
 
         return toolbar;
     }
@@ -141,9 +144,9 @@ public class AreaView extends VerticalLayout {
         form.setVisible(false);
         removeClassName("editing");
     }
-    
-     private void updateList() {
-        grid.setItems(dataService.searchArea(filter.getValue()));
+
+    private void updateList() {
+        grid.setItems(dataService.findAllArea());
     }
 
     //Filtros
@@ -154,10 +157,11 @@ public class AreaView extends VerticalLayout {
         filterNombre.setPrefixComponent(VaadinIcon.SEARCH.create());
         filterNombre.setClearButtonVisible(true);
         filterNombre.setWidth("100%");
-        filterNombre.setValueChangeMode(ValueChangeMode.LAZY);
-        filterNombre.addValueChangeListener(e -> {
-            grid.setItems(dataService.searchAreaByName(filterNombre.getValue()));
-        });
+        filterNombre.setValueChangeMode(ValueChangeMode.EAGER);
+        filterNombre.addValueChangeListener(
+                event -> gridListDataView
+                        .addFilter(area -> StringUtils.containsIgnoreCase(area.getNombre(), filterNombre.getValue()))
+        );
 
         return filterNombre;
     }
@@ -169,9 +173,10 @@ public class AreaView extends VerticalLayout {
         filterDescripcion.setClearButtonVisible(true);
         filterDescripcion.setWidth("100%");
         filterDescripcion.setValueChangeMode(ValueChangeMode.LAZY);
-        filterDescripcion.addValueChangeListener(e -> {
-            grid.setItems(dataService.searchAreaByDescripcion(filterDescripcion.getValue()));
-        });
+        filterDescripcion.addValueChangeListener(
+                event -> gridListDataView
+                        .addFilter(area -> StringUtils.containsIgnoreCase(area.getDescripcion(), filterDescripcion.getValue()))
+        );
         return filterDescripcion;
     }
 

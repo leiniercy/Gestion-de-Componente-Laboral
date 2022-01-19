@@ -28,6 +28,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.grid.HeaderRow;
+import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Header;
 import com.vaadin.flow.component.icon.Icon;
@@ -39,6 +40,7 @@ import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import javax.annotation.security.RolesAllowed;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.crudui.crud.Crud;
 
@@ -61,6 +63,8 @@ public class EstudiantesView extends VerticalLayout {
 
     private EstudianteService estudianteService;
 
+    private GridListDataView<Estudiante> gridListDataView;
+
     private Grid.Column<Estudiante> nombreColumn = grid.addColumn(Estudiante::getNombre).setHeader("Nombre").setAutoWidth(true);
     private Grid.Column<Estudiante> apellidosColumn = grid.addColumn(Estudiante::getApellidos).setHeader("Apellidos").setAutoWidth(true);
     private Grid.Column<Estudiante> userColumn = grid.addColumn(estudiante -> estudiante.getUser().getName()).setHeader("Usuario").setAutoWidth(true);
@@ -77,7 +81,7 @@ public class EstudiantesView extends VerticalLayout {
     ) {
         this.dataService = service;
         this.estudianteService = estudianteService;
-        addClassNames("list-est-view" , "flex", "flex-col", "h-full");
+        addClassNames("list-est-view", "flex", "flex-col", "h-full");
         setSizeFull();
         configureGrid();
 
@@ -114,6 +118,7 @@ public class EstudiantesView extends VerticalLayout {
         headerRow.getCell(areaColumn).setComponent(FiltrarArea());
         headerRow.getCell(grupoColumn).setComponent(FiltrarGrupo());
 
+        gridListDataView = grid.setItems(dataService.findAllEstudiante());
         grid.addClassNames("estudiante-grid");
         grid.setSizeFull();
         grid.setHeightFull();
@@ -129,12 +134,10 @@ public class EstudiantesView extends VerticalLayout {
         addButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         addButton.addClickListener(click -> addEstudiante());
 
-        
         HorizontalLayout toolbar = new HorizontalLayout(total, addButton);
-        toolbar.setAlignItems(FlexComponent.Alignment.CENTER);
-        toolbar.setFlexGrow(1, toolbar);
-        toolbar.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
-        toolbar.setSpacing(false);
+        toolbar.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
+        toolbar.setWidth("100%");
+        toolbar.expand(total);
 
         return toolbar;
     }
@@ -173,7 +176,7 @@ public class EstudiantesView extends VerticalLayout {
     }
 
     private void updateList() {
-        grid.setItems(dataService.searchEstudianteByNombre(filter.getValue()));
+        grid.setItems(dataService.findAllEstudiante());
     }
 
     // Filtros
@@ -185,9 +188,10 @@ public class EstudiantesView extends VerticalLayout {
         nombreFilter.setClearButtonVisible(true);
         nombreFilter.setWidth("100%");
         nombreFilter.setValueChangeMode(ValueChangeMode.LAZY);
-        nombreFilter.addValueChangeListener(e -> {
-            grid.setItems(dataService.searchEstudianteByNombre(nombreFilter.getValue()));
-        });
+        nombreFilter.addValueChangeListener(
+                event -> gridListDataView
+                        .addFilter(estudiante -> StringUtils.containsIgnoreCase(estudiante.getNombre(), nombreFilter.getValue()))
+        );
 
         return nombreFilter;
     }
@@ -199,9 +203,10 @@ public class EstudiantesView extends VerticalLayout {
         apellidosFilter.setClearButtonVisible(true);
         apellidosFilter.setWidth("100%");
         apellidosFilter.setValueChangeMode(ValueChangeMode.LAZY);
-        apellidosFilter.addValueChangeListener(e -> {
-            grid.setItems(dataService.searchEstudianteByApellidos(apellidosFilter.getValue()));
-        });
+        apellidosFilter.addValueChangeListener(
+                event -> gridListDataView
+                        .addFilter(estudiante -> StringUtils.containsIgnoreCase(estudiante.getApellidos(), apellidosFilter.getValue()))
+        );
         return apellidosFilter;
     }
 
@@ -212,9 +217,10 @@ public class EstudiantesView extends VerticalLayout {
         emailFilter.setClearButtonVisible(true);
         emailFilter.setWidth("100%");
         emailFilter.setValueChangeMode(ValueChangeMode.LAZY);
-        emailFilter.addValueChangeListener(e -> {
-            grid.setItems(dataService.searchEstudianteByEmail(emailFilter.getValue()));
-        });
+        emailFilter.addValueChangeListener(
+                event -> gridListDataView
+                        .addFilter(estudiante -> StringUtils.containsIgnoreCase(estudiante.getEmail(), emailFilter.getValue()))
+        );
         return emailFilter;
     }
 
@@ -225,9 +231,10 @@ public class EstudiantesView extends VerticalLayout {
         solapinFilter.setClearButtonVisible(true);
         solapinFilter.setWidth("100%");
         solapinFilter.setValueChangeMode(ValueChangeMode.LAZY);
-        solapinFilter.addValueChangeListener(e -> {
-            grid.setItems(dataService.searchEstudianteBySolapin(solapinFilter.getValue()));
-        });
+        solapinFilter.addValueChangeListener(
+                event -> gridListDataView
+                        .addFilter(estudiante -> StringUtils.containsIgnoreCase(estudiante.getSolapin(), solapinFilter.getValue()))
+        );
         return solapinFilter;
     }
 
@@ -238,9 +245,10 @@ public class EstudiantesView extends VerticalLayout {
         anno_repitenciaFilter.setClearButtonVisible(true);
         anno_repitenciaFilter.setWidth("100%");
         anno_repitenciaFilter.setValueChangeMode(ValueChangeMode.LAZY);
-        anno_repitenciaFilter.addValueChangeListener(e -> {
-            grid.setItems(dataService.searchEstudianteByAnno_repitencia(anno_repitenciaFilter.getValue()));
-        });
+        anno_repitenciaFilter.addValueChangeListener(
+                event -> gridListDataView
+                        .addFilter(estudiante -> StringUtils.containsIgnoreCase(Integer.toString(estudiante.getAnno_repitencia()), Integer.toString(anno_repitenciaFilter.getValue())))
+        );
         return anno_repitenciaFilter;
     }
 
@@ -251,9 +259,10 @@ public class EstudiantesView extends VerticalLayout {
         cantidad_asignaturasFilter.setClearButtonVisible(true);
         cantidad_asignaturasFilter.setWidth("100%");
         cantidad_asignaturasFilter.setValueChangeMode(ValueChangeMode.LAZY);
-        cantidad_asignaturasFilter.addValueChangeListener(e -> {
-            grid.setItems(dataService.searchEstudianteByCantidad_asignaturas(cantidad_asignaturasFilter.getValue()));
-        });
+        cantidad_asignaturasFilter.addValueChangeListener(
+                event -> gridListDataView
+                        .addFilter(estudiante -> StringUtils.containsIgnoreCase(Integer.toString(estudiante.getCantidad_asignaturas()), Integer.toString(cantidad_asignaturasFilter.getValue())))
+        );
         return cantidad_asignaturasFilter;
     }
 
@@ -264,11 +273,14 @@ public class EstudiantesView extends VerticalLayout {
         areaFilter.setPlaceholder("Filtrar");
         areaFilter.setClearButtonVisible(true);
         areaFilter.setWidth("100%");
-        areaFilter.addValueChangeListener(e -> {
-            grid.setItems(dataService.searchEstudianteByArea(areaFilter.getValue().getNombre()));
-        });
+        areaFilter.addValueChangeListener(
+                 event -> gridListDataView
+                        .addFilter(estudiante -> StringUtils.containsIgnoreCase(estudiante.getArea().getNombre(), areaFilter.getValue().getNombre() ))
+        );
         return areaFilter;
     }
+
+  
 
     private ComboBox<Grupo> FiltrarGrupo() {
         ComboBox<Grupo> grupoFilter = new ComboBox<>();
@@ -277,9 +289,11 @@ public class EstudiantesView extends VerticalLayout {
         grupoFilter.setPlaceholder("Filtrar");
         grupoFilter.setClearButtonVisible(true);
         grupoFilter.setWidth("100%");
-        grupoFilter.addValueChangeListener(e -> {
-            grid.setItems(dataService.searchEstudianteByGrupo(grupoFilter.getValue().getNumero()));
-        });
+        grupoFilter.addValueChangeListener(
+                event -> gridListDataView
+                        .addFilter(estudiante -> StringUtils.containsIgnoreCase( estudiante.getGrupo().getNumero() , grupoFilter.getValue().getNumero() ))
+                            
+        );
         return grupoFilter;
     }
 
@@ -290,9 +304,11 @@ public class EstudiantesView extends VerticalLayout {
         userFilter.setPlaceholder("Filtrar");
         userFilter.setClearButtonVisible(true);
         userFilter.setWidth("100%");
-        userFilter.addValueChangeListener(e -> {
-//            grid.setItems(dataService.searchUser(userFilter.getValue().getNombre()));
-        });
+        userFilter.addValueChangeListener(
+             event -> gridListDataView
+                        .addFilter(estudiante -> StringUtils.containsIgnoreCase(estudiante.getUser().getName() , userFilter.getValue().getName() ))
+        );
+        
         return userFilter;
     }
 

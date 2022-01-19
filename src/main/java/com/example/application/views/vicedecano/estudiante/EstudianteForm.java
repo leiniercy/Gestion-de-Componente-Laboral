@@ -13,10 +13,12 @@ import com.example.application.views.Prueba.*;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -73,7 +75,7 @@ public class EstudianteForm extends FormLayout {
         //apellidos
         //usuario
         //email
-        email.setPlaceholder("usuario@estdiantes.uci.cu");
+        email.setPlaceholder("usuario@estudiantes.uci.cu");
         email.setPattern("^.+@estudiantes.uci\\.cu$");
         email.setErrorMessage("Por favor escriba un correo válido");
         email.setClearButtonVisible(true);
