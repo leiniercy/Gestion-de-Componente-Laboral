@@ -21,7 +21,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class DataService {
-
+    
+    private UserRepository userRepository;
     private AreaRepository areaRepository;
     private EstudianteRepository estudianteRepository;
     private ProfesorRepository profesorRepository;
@@ -30,6 +31,7 @@ public class DataService {
     private TareaRepository tareaRepository;
 
     public DataService(
+            @Autowired UserRepository userRepository,
             @Autowired AreaRepository areaRepository,
             @Autowired EstudianteRepository estudianteRepository,
             @Autowired ProfesorRepository profesorRepository,
@@ -37,6 +39,7 @@ public class DataService {
             @Autowired GrupoRepository grupoRepository,
             @Autowired TareaRepository tareaRepository) {
 
+        this.userRepository = userRepository;
         this.areaRepository = areaRepository;
         this.estudianteRepository = estudianteRepository;
         this.profesorRepository = profesorRepository;
@@ -322,6 +325,8 @@ public class DataService {
         profesorRepository.save(profesor);
     }
 
-    
+    public List<User> findAllUser() {
+        return userRepository.findAll();
+    }
 
 }
