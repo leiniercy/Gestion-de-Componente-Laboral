@@ -55,7 +55,7 @@ public class EstudianteForm extends FormLayout {
     private BeanValidationBinder<Estudiante> binder = new BeanValidationBinder<>(Estudiante.class);
 
     public EstudianteForm(List<User> users, List<Area> areas, List<Grupo> grupos) {
-        addClassName("contact-form");
+        addClassName("estudiante-form");
         binder.bindInstanceFields(this);
 
         user.setItems(users);

@@ -77,7 +77,7 @@ public class EstudiantesView extends VerticalLayout {
     ) {
         this.dataService = service;
         this.estudianteService = estudianteService;
-        addClassName("list-est-view");
+        addClassNames("list-est-view" , "flex", "flex-col", "h-full");
         setSizeFull();
         configureGrid();
 
