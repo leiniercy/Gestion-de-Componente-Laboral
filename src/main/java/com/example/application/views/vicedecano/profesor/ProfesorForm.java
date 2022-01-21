@@ -5,10 +5,7 @@
  */
 package com.example.application.views.vicedecano.profesor;
 
-import com.example.application.data.entity.Area;
-import com.example.application.data.entity.Grupo;
-import com.example.application.data.entity.Profesor;
-import com.example.application.data.entity.User;
+import com.example.application.data.entity.*;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Key;
@@ -52,6 +49,12 @@ public class ProfesorForm extends FormLayout {
         addClassName("rofesor-form");
 
         binder.bindInstanceFields(this);
+        binder.forField(nombre).asRequired().bind(Profesor::getNombre, Profesor::setNombre);
+        binder.forField(apellidos).asRequired().bind(Profesor ::getApellidos, Profesor::setApellidos);
+        binder.forField(user).asRequired().bind(Profesor::getUser, Profesor::setUser);
+        binder.forField(email).asRequired().bind(Profesor::getEmail, Profesor::setEmail);
+        binder.forField(solapin).asRequired().bind(Profesor::getSolapin, Profesor::setSolapin);
+        binder.forField(a).asRequired().bind(Profesor::getA , Profesor::setA);
 
         user.setItems(users);
         user.setItemLabelGenerator(User::getName);

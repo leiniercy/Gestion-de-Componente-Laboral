@@ -10,6 +10,7 @@ import com.example.application.data.entity.Evaluacion;
 import com.example.application.data.entity.Estudiante;
 import com.example.application.data.entity.Tarea;
 import com.example.application.views.MainLayout;
+import com.example.application.views.estudiante.Client;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -167,9 +168,10 @@ public class EvaluacionesView extends VerticalLayout {
         filterNota.setClearButtonVisible(true);
         filterNota.setWidth("100%");
         filterNota.setValueChangeMode(ValueChangeMode.LAZY);
-        filterNota.addValueChangeListener(e -> {
-
-        });
+        filterNota.addValueChangeListener(
+                event -> gridListDataView
+                        .addFilter(evaluacion -> StringUtils.containsIgnoreCase(evaluacion.getNota(), filterNota.getValue()))
+        );
 
         return filterNota;
     }
@@ -181,9 +183,10 @@ public class EvaluacionesView extends VerticalLayout {
         filterDescripcion.setClearButtonVisible(true);
         filterDescripcion.setWidth("100%");
         filterDescripcion.setValueChangeMode(ValueChangeMode.LAZY);
-        filterDescripcion.addValueChangeListener(e -> {
-
-        });
+        filterDescripcion.addValueChangeListener(
+            event -> gridListDataView
+                    .addFilter(evaluacion -> StringUtils.containsIgnoreCase(evaluacion.getDescripcion(), filterDescripcion.getValue()))
+        );
         return filterDescripcion;
     }
 
@@ -195,10 +198,19 @@ public class EvaluacionesView extends VerticalLayout {
         filterEstudiante.setPlaceholder("Filtrar");
         filterEstudiante.setClearButtonVisible(true);
         filterEstudiante.setWidth("100%");
-        filterEstudiante.addValueChangeListener(e -> {
-
-        });
+        filterEstudiante.addValueChangeListener(
+            event -> gridListDataView
+                    .addFilter(evaluacion -> areEstudiantesEqual(evaluacion , filterEstudiante))
+        );
         return filterEstudiante;
+    }
+
+    private boolean areEstudiantesEqual(Evaluacion evaluacion, ComboBox<Estudiante> filterEstudiante) {
+        String estudianteFilterValue = filterEstudiante.getValue().getStringNombreApellidos();
+        if (estudianteFilterValue != null) {
+            return StringUtils.equals(evaluacion.getEstudiante().getStringNombreApellidos(), estudianteFilterValue);
+        }
+        return true;
     }
 
     private ComboBox<Tarea> FiltarTarea() {
@@ -209,11 +221,20 @@ public class EvaluacionesView extends VerticalLayout {
         filterTarea.setPlaceholder("Filter");
         filterTarea.setClearButtonVisible(true);
         filterTarea.setWidth("100%");
-        filterTarea.addValueChangeListener(e -> {
-
-        });
+        filterTarea.addValueChangeListener(
+            event -> gridListDataView
+                    .addFilter(evaluacion -> StringUtils.containsIgnoreCase(evaluacion.getTarea().getNombre(), filterTarea.getValue().getNombre()))
+        );
 
         return filterTarea;
+    }
+
+    private boolean areTareasEqual(Evaluacion evaluacion, ComboBox<Tarea> filterTarea) {
+        String tareaFilterValue = filterTarea.getValue().getNombre();
+        if (tareaFilterValue != null) {
+            return StringUtils.equals(evaluacion.getTarea().getNombre(), tareaFilterValue);
+        }
+        return true;
     }
 
     private ComboBox<String> FiltarStatus() {
@@ -223,11 +244,19 @@ public class EvaluacionesView extends VerticalLayout {
         statusFilter.setPlaceholder("Filter");
         statusFilter.setClearButtonVisible(true);
         statusFilter.setWidth("100%");
-        statusFilter.addValueChangeListener(e -> {
-
-        });
+        statusFilter.addValueChangeListener(
+            event -> gridListDataView
+                    .addFilter(evaluacion -> areStatusesEqual(evaluacion, statusFilter))
+        );
 
         return statusFilter;
+    }
+    private boolean areStatusesEqual(Evaluacion evaluacion, ComboBox<String> statusFilter) {
+        String statusFilterValue = statusFilter.getValue();
+        if (statusFilterValue != null) {
+            return StringUtils.equals(evaluacion.getStatus(), statusFilterValue);
+        }
+        return true;
     }
 
 }

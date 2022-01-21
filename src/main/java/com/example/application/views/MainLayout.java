@@ -3,7 +3,6 @@ package com.example.application.views;
 import com.example.application.data.entity.User;
 import com.example.application.security.AuthenticatedUser;
 import com.example.application.views.Inicio.InicioView;
-import com.example.application.views.Prueba.ListView;
 import com.example.application.views.jefe_area.tarea.TareaView;
 import com.example.application.views.estudiante.ListadeTareasEstudianteView;
 import com.example.application.views.jefe_area.EstadisticasJAView;

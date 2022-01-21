@@ -7,6 +7,7 @@ package com.example.application.views.jefe_area.tarea;
 
 import com.example.application.data.DataService;
 import com.example.application.data.entity.Estudiante;
+import com.example.application.data.entity.Evaluacion;
 import com.example.application.data.entity.Tarea;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Html;
@@ -193,22 +194,28 @@ public class TareaView extends VerticalLayout {
         estudiantefilter.setWidth("100%");
         estudiantefilter.addValueChangeListener(
                 event -> gridListDataView
-                        .addFilter(tarea -> StringUtils.containsIgnoreCase(tarea.getE().getStringNombreApellidos(), estudiantefilter.getValue().getStringNombreApellidos()))
+                        .addFilter(tarea ->  areEstudiantesEqual( tarea, estudiantefilter))
         );
 
         return estudiantefilter;
     }
 
+    private boolean areEstudiantesEqual(Tarea tarea, ComboBox<Estudiante> filterEstudiante) {
+        String estudianteFilterValue = filterEstudiante.getValue().getStringNombreApellidos();
+        if (estudianteFilterValue != null) {
+            return StringUtils.equals(tarea.getE().getStringNombreApellidos(), estudianteFilterValue);
+        }
+        return true;
+    }
+
     private DatePicker FiltrarFechaInicio() {
         DatePicker dateFilter = new DatePicker();
-//        dateFilter.setPlaceholder("Filter");
-//        dateFilter.setClearButtonVisible(true);
-//        dateFilter.setWidth("100%");
-//        dateFilter.addValueChangeListener(
-//                event -> gridListDataView
-//                        .addFilter(tarea -> LocalDate.parse(tarea.getFecha_inicio()) )
-//                        
-//        );
+        dateFilter.setPlaceholder("Filter");
+        dateFilter.setClearButtonVisible(true);
+        dateFilter.setWidth("100%");
+        dateFilter.addValueChangeListener(e->{
+            grid.setItems(dataService.searchTareaByFecha( dateFilter.getValue() ) );
+        });
         return dateFilter;
     }
 
@@ -218,7 +225,7 @@ public class TareaView extends VerticalLayout {
         dateFilter.setClearButtonVisible(true);
         dateFilter.setWidth("100%");
         dateFilter.addValueChangeListener(e -> {
-
+            grid.setItems(dataService.searchTareaByFecha( dateFilter.getValue() ) );
         });
         return dateFilter;
     }

@@ -10,6 +10,8 @@ import com.example.application.data.repository.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
+
+import org.apache.tomcat.jni.Local;
 import org.hibernate.annotations.Formula;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Query;
@@ -196,7 +198,9 @@ public class DataService {
     public List<Tarea> searchTarea(String searchTerm) {
         return tareaRepository.search(searchTerm);
     }
-
+    public List<Tarea> searchTareaByFecha(LocalDate searchTerm) {
+        return tareaRepository.searchFecha(searchTerm);
+    }
 
     public long countTarea() {
         return tareaRepository.count();

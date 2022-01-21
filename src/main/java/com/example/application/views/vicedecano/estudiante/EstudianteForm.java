@@ -9,7 +9,6 @@ import com.example.application.data.entity.Area;
 import com.example.application.data.entity.Estudiante;
 import com.example.application.data.entity.Grupo;
 import com.example.application.data.entity.User;
-import com.example.application.views.Prueba.*;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Key;
@@ -58,7 +57,19 @@ public class EstudianteForm extends FormLayout {
 
     public EstudianteForm(List<User> users, List<Area> areas, List<Grupo> grupos) {
         addClassName("estudiante-form");
+
+        //
         binder.bindInstanceFields(this);
+        binder.forField(nombre).asRequired().bind(Estudiante::getNombre, Estudiante::setNombre);
+        binder.forField(apellidos).asRequired().bind(Estudiante::getApellidos, Estudiante::setApellidos);
+        binder.forField(user).asRequired().bind(Estudiante::getUser, Estudiante::setUser);
+        binder.forField(email).asRequired().bind(Estudiante::getEmail, Estudiante::setEmail);
+        binder.forField(solapin).asRequired().bind(Estudiante::getSolapin, Estudiante::setSolapin);
+        binder.forField(anno_repitencia).asRequired().bind(Estudiante::getAnno_repitencia, Estudiante::setAnno_repitencia);
+        binder.forField(cantidad_asignaturas).asRequired().bind(Estudiante::getCantidad_asignaturas , Estudiante::setCantidad_asignaturas);
+        binder.forField(area).asRequired().bind(Estudiante::getArea , Estudiante::setArea);
+        binder.forField(grupo).asRequired().bind(Estudiante::getGrupo , Estudiante::setGrupo);
+
 
         user.setItems(users);
         user.setItemLabelGenerator(User::getName);

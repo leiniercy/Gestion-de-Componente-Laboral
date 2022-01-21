@@ -48,8 +48,11 @@ public class EvaluacionForm extends FormLayout{
         
         addClassName("evaluacion-form");
         binder.bindInstanceFields(this);
+        binder.forField(nota).asRequired().bind(Evaluacion::getNota, Evaluacion::setNota);
+        binder.forField(estudiante).asRequired().bind(Evaluacion::getEstudiante, Evaluacion::setEstudiante);
+        binder.forField(tarea).asRequired().bind(Evaluacion::getTarea , Evaluacion::setTarea);
+        binder.forField(status).asRequired().bind(Evaluacion::getStatus , Evaluacion::setStatus);
 
-    
 
         //Config form
         

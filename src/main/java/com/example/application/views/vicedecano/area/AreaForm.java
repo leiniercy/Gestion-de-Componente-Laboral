@@ -6,6 +6,7 @@
 package com.example.application.views.vicedecano.area;
 
 import com.example.application.data.entity.Area;
+import com.example.application.data.entity.Profesor;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Key;
@@ -40,7 +41,7 @@ public class AreaForm extends FormLayout{
         
         addClassName("area-form");
         binder.bindInstanceFields(this);
-
+        binder.forField(nombre).asRequired().bind(Area::getNombre, Area::setNombre);
     
 
         //Config form

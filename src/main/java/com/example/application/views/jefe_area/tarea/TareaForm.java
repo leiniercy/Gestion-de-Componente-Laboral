@@ -7,6 +7,7 @@ package com.example.application.views.jefe_area.tarea;
 
 
 import com.example.application.data.entity.Estudiante;
+import com.example.application.data.entity.Profesor;
 import com.example.application.data.entity.Tarea;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -49,6 +50,9 @@ public class TareaForm extends FormLayout {
         
         addClassName("tarea-form");
         binder.bindInstanceFields(this);
+        binder.forField(nombre).asRequired().bind(Tarea::getNombre, Tarea::setNombre);
+        binder.forField(fecha_inicio).asRequired().bind(Tarea::getFecha_inicio, Tarea::setFecha_inicio);
+        binder.forField(e).asRequired().bind(Tarea::getE, Tarea::setE);
 
         e.setItems(estudiantes);
         e.setItemLabelGenerator(Estudiante::getStringNombreApellidos);

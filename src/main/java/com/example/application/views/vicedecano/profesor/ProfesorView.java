@@ -6,10 +6,7 @@
 package com.example.application.views.vicedecano.profesor;
 
 import com.example.application.data.DataService;
-import com.example.application.data.entity.Area;
-import com.example.application.data.entity.Grupo;
-import com.example.application.data.entity.Profesor;
-import com.example.application.data.entity.User;
+import com.example.application.data.entity.*;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
@@ -22,6 +19,7 @@ import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.IntegerField;
@@ -73,8 +71,20 @@ public class ProfesorView extends VerticalLayout{
         form.addListener(ProfesorForm.SaveEvent.class, this::saveProfesor);
         form.addListener(ProfesorForm.DeleteEvent.class, this::deleteProfesor);
         form.addListener(ProfesorForm.CloseEvent.class, e -> closeEditor());
-        
-        
+
+        FlexLayout content = new FlexLayout(grid, form);
+        content.setFlexGrow(2, grid);
+        content.setFlexGrow(1, form);
+        content.setFlexShrink(0, form);
+        content.addClassNames("content", "gap-m");
+        content.setSizeFull();
+
+        add(getToolbar(), content);
+        updateList();
+        closeEditor();
+        grid.asSingleSelect().addValueChangeListener(event
+                -> editProfesor(event.getValue()));
+
         
     }
     
@@ -217,10 +227,18 @@ public class ProfesorView extends VerticalLayout{
         areaFilter.setClearButtonVisible(true);
         areaFilter.setWidth("100%");
         areaFilter.addValueChangeListener(
-                 event -> gridListDataView
-                        .addFilter(profesor -> StringUtils.containsIgnoreCase(profesor.getA().getNombre(), areaFilter.getValue().getNombre() ))
+                event -> gridListDataView
+                        .addFilter(profesor -> areAreaEqual(profesor, areaFilter) )
         );
         return areaFilter;
+    }
+
+    private boolean areAreaEqual(Profesor profesor, ComboBox<Area> areaFilter) {
+        String areaFilterValue = areaFilter.getValue().getNombre();
+        if (areaFilterValue != null) {
+            return StringUtils.equals(profesor.getA().getNombre(), areaFilterValue);
+        }
+        return true;
     }
 
     private ComboBox<User> FiltrarUser() {
@@ -231,11 +249,19 @@ public class ProfesorView extends VerticalLayout{
         userFilter.setClearButtonVisible(true);
         userFilter.setWidth("100%");
         userFilter.addValueChangeListener(
-             event -> gridListDataView
-                        .addFilter(profesor -> StringUtils.containsIgnoreCase(profesor.getUser().getName() , userFilter.getValue().getName() ))
+                event -> gridListDataView
+                        .addFilter(profesor -> areUserEqual(profesor, userFilter))
         );
-        
+
         return userFilter;
+    }
+
+    private boolean areUserEqual(Profesor profesor, ComboBox<User> userFilter) {
+        String userFilterValue = userFilter.getValue().getName();
+        if (userFilterValue != null) {
+            return StringUtils.equals(profesor.getUser().getName(), userFilterValue);
+        }
+        return true;
     }
 
     

@@ -29,4 +29,12 @@ public interface TareaRepository extends JpaRepository<Tarea, Integer> {
     )
     List<Tarea> search(@Param("searchTerm") String searchTerm);
 
+    //filtrar pot fecha
+    @Query("SELECT t from Tarea t JOIN Estudiante e on t.id = e.id "
+            + " WHERE t.fecha_inicio = searchTerm "
+            + " or t.fecha_fin = searchTerm"
+    )
+    List<Tarea> searchFecha(@Param("searchTerm") LocalDate searchTerm);
+
+
 }

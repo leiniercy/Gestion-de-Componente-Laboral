@@ -5,9 +5,8 @@
  */
 package com.example.application.views.vicedecano.estudiante;
 
-import com.example.application.views.Prueba.Contact;
-import com.example.application.views.Prueba.ContactForm;
-import com.example.application.views.Prueba.CrmService;
+
+import com.example.application.data.entity.*;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
@@ -16,10 +15,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.example.application.data.DataService;
-import com.example.application.data.entity.Area;
-import com.example.application.data.entity.Estudiante;
-import com.example.application.data.entity.Grupo;
-import com.example.application.data.entity.User;
 import com.example.application.data.service.EstudianteService;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
@@ -268,9 +263,17 @@ public class EstudiantesView extends VerticalLayout {
         areaFilter.setWidth("100%");
         areaFilter.addValueChangeListener(
                  event -> gridListDataView
-                        .addFilter(estudiante -> StringUtils.containsIgnoreCase(estudiante.getArea().getNombre(), areaFilter.getValue().getNombre() ))
+                        .addFilter(estudiante -> areAreaEqual(estudiante, areaFilter) )
         );
         return areaFilter;
+    }
+
+    private boolean areAreaEqual(Estudiante estudiante, ComboBox<Area> areaFilter) {
+        String areaFilterValue = areaFilter.getValue().getNombre();
+        if (areaFilterValue != null) {
+            return StringUtils.equals(estudiante.getArea().getNombre(), areaFilterValue);
+        }
+        return true;
     }
 
   
@@ -284,10 +287,18 @@ public class EstudiantesView extends VerticalLayout {
         grupoFilter.setWidth("100%");
         grupoFilter.addValueChangeListener(
                 event -> gridListDataView
-                        .addFilter(estudiante -> StringUtils.containsIgnoreCase( estudiante.getGrupo().getNumero() , grupoFilter.getValue().getNumero() ))
+                        .addFilter(estudiante ->  areGrupoEqual(estudiante , grupoFilter) )
                             
         );
         return grupoFilter;
+    }
+
+    private boolean areGrupoEqual(Estudiante estudiante, ComboBox<Grupo> grupoFilter) {
+        String grupoFilterValue = grupoFilter.getValue().getNumero();
+        if (grupoFilterValue != null) {
+            return StringUtils.equals(estudiante.getGrupo().getNumero(), grupoFilterValue);
+        }
+        return true;
     }
 
     private ComboBox<User> FiltrarUser() {
@@ -299,10 +310,18 @@ public class EstudiantesView extends VerticalLayout {
         userFilter.setWidth("100%");
         userFilter.addValueChangeListener(
              event -> gridListDataView
-                        .addFilter(estudiante -> StringUtils.containsIgnoreCase(estudiante.getUser().getName() , userFilter.getValue().getName() ))
+                        .addFilter(estudiante -> areUserEqual(estudiante, userFilter))
         );
         
         return userFilter;
+    }
+
+    private boolean areUserEqual(Estudiante estudiante, ComboBox<User> userFilter) {
+        String userFilterValue = userFilter.getValue().getName();
+        if (userFilterValue != null) {
+            return StringUtils.equals(estudiante.getUser().getName(), userFilterValue);
+        }
+        return true;
     }
 
 }
