@@ -12,5 +12,5 @@ public interface GrupoRepository extends JpaRepository<Grupo, Integer> {
     @Query("SELECT g FROM Grupo g "
             + "WHERE  g.numero = :searchTerm  "
     )
-    List<Grupo> searchByNumero(@Param("searchTerm") Integer searchTerm);
+    List<Grupo> search(@Param("searchTerm") Integer searchTerm);
 }

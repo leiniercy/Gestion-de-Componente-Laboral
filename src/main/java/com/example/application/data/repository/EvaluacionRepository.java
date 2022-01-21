@@ -28,38 +28,7 @@ public interface EvaluacionRepository extends JpaRepository<Evaluacion, Integer>
     )
     List<Evaluacion> search(@Param("searchTerm") String searchTerm);
 
-    //filtar por nota
-    @Query("SELECT e FROM Evaluacion e JOIN Estudiante p on e.id = p.id "
-            + "WHERE  lower(e.nota) like lower(concat('%', :searchTerm , '%')) "
-    )
-    List<Evaluacion> searchByNota(@Param("searchTerm") String searchTerm);
-
-    //filtrar por descripcion
-    @Query("SELECT e FROM Evaluacion e JOIN Estudiante p on e.id = p.id "
-            + "WHERE  lower(e.descripcion) like lower(concat('%', :searchTerm , '%')) "
-    )
-    List<Evaluacion> searchByDescripcion(@Param("searchTerm") String searchTerm);
     
-    //filtrar por nombre y apellidos (Estudiante)
-    @Query("SELECT e FROM Evaluacion e JOIN Estudiante p on e.id = p.id "
-            + "WHERE  lower(p.nombre) like lower(concat('%', :searchTerm , '%')) "
-            + " or lower(p.apellidos) like lower(concat('%', :searchTerm , '%')) "
-    )
-    List<Evaluacion> searchByEstudiante(@Param("searchTerm") String searchTerm);
-    
-    //filtrar por nombre tarea
-    @Query("SELECT e FROM Evaluacion e JOIN Estudiante p on e.id = p.id "
-            +" JOIN Tarea t on e.id = t.id "
-            + "WHERE  lower(t.nombre) like lower(concat('%', :searchTerm , '%')) "
-    )
-    List<Evaluacion> searchByTarea(@Param("searchTerm") String searchTerm);
-
-     //filtrar por nombre tarea
-    @Query("SELECT e FROM Evaluacion e JOIN Estudiante p on e.id = p.id "
-            +" JOIN Tarea t on e.id = t.id "
-            + "WHERE  lower(e.status) like lower(concat('%', :searchTerm , '%')) "
-    )
-    List<Evaluacion> searchByStatus(@Param("searchTerm") String searchTerm);
     
     
 }

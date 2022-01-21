@@ -26,16 +26,6 @@ public interface AreaRepository extends JpaRepository<Area, Integer> {
     )
     List<Area> search(@Param("searchTerm") String searchTerm);
 
-    //filtrar nombre
-    @Query("SELECT a FROM Area a "
-            + "WHERE lower(a.nombre) like lower(concat('%', :searchTerm, '%')) "
-    )
-    List<Area> searchByNombre(@Param("searchTerm") String searchTerm);
-
-    //filtrar descripcion
-    @Query("SELECT a FROM Area a "
-            + "WHERE lower(a.descripcion) like lower(concat('%', :searchTerm, '%')) "
-    )
-    List<Area> searchByDescripcion(@Param("searchTerm") String searchTerm);
+   
 
 }

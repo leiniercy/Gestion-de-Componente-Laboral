@@ -57,14 +57,6 @@ public class DataService {
         return areaRepository.search(stringFilter);
     }
 
-    public List<Area> searchAreaByName(String stringFilter) {
-        return areaRepository.searchByNombre(stringFilter);
-    }
-
-    public List<Area> searchAreaByDescripcion(String stringFilter) {
-        return areaRepository.searchByDescripcion(stringFilter);
-    }
-
     public long countArea() {
         return areaRepository.count();
     }
@@ -86,36 +78,8 @@ public class DataService {
         return estudianteRepository.findAll();
     }
        
-    public List<Estudiante> searchEstudianteByNombre(String searchTerm) {
-        return estudianteRepository.searchEstudianteNombre(searchTerm);
-    }
-
-    public List<Estudiante> searchEstudianteByApellidos(String searchTerm) {
-        return estudianteRepository.searchEstudianteApellidos(searchTerm);
-    }
-
-    public List<Estudiante> searchEstudianteByEmail(String searchTerm) {
-        return estudianteRepository.searchEstudianteEmail(searchTerm);
-    }
-
-    public List<Estudiante> searchEstudianteBySolapin(String searchTerm) {
-        return estudianteRepository.searchEstudianteSolapin(searchTerm);
-    }
-
-    public List<Estudiante> searchEstudianteByAnno_repitencia(Integer searchTerm) {
-        return estudianteRepository.searchEstudianteAnno_repitencia(searchTerm);
-    }
-
-    public List<Estudiante> searchEstudianteByCantidad_asignaturas(Integer searchTerm) {
-        return estudianteRepository.searchEstudianteCantidad_asignaturas(searchTerm);
-    }
-
-    public List<Estudiante> searchEstudianteByArea(String searchTerm) {
-        return estudianteRepository.searchEstudianteArea(searchTerm);
-    }
-
-    public List<Estudiante> searchEstudianteByGrupo(String searchTerm) {
-        return estudianteRepository.searchEstudianteGrupo(searchTerm);
+    public List<Estudiante> searchEstudiante(String searchTerm) {
+        return estudianteRepository.searchEstudiante(searchTerm);
     }
 
     public long countEstudiante() {
@@ -179,24 +143,8 @@ public class DataService {
         return evaluacionRepository.findAll();
     }
 
-    public List<Evaluacion> searchEvaluacionByNota(String searchTerm) {
-        return evaluacionRepository.searchByNota(searchTerm);
-    }
-
-    public List<Evaluacion> searchEvaluacionByDescripcion(String searchTerm) {
-        return evaluacionRepository.searchByDescripcion(searchTerm);
-    }
-
-    public List<Evaluacion> searchEvaluacionByEstudiante(String searchTerm) {
-        return evaluacionRepository.searchByEstudiante(searchTerm);
-    }
-    
-    public List<Evaluacion> searchEvaluacionByTarea(String searchTerm) {
-        return evaluacionRepository.searchByTarea(searchTerm);
-    }
-    
-      public List<Evaluacion> searchEvaluacionByStatus(String searchTerm) {
-        return evaluacionRepository.searchByStatus(searchTerm);
+    public List<Evaluacion> searchEvaluacion(String searchTerm) {
+        return evaluacionRepository.search(searchTerm);
     }
 
     public long countEvaluacion() {
@@ -220,8 +168,8 @@ public class DataService {
         return grupoRepository.findAll();
     }
 
-    public List<Grupo> searchGrupoByNumero(Integer searchTerm) {
-        return grupoRepository.searchByNumero(searchTerm);
+    public List<Grupo> searchGrupo(Integer searchTerm) {
+        return grupoRepository.search(searchTerm);
     }
 
     public long countGrupo() {
@@ -245,25 +193,10 @@ public class DataService {
         return tareaRepository.findAll();
     }
 
-    public List<Tarea> searchTareaByNombre(String searchTerm) {
-        return tareaRepository.searchByNombre(searchTerm);
+    public List<Tarea> searchTarea(String searchTerm) {
+        return tareaRepository.search(searchTerm);
     }
 
-    public List<Tarea> searchTareaByDescripcion(String searchTerm) {
-        return tareaRepository.searchByDescripcion(searchTerm);
-    }
-
-    public List<Tarea> searchTareaByFechaInicio(LocalDate value) {
-    return tareaRepository.searchByFechaInicio(value);
-    }
-
-    public List<Tarea> searchTareaByFechaFin(LocalDate value) {
-        return tareaRepository.searchByFechaFin(value);
-    }
-
-    public List<Tarea> searchTareaByEstudiante(String searchTerm) {
-        return tareaRepository.searchByEstudiante(searchTerm);
-    }
 
     public long countTarea() {
         return tareaRepository.count();
@@ -289,26 +222,10 @@ public class DataService {
         return profesorRepository.findAll();
     }
     
-    public List<Profesor> searchProfesorByNombre(String searchTerm) {
-        return profesorRepository.searchProfesorNombre(searchTerm);
+    public List<Profesor> searchProfesor(String searchTerm) {
+        return profesorRepository.searchProfesor(searchTerm);
     }
 
-    public List<Profesor> searchProfesorByApellidos(String searchTerm) {
-        return profesorRepository.searchProfesorApellidos(searchTerm);
-    }
-
-    public List<Profesor> searchProfesorByEmail(String searchTerm) {
-        return profesorRepository.searchProfesorEmail(searchTerm);
-    }
-
-    public List<Profesor> searchProfesorBySolapin(String searchTerm) {
-        return profesorRepository.searchProfesorSolpain(searchTerm);
-    }
-
-
-    public List<Profesor> searchProfesorByArea(String searchTerm) {
-        return profesorRepository.searchProfesorArea(searchTerm);
-    }
      public long countProfesor() {
         return tareaRepository.count();
     }
@@ -317,7 +234,7 @@ public class DataService {
         profesorRepository.delete(profesor);
     }
 
-    public void saveTarea(Profesor profesor) {
+    public void saveProfesor(Profesor profesor) {
         if (profesor == null) {
             System.err.println("This field is null. Are you sure you have connected your form to the application?");
             return;

@@ -31,44 +31,6 @@ public interface ProfesorRepository extends JpaRepository<Profesor,Integer> {
             + " or lower(a.nombre) like lower(concat('%', :searchTerm, '%'))"
     )
     List<Profesor> searchProfesor(@Param("searchTerm") String searchTerm);
-
-    //filtar Profesor por nombre
-    @Query("select p from Profesor p "
-            + "join Area a on p.id  = a.id "
-            + "where lower(p.nombre) like lower(concat('%', :searchTerm, '%')) "
-    )
-    List<Profesor> searchProfesorNombre(@Param("searchTerm") String searchTerm);
-
-    //filtar Profesor por apellidos
-    @Query("select p from Profesor p "
-            + "join Area a on p.id  = a.id "
-            + "where lower(p.apellidos) like lower(concat('%', :searchTerm, '%')) "
-    )
-    List<Profesor> searchProfesorApellidos(@Param("searchTerm") String searchTerm);
-
-    //filtar Profesor por email
-    @Query("select p from Profesor p "
-            + "join Area a on p.id  = a.id "
-            + "where lower(p.email) like lower(concat('%', :searchTerm, '%')) "
-    )
-    List<Profesor> searchProfesorEmail(@Param("searchTerm") String searchTerm);
-
-    //filtar Profesor por solapin
-    @Query("select p from Profesor p "
-            + "join Area a on p.id  = a.id "
-            + "where lower(p.solapin) like lower(concat('%', :searchTerm, '%')) "
-    )
-    List<Profesor> searchProfesorSolpain(@Param("searchTerm") String searchTerm);
-
-    //filtar Profesor Area
-    @Query("select p from Profesor p "
-            + "join Area a on p.id  = a.id "
-            + "where dtype like 'Profesor' "
-            + "and lower(a.nombre) like lower(concat('%', :searchTerm, '%')) "
-    )
-    List<Profesor> searchProfesorArea(@Param("searchTerm") String searchTerm);
-    
-    
-    
+   
 }
 

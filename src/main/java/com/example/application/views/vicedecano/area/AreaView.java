@@ -42,8 +42,6 @@ public class AreaView extends VerticalLayout {
 
     AreaForm form;
 
-    private AreaService areaService;
-
     private DataService dataService;
 
     private GridListDataView<Area> gridListDataView;
@@ -52,10 +50,9 @@ public class AreaView extends VerticalLayout {
     private Grid.Column<Area> descripcionColumn = grid.addColumn(Area::getDescripcion).setHeader("Descripción").setAutoWidth(true);
 
     public AreaView(
-            @Autowired AreaService areaService,
             @Autowired DataService dataService
     ) {
-        this.areaService = areaService;
+        
         this.dataService = dataService;
         addClassNames("area-view", "flex", "flex-col", "h-full");
         setSizeFull();

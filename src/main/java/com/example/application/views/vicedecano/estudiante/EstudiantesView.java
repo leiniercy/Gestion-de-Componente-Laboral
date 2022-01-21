@@ -57,11 +57,7 @@ public class EstudiantesView extends VerticalLayout {
 
     EstudianteForm form;
 
-    TextField filter = new TextField();
-
     private DataService dataService;
-
-    private EstudianteService estudianteService;
 
     private GridListDataView<Estudiante> gridListDataView;
 
@@ -75,12 +71,9 @@ public class EstudiantesView extends VerticalLayout {
     private Grid.Column<Estudiante> areaColumn = grid.addColumn(estudiante -> estudiante.getArea().getNombre()).setHeader("Área").setAutoWidth(true);
     private Grid.Column<Estudiante> grupoColumn = grid.addColumn(estudiante -> estudiante.getGrupo().getNumero()).setHeader("Grupo").setAutoWidth(true);
 
-    public EstudiantesView(
-            @Autowired DataService service,
-            @Autowired EstudianteService estudianteService
-    ) {
+    public EstudiantesView( @Autowired DataService service ) {
+        
         this.dataService = service;
-        this.estudianteService = estudianteService;
         addClassNames("list-est-view", "flex", "flex-col", "h-full");
         setSizeFull();
         configureGrid();

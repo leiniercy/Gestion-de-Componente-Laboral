@@ -4,7 +4,7 @@ import com.example.application.data.entity.User;
 import com.example.application.security.AuthenticatedUser;
 import com.example.application.views.Inicio.InicioView;
 import com.example.application.views.Prueba.ListView;
-import com.example.application.views.jefe_area.tarea.TareaFormView;
+import com.example.application.views.jefe_area.tarea.TareaView;
 import com.example.application.views.estudiante.ListadeTareasEstudianteView;
 import com.example.application.views.jefe_area.EstadisticasJAView;
 import com.example.application.views.jefe_area.evaluacion.EvaluacionesView;
@@ -171,7 +171,7 @@ public class MainLayout extends AppLayout {
 
             //Jefe de Area
             new MenuItemInfo("Estadisticas", "la la-chart-bar", EstadisticasJAView.class), //
-            new MenuItemInfo("Tarea", "la la-th-list", TareaFormView.class), //
+            new MenuItemInfo("Tarea", "la la-th-list", TareaView.class), //
             new MenuItemInfo("Evaluacion", "la la-etsy", EvaluacionesView.class), //
 
             //Estudiante

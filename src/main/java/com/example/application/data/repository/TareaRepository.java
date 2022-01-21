@@ -29,35 +29,4 @@ public interface TareaRepository extends JpaRepository<Tarea, Integer> {
     )
     List<Tarea> search(@Param("searchTerm") String searchTerm);
 
-    //filtrar por nombre 
-    @Query("SELECT t from Tarea t JOIN Estudiante e on t.id = e.id "
-            + " WHERE lower(t.nombre) like lower(concat('%', :searchTerm, '%')) "
-    )
-    List<Tarea> searchByNombre(@Param("searchTerm") String searchTerm);
-    
-    //filtrar por descripcion 
-    @Query("SELECT t from Tarea t JOIN Estudiante e on t.id = e.id "
-            + " WHERE lower(t.descripcion) like lower(concat('%', :searchTerm, '%')) "
-    )
-    List<Tarea> searchByDescripcion(@Param("searchTerm") String searchTerm);
-    
-    //filtrar por fecha de inicio 
-    @Query("SELECT t from Tarea t JOIN Estudiante e on t.id = e.id "
-            + " WHERE t.fecha_inicio =  :searchTerm "
-    )
-    List<Tarea> searchByFechaInicio(@Param("searchTerm") LocalDate searchTerm);
-    
-    //filtrar por fecha de fin 
-    @Query("SELECT t from Tarea t JOIN Estudiante e on t.id = e.id "
-            + " WHERE t.fecha_fin =  :searchTerm "
-    )
-    List<Tarea> searchByFechaFin(@Param("searchTerm") LocalDate searchTerm);
-    
-    //filtrar por Estudiante
-    @Query("SELECT t from Tarea t JOIN Estudiante e on t.id = e.id "
-            + " WHERE lower(e.nombre) like lower(concat('%', :searchTerm, '%')) "
-            + "or lower(e.apellidos) like lower(concat('%', :searchTerm, '%')) "
-    )
-    List<Tarea> searchByEstudiante(@Param("searchTerm") String searchTerm);
-
 }
