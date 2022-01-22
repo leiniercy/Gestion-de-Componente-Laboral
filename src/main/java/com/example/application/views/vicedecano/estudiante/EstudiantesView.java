@@ -7,8 +7,10 @@ package com.example.application.views.vicedecano.estudiante;
 
 
 import com.example.application.data.entity.*;
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -56,7 +58,7 @@ public class EstudiantesView extends VerticalLayout {
 
     private GridListDataView<Estudiante> gridListDataView;
 
-    private Grid.Column<Estudiante> nombreColumn = grid.addColumn(Estudiante::getNombre).setHeader("Nombre").setAutoWidth(true);
+    private Grid.Column<Estudiante> nombreColumn = grid.addColumn(Estudiante::getNombre).setHeader("Nombre").setFrozen(true).setAutoWidth(true).setFlexGrow(0);
     private Grid.Column<Estudiante> apellidosColumn = grid.addColumn(Estudiante::getApellidos).setHeader("Apellidos").setAutoWidth(true);
     private Grid.Column<Estudiante> userColumn = grid.addColumn(estudiante -> estudiante.getUser().getName()).setHeader("Usuario").setAutoWidth(true);
     private Grid.Column<Estudiante> emailColumn = grid.addColumn(Estudiante::getEmail).setHeader("Correo").setAutoWidth(true);
@@ -65,6 +67,18 @@ public class EstudiantesView extends VerticalLayout {
     private Grid.Column<Estudiante> cantidad_asignaturasColumn = grid.addColumn(Estudiante::getCantidad_asignaturas).setHeader("Cantidad de asignaturas").setAutoWidth(true);
     private Grid.Column<Estudiante> areaColumn = grid.addColumn(estudiante -> estudiante.getArea().getNombre()).setHeader("Área").setAutoWidth(true);
     private Grid.Column<Estudiante> grupoColumn = grid.addColumn(estudiante -> estudiante.getGrupo().getNumero()).setHeader("Grupo").setAutoWidth(true);
+    private Grid.Column<Estudiante> editColumn = grid.addComponentColumn(estudiante -> {
+        HorizontalLayout layout = new HorizontalLayout();
+        Button editButton = new Button(VaadinIcon.EDIT.create());
+        editButton.addClickShortcut(Key.F2);
+        editButton.addClickListener(e -> this.editEstudiante(estudiante));
+        Button removeButton = new Button(VaadinIcon.TRASH.create());
+        removeButton.addClickShortcut(Key.DELETE);
+        removeButton.addClickListener(e -> this.remove(estudiante));
+        layout.add(editButton,removeButton);
+        return layout;
+    }).setFlexGrow(0);
+
 
     public EstudiantesView( @Autowired DataService service ) {
         
@@ -108,9 +122,13 @@ public class EstudiantesView extends VerticalLayout {
 
         gridListDataView = grid.setItems(dataService.findAllEstudiante());
         grid.addClassNames("estudiante-grid");
+        grid.setAllRowsVisible(true);
         grid.setSizeFull();
         grid.setHeightFull();
-        grid.getColumns().forEach(col -> col.setAutoWidth(true));
+        //grid.addThemeVariants(GridVariant.LUMO_COLUMN_BORDERS);
+        grid.addThemeVariants(GridVariant.LUMO_COMPACT);
+        grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
+        grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
     }
 
     private HorizontalLayout getToolbar() {
@@ -123,9 +141,10 @@ public class EstudiantesView extends VerticalLayout {
         addButton.addClickListener(click -> addEstudiante());
 
         HorizontalLayout toolbar = new HorizontalLayout(total, addButton);
-        toolbar.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
+        toolbar.setAlignItems(FlexComponent.Alignment.BASELINE);
         toolbar.setWidth("100%");
-        toolbar.expand(total);
+        //toolbar.expand(total);
+        toolbar.setFlexGrow(1, total);
 
         return toolbar;
     }
@@ -141,6 +160,22 @@ public class EstudiantesView extends VerticalLayout {
         updateList();
         closeEditor();
     }
+    private void remove(Estudiante estudiante) {
+        if (estudiante == null)
+            return;
+        dataService.deleteEstudiante(estudiante);
+        this.refreshGrid();
+    }
+
+    private void refreshGrid() {
+        if (dataService.findAllArea().size() > 0) {
+            grid.setVisible(true);
+            grid.setItems(dataService.findAllEstudiante());
+        } else {
+            grid.setVisible(false);
+        }
+    }
+
 
     public void editEstudiante(Estudiante estudiante) {
         if (estudiante == null) {

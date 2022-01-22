@@ -50,7 +50,7 @@ public class ProfesorView extends VerticalLayout{
     
     private GridListDataView<Profesor> gridListDataView;
     
-    private Grid.Column<Profesor> nombreColumn = grid.addColumn(Profesor::getNombre).setHeader("Nombre").setAutoWidth(true);
+    private Grid.Column<Profesor> nombreColumn = grid.addColumn(Profesor::getNombre).setHeader("Nombre").setFrozen(true).setAutoWidth(true).setFlexGrow(0);
     private Grid.Column<Profesor> apellidosColumn = grid.addColumn(Profesor::getApellidos).setHeader("Apellidos").setAutoWidth(true);
     private Grid.Column<Profesor> userColumn = grid.addColumn(profesor -> profesor.getUser().getName()).setHeader("Usuario").setAutoWidth(true);
     private Grid.Column<Profesor> emailColumn = grid.addColumn(Profesor::getEmail).setHeader("Correo").setAutoWidth(true);

@@ -5,6 +5,7 @@
  */
 package com.example.application.views.vicedecano.area;
 
+import com.example.application.data.ValidationMessage;
 import com.example.application.data.entity.Area;
 import com.example.application.data.entity.Profesor;
 import com.vaadin.flow.component.ComponentEvent;
@@ -32,17 +33,21 @@ public class AreaForm extends FormLayout{
     private TextField descripcion  = new TextField("Descripcion");
     
     private Button save = new Button("Añadir", VaadinIcon.PLUS.create());
-    private Button close = new Button("Cancelar", VaadinIcon.ERASER.create());
-    private Button delete = new Button("Eliminar", VaadinIcon.REFRESH.create());
+    private Button close = new Button("Cancelar", VaadinIcon.REFRESH.create());
 
     private BeanValidationBinder<Area> binder = new BeanValidationBinder<>(Area.class);
 
     public AreaForm() {
         
         addClassName("area-form");
+
+        ValidationMessage nombreValidationMessage = new ValidationMessage();
+
         binder.bindInstanceFields(this);
-        binder.forField(nombre).asRequired().bind(Area::getNombre, Area::setNombre);
-    
+        binder.forField(nombre)
+                .asRequired("El campo nombre no debe estar vacío")
+                .withStatusLabel(nombreValidationMessage)
+                .bind(Area::getNombre, Area::setNombre);
 
         //Config form
         
@@ -62,19 +67,13 @@ public class AreaForm extends FormLayout{
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         save.addClickShortcut(Key.ENTER);
       
-        
-        delete.addClickListener(event -> fireEvent(new DeleteEvent(this, area)));
-        delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        delete.addClickShortcut(Key.DELETE);
-        
-        
         close.addClickListener(event -> fireEvent(new CloseEvent(this)));
         close.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         close.addClickShortcut(Key.ESCAPE);
         
         binder.addStatusChangeListener(e -> save.setEnabled(binder.isValid()));
 
-        return new HorizontalLayout(save, delete, close);
+        return new HorizontalLayout(save,close);
     }
 
     public void setArea(Area area) {

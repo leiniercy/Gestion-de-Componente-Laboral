@@ -7,21 +7,24 @@ package com.example.application.views.vicedecano.area;
 
 import com.example.application.data.DataService;
 import com.example.application.data.entity.Area;
-import com.example.application.data.service.AreaService;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
+import com.vaadin.flow.component.grid.editor.Editor;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -39,6 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class AreaView extends VerticalLayout {
 
     private Grid<Area> grid = new Grid<>(Area.class, false);
+    Editor<Area> editor = grid.getEditor();
 
     AreaForm form;
 
@@ -46,8 +50,23 @@ public class AreaView extends VerticalLayout {
 
     private GridListDataView<Area> gridListDataView;
 
-    private Grid.Column<Area> nombreColumn = grid.addColumn(Area::getNombre).setHeader("Nombre").setAutoWidth(true);
+    private Grid.Column<Area> nombreColumn = grid.addColumn(Area::getNombre)
+            .setHeader("Nombre")
+//            .setFooter(String.format("%s total de areas", dataService.findAllArea().size()))
+            .setAutoWidth(true).setFlexGrow(1);
     private Grid.Column<Area> descripcionColumn = grid.addColumn(Area::getDescripcion).setHeader("Descripción").setAutoWidth(true);
+    private Grid.Column<Area> editColumn = grid.addComponentColumn(area -> {
+        HorizontalLayout layout = new HorizontalLayout();
+        Button editButton = new Button(VaadinIcon.EDIT.create());
+        editButton.addClickShortcut(Key.F2);
+        editButton.addClickListener(e -> this.editArea(area));
+        Button removeButton = new Button(VaadinIcon.TRASH.create());
+        removeButton.addClickShortcut(Key.DELETE);
+        removeButton.addClickListener(e -> this.remove(area));
+        layout.add(editButton,removeButton);
+        return layout;
+    }).setFlexGrow(0);
+
 
     public AreaView(
             @Autowired DataService dataService
@@ -87,10 +106,16 @@ public class AreaView extends VerticalLayout {
 
         gridListDataView = grid.setItems(dataService.findAllArea());
         grid.addClassNames("estudiante-grid");
+        grid.setAllRowsVisible(true);
         grid.setSizeFull();
         grid.setHeightFull();
-        grid.getColumns().forEach(col -> col.setAutoWidth(true));
+        //grid.addThemeVariants(GridVariant.LUMO_COLUMN_BORDERS);
+        grid.addThemeVariants(GridVariant.LUMO_COMPACT);
+        grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
+        grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+
     }
+
 
     private HorizontalLayout getToolbar() {
 
@@ -102,9 +127,10 @@ public class AreaView extends VerticalLayout {
         addButton.addClickListener(click -> addArea());
 
         HorizontalLayout toolbar = new HorizontalLayout(total, addButton);
-        toolbar.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
+        toolbar.setAlignItems(FlexComponent.Alignment.BASELINE);
         toolbar.setWidth("100%");
-        toolbar.expand(total);
+        //toolbar.expand(total);
+        toolbar.setFlexGrow(1, total);
 
         return toolbar;
     }
@@ -141,6 +167,23 @@ public class AreaView extends VerticalLayout {
         form.setVisible(false);
         removeClassName("editing");
     }
+
+    private void remove(Area area) {
+        if (area == null)
+            return;
+        dataService.deleteArea(area);
+        this.refreshGrid();
+    }
+
+    private void refreshGrid() {
+        if (dataService.findAllArea().size() > 0) {
+            grid.setVisible(true);
+            grid.setItems(dataService.findAllArea());
+        } else {
+            grid.setVisible(false);
+        }
+    }
+
 
     private void updateList() {
         grid.setItems(dataService.findAllArea());

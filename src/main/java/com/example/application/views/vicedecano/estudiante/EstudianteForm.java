@@ -5,6 +5,7 @@
  */
 package com.example.application.views.vicedecano.estudiante;
 
+import com.example.application.data.ValidationMessage;
 import com.example.application.data.entity.Area;
 import com.example.application.data.entity.Estudiante;
 import com.example.application.data.entity.Grupo;
@@ -51,7 +52,7 @@ public class EstudianteForm extends FormLayout {
 
     private Button save = new Button("Añadir", VaadinIcon.PLUS.create());
     private Button close = new Button("Cancelar", VaadinIcon.ERASER.create());
-    private Button delete = new Button("Eliminar", VaadinIcon.REFRESH.create());
+
 
     private BeanValidationBinder<Estudiante> binder = new BeanValidationBinder<>(Estudiante.class);
 
@@ -59,16 +60,51 @@ public class EstudianteForm extends FormLayout {
         addClassName("estudiante-form");
 
         //
+        ValidationMessage nombreValidationMessage = new ValidationMessage();
+        ValidationMessage apellidosValidationMessage = new ValidationMessage();
+        ValidationMessage userValidationMessage = new ValidationMessage();
+        ValidationMessage emailValidationMessage = new ValidationMessage();
+        ValidationMessage solapinValidationMessage = new ValidationMessage();
+        ValidationMessage annoRepitenciaValidationMessage = new ValidationMessage();
+        ValidationMessage cantidadAsignaturasValidationMessage = new ValidationMessage();
+        ValidationMessage areaValidationMessage = new ValidationMessage();
+        ValidationMessage grupoValidationMessage = new ValidationMessage();
+
         binder.bindInstanceFields(this);
-        binder.forField(nombre).asRequired().bind(Estudiante::getNombre, Estudiante::setNombre);
-        binder.forField(apellidos).asRequired().bind(Estudiante::getApellidos, Estudiante::setApellidos);
-        binder.forField(user).asRequired().bind(Estudiante::getUser, Estudiante::setUser);
-        binder.forField(email).asRequired().bind(Estudiante::getEmail, Estudiante::setEmail);
-        binder.forField(solapin).asRequired().bind(Estudiante::getSolapin, Estudiante::setSolapin);
-        binder.forField(anno_repitencia).asRequired().bind(Estudiante::getAnno_repitencia, Estudiante::setAnno_repitencia);
-        binder.forField(cantidad_asignaturas).asRequired().bind(Estudiante::getCantidad_asignaturas , Estudiante::setCantidad_asignaturas);
-        binder.forField(area).asRequired().bind(Estudiante::getArea , Estudiante::setArea);
-        binder.forField(grupo).asRequired().bind(Estudiante::getGrupo , Estudiante::setGrupo);
+        binder.forField(nombre)
+                .asRequired("El campo nombre no debe estar vacío")
+                .withStatusLabel(nombreValidationMessage)
+                .bind(Estudiante::getNombre, Estudiante::setNombre);
+        binder.forField(apellidos)
+                .asRequired("El campo apellidos no debe estar vacío")
+                .withStatusLabel(apellidosValidationMessage)
+                .bind(Estudiante::getApellidos, Estudiante::setApellidos);
+        binder.forField(user)
+                .asRequired("Debe seleccionar un usuario")
+                .withStatusLabel(userValidationMessage)
+                .bind(Estudiante::getUser, Estudiante::setUser);
+        binder.forField(email)
+                .asRequired("El campo correo no debe estar vacío")
+                .withStatusLabel(emailValidationMessage)
+                .bind(Estudiante::getEmail, Estudiante::setEmail);
+        binder.forField(solapin)
+                .asRequired()
+                .bind(Estudiante::getSolapin, Estudiante::setSolapin);
+        binder.forField(anno_repitencia)
+                .asRequired("El campo no debe ser vacío")
+                .withStatusLabel(annoRepitenciaValidationMessage)
+                .bind(Estudiante::getAnno_repitencia, Estudiante::setAnno_repitencia);
+        binder.forField(cantidad_asignaturas)
+                .asRequired("El campo no debe ser vacío")
+                .bind(Estudiante::getCantidad_asignaturas , Estudiante::setCantidad_asignaturas);
+        binder.forField(area)
+                .asRequired("Debe seleccionar un área")
+                .withStatusLabel(areaValidationMessage)
+                .bind(Estudiante::getArea , Estudiante::setArea);
+        binder.forField(grupo)
+                .asRequired("Debe seleccionar un grupo")
+                .withStatusLabel(grupoValidationMessage)
+                .bind(Estudiante::getGrupo , Estudiante::setGrupo);
 
 
         user.setItems(users);
@@ -125,20 +161,14 @@ public class EstudianteForm extends FormLayout {
         save.addClickListener(event -> validateAndSave());
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         save.addClickShortcut(Key.ENTER);
-      
-        
-        delete.addClickListener(event -> fireEvent(new DeleteEvent(this, estudiante)));
-        delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        delete.addClickShortcut(Key.DELETE);
-        
-        
+
         close.addClickListener(event -> fireEvent(new CloseEvent(this)));
         close.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         close.addClickShortcut(Key.ESCAPE);
         
         binder.addStatusChangeListener(e -> save.setEnabled(binder.isValid()));
 
-        return new HorizontalLayout(save, delete, close);
+        return new HorizontalLayout(save,close);
     }
 
     public void setEstudiante(Estudiante estudiante) {

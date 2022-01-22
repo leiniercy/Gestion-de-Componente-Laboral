@@ -53,7 +53,7 @@ public class TareaView extends VerticalLayout {
 
     private GridListDataView<Tarea> gridListDataView;
 
-    private Grid.Column<Tarea> nombreColumn = grid.addColumn(Tarea::getNombre).setHeader("Nombre").setAutoWidth(true);
+    private Grid.Column<Tarea> nombreColumn = grid.addColumn(Tarea::getNombre).setHeader("Nombre").setFrozen(true).setAutoWidth(true).setFlexGrow(0);
     private Grid.Column<Tarea> descripcionColumn = grid.addColumn(Tarea::getDescripcion).setHeader("Descripción").setAutoWidth(true);
     private Grid.Column<Tarea> fecha_inicioColumn = grid.addColumn(Tarea::getFecha_inicio).setHeader("Fecha de inicio").setAutoWidth(true);
     private Grid.Column<Tarea> fecha_finColumn = grid.addColumn(Tarea::getFecha_fin).setHeader("Fecha de fin").setAutoWidth(true);
