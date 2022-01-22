@@ -22,6 +22,8 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
+import com.vaadin.flow.component.gridpro.GridPro;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -29,7 +31,9 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
+import com.vaadin.flow.function.SerializableBiConsumer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import javax.annotation.security.RolesAllowed;
@@ -47,7 +51,9 @@ import java.util.Arrays;
 @RolesAllowed("jefeArea")
 public class EvaluacionesView extends VerticalLayout {
 
-    private Grid<Evaluacion> grid = new Grid<>(Evaluacion.class, false);
+//    private Grid<Evaluacion> grid = new Grid<>(Evaluacion.class, false);
+
+    private GridPro<Evaluacion> grid = new GridPro<Evaluacion>();
 
     EvaluacionForm form;
 
@@ -61,7 +67,16 @@ public class EvaluacionesView extends VerticalLayout {
     private Grid.Column<Evaluacion> descripcionColumn = grid.addColumn(Evaluacion::getDescripcion).setHeader("Descripción").setAutoWidth(true).setFlexGrow(0);
     private Grid.Column<Evaluacion> estudianteColumn = grid.addColumn(evaluacion -> evaluacion.getEstudiante().getStringNombreApellidos()).setHeader("Estudiante").setAutoWidth(true).setFlexGrow(0);
     private Grid.Column<Evaluacion> tareaColumn = grid.addColumn(evaluacion -> evaluacion.getTarea().getNombre()).setHeader("Tarea").setAutoWidth(true).setFlexGrow(0);
-    private Grid.Column<Evaluacion> statusColumn = grid.addColumn(evaluacion -> evaluacion.getStatus()).setHeader("Status").setAutoWidth(true).setFlexGrow(0);
+
+    private Grid.Column<Evaluacion> statusColumn
+         = grid.addEditColumn(Evaluacion::getStatus, new ComponentRenderer<>(evaluacion -> {
+            Span span = new Span();
+            span.setText(evaluacion.getStatus());
+            span.getElement().setAttribute("theme", "badge " + evaluacion.getStatus().toLowerCase());
+            return span;
+        })).select((item, newValue) -> item.setStatus(newValue), Arrays.asList("Pendiente", "Completado", "No Completado"))
+        .setComparator(evaluacion -> evaluacion.getStatus()).setHeader("Estatus");
+
     private Grid.Column<Evaluacion> editColumn = grid.addComponentColumn(evaluacion -> {
         HorizontalLayout layout = new HorizontalLayout();
         Button editButton = new Button(VaadinIcon.EDIT.create());
@@ -82,7 +97,7 @@ public class EvaluacionesView extends VerticalLayout {
         setSizeFull();
         configureGrid();
 
-        form = new EvaluacionForm();
+        form = new EvaluacionForm(dataService.findAllEstudiante(),dataService.findAllTareas());
         form.setWidth("25em");
         form.addListener(EvaluacionForm.SaveEvent.class, this::saveEvaluacion);
         form.addListener(EvaluacionForm.CloseEvent.class, e -> closeEditor());
@@ -116,6 +131,7 @@ public class EvaluacionesView extends VerticalLayout {
         grid.setSizeFull();
         grid.setHeightFull();
         grid.getColumns().forEach(col -> col.setAutoWidth(true));
+        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COLUMN_BORDERS);
         grid.addThemeVariants(GridVariant.LUMO_COMPACT);
         grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
         grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);

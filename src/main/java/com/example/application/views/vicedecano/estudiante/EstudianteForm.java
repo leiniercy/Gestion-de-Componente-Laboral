@@ -107,21 +107,13 @@ public class EstudianteForm extends FormLayout {
                 .withStatusLabel(grupoValidationMessage)
                 .bind(Estudiante::getGrupo , Estudiante::setGrupo);
 
-
-        user.setItems(users);
-        user.setItemLabelGenerator(User::getName);
-
-        area.setItems(areas);
-        area.setItemLabelGenerator(Area::getNombre);
-
-        grupo.setItems(grupos);
-        grupo.setItemLabelGenerator(Grupo::getNumero);
-
         //Config form
         
         //nombre
         //apellidos
         //usuario
+        user.setItems(users);
+        user.setItemLabelGenerator(User::getName);
         //email
         email.setPlaceholder("usuario@estudiantes.uci.cu");
         email.setPattern("^.+@estudiantes.uci\\.cu$");
@@ -142,7 +134,11 @@ public class EstudianteForm extends FormLayout {
         cantidad_asignaturas.setMin(2);
         cantidad_asignaturas.setMax(16);
         //grupo
+        grupo.setItems(grupos);
+        grupo.setItemLabelGenerator(Grupo::getNumero);
         //area
+        area.setItems(areas);
+        area.setItemLabelGenerator(Area::getNombre);
 
         add(
                 nombre,

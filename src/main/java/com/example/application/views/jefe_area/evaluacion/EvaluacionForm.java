@@ -9,6 +9,7 @@ package com.example.application.views.jefe_area.evaluacion;
 import com.example.application.data.ValidationMessage;
 import com.example.application.data.entity.Estudiante;
 import com.example.application.data.entity.Evaluacion;
+import com.example.application.data.entity.Grupo;
 import com.example.application.data.entity.Tarea;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -24,6 +25,9 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.shared.Registration;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -44,7 +48,7 @@ public class EvaluacionForm extends FormLayout{
 
     private BeanValidationBinder<Evaluacion> binder = new BeanValidationBinder<>(Evaluacion.class);
 
-    public EvaluacionForm() {
+    public EvaluacionForm( List<Estudiante> estudiantes,  List<Tarea>tareas) {
         
         addClassName("evaluacion-form");
 
@@ -78,8 +82,13 @@ public class EvaluacionForm extends FormLayout{
         //nombre
         //descripcion
         //estudiante
+        estudiante.setItems(estudiantes);
+        estudiante.setItemLabelGenerator(Estudiante::getStringNombreApellidos);
         //tarea
+        tarea.setItems(tareas);
+        tarea.setItemLabelGenerator(Tarea::getNombre);
         //status
+        status.setItems(Arrays.asList("Pendiente", "Completada", "No Completada"));
 
         add(
                 nota,
