@@ -6,6 +6,7 @@
 package com.example.application.views.jefe_area.tarea;
 
 
+import com.example.application.data.ValidationMessage;
 import com.example.application.data.entity.Estudiante;
 import com.example.application.data.entity.Profesor;
 import com.example.application.data.entity.Tarea;
@@ -41,21 +42,32 @@ public class TareaForm extends FormLayout {
     private ComboBox<Estudiante> e = new ComboBox<>("Estudiante");
     
     private Button save = new Button("Añadir", VaadinIcon.PLUS.create());
-    private Button close = new Button("Cancelar", VaadinIcon.ERASER.create());
-    private Button delete = new Button("Eliminar", VaadinIcon.REFRESH.create());
+    private Button close = new Button("Cancelar", VaadinIcon.REFRESH.create());
+
 
     private BeanValidationBinder<Tarea> binder = new BeanValidationBinder<>(Tarea.class);
 
     public TareaForm(List<Estudiante> estudiantes ) {
         
         addClassName("tarea-form");
-        binder.bindInstanceFields(this);
-        binder.forField(nombre).asRequired().bind(Tarea::getNombre, Tarea::setNombre);
-        binder.forField(fecha_inicio).asRequired().bind(Tarea::getFecha_inicio, Tarea::setFecha_inicio);
-        binder.forField(e).asRequired().bind(Tarea::getE, Tarea::setE);
 
-        e.setItems(estudiantes);
-        e.setItemLabelGenerator(Estudiante::getStringNombreApellidos);
+        ValidationMessage nombreValidationMessage = new ValidationMessage();
+        ValidationMessage fecha_inicioValidationMessage = new ValidationMessage();
+        ValidationMessage estudianteValidationMessage = new ValidationMessage();
+
+        binder.bindInstanceFields(this);
+        binder.forField(nombre)
+                .asRequired("El campo nombre no debe estar vacío")
+                .withStatusLabel(nombreValidationMessage)
+                .bind(Tarea::getNombre, Tarea::setNombre);
+        binder.forField(fecha_inicio)
+                .asRequired("Debe elegir una fecha")
+                .withStatusLabel(fecha_inicioValidationMessage)
+                .bind(Tarea::getFecha_inicio, Tarea::setFecha_inicio);
+        binder.forField(e)
+                .asRequired("El campo estudiante no debe estar vacío")
+                .withStatusLabel(estudianteValidationMessage)
+                .bind(Tarea::getE, Tarea::setE);
 
         //Config form
         
@@ -64,7 +76,8 @@ public class TareaForm extends FormLayout {
         //fecha_inicio
         //fecha_fin
         //e
-      
+        e.setItems(estudiantes);
+        e.setItemLabelGenerator(Estudiante::getStringNombreApellidos);
 
         add(
                 nombre,
@@ -80,20 +93,14 @@ public class TareaForm extends FormLayout {
         save.addClickListener(event -> validateAndSave());
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         save.addClickShortcut(Key.ENTER);
-      
-        
-        delete.addClickListener(event -> fireEvent(new DeleteEvent(this, tarea)));
-        delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        delete.addClickShortcut(Key.DELETE);
-        
-        
+
         close.addClickListener(event -> fireEvent(new CloseEvent(this)));
         close.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         close.addClickShortcut(Key.ESCAPE);
         
         binder.addStatusChangeListener(e -> save.setEnabled(binder.isValid()));
 
-        return new HorizontalLayout(save, delete, close);
+        return new HorizontalLayout(save,close);
     }
 
     public void setTarea(Tarea tarea) {

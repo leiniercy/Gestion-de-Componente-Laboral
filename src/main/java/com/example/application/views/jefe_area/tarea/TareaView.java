@@ -6,17 +6,20 @@
 package com.example.application.views.jefe_area.tarea;
 
 import com.example.application.data.DataService;
+import com.example.application.data.entity.Area;
 import com.example.application.data.entity.Estudiante;
 import com.example.application.data.entity.Evaluacion;
 import com.example.application.data.entity.Tarea;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.icon.Icon;
@@ -53,12 +56,22 @@ public class TareaView extends VerticalLayout {
 
     private GridListDataView<Tarea> gridListDataView;
 
-    private Grid.Column<Tarea> nombreColumn = grid.addColumn(Tarea::getNombre).setHeader("Nombre").setFrozen(true).setAutoWidth(true).setFlexGrow(0);
-    private Grid.Column<Tarea> descripcionColumn = grid.addColumn(Tarea::getDescripcion).setHeader("Descripción").setAutoWidth(true);
-    private Grid.Column<Tarea> fecha_inicioColumn = grid.addColumn(Tarea::getFecha_inicio).setHeader("Fecha de inicio").setAutoWidth(true);
-    private Grid.Column<Tarea> fecha_finColumn = grid.addColumn(Tarea::getFecha_fin).setHeader("Fecha de fin").setAutoWidth(true);
-    private Grid.Column<Tarea> estudianteColumn = grid.addColumn(tarea -> tarea.getE().getStringNombreApellidos()).setHeader("Estudiante").setAutoWidth(true);
-
+    private Grid.Column<Tarea> nombreColumn = grid.addColumn(Tarea::getNombre).setHeader("Nombre").setAutoWidth(true).setFlexGrow(0);
+    private Grid.Column<Tarea> descripcionColumn = grid.addColumn(Tarea::getDescripcion).setHeader("Descripción").setAutoWidth(true).setFlexGrow(0);
+    private Grid.Column<Tarea> fecha_inicioColumn = grid.addColumn(Tarea::getFecha_inicio).setHeader("Fecha de inicio").setAutoWidth(true).setFlexGrow(0);
+    private Grid.Column<Tarea> fecha_finColumn = grid.addColumn(Tarea::getFecha_fin).setHeader("Fecha de fin").setAutoWidth(true).setFlexGrow(0);
+    private Grid.Column<Tarea> estudianteColumn = grid.addColumn(tarea -> tarea.getE().getStringNombreApellidos()).setHeader("Estudiante").setAutoWidth(true).setFlexGrow(0);
+    private Grid.Column<Tarea> editColumn = grid.addComponentColumn(tarea -> {
+        HorizontalLayout layout = new HorizontalLayout();
+        Button editButton = new Button(VaadinIcon.EDIT.create());
+        editButton.addClickShortcut(Key.F2);
+        editButton.addClickListener(e -> this.editTarea(tarea));
+        Button removeButton = new Button(VaadinIcon.TRASH.create());
+        removeButton.addClickShortcut(Key.DELETE);
+        removeButton.addClickListener(e -> this.deleteTarea(tarea));
+        layout.add(editButton,removeButton);
+        return layout;
+    }).setFlexGrow(0);
     public TareaView(@Autowired DataService dataService) {
 
         this.dataService = dataService;
@@ -69,7 +82,6 @@ public class TareaView extends VerticalLayout {
         form = new TareaForm(dataService.findAllEstudiante());
         form.setWidth("25em");
         form.addListener(TareaForm.SaveEvent.class, this::saveTarea);
-        form.addListener(TareaForm.DeleteEvent.class, this::deleteTarea);
         form.addListener(TareaForm.CloseEvent.class, e -> closeEditor());
 
         FlexLayout content = new FlexLayout(grid, form);
@@ -100,6 +112,10 @@ public class TareaView extends VerticalLayout {
         grid.setSizeFull();
         grid.setHeightFull();
         grid.getColumns().forEach(col -> col.setAutoWidth(true));
+        grid.addThemeVariants(GridVariant.LUMO_COMPACT);
+        grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
+        grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+
     }
 
     private HorizontalLayout getToolbar() {
@@ -112,7 +128,7 @@ public class TareaView extends VerticalLayout {
         addButton.addClickListener(click -> addTarea());
 
         HorizontalLayout toolbar = new HorizontalLayout(total, addButton);
-        toolbar.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
+        toolbar.setAlignItems(FlexComponent.Alignment.BASELINE);
         toolbar.setWidth("100%");
         toolbar.expand(total);
 
@@ -125,10 +141,19 @@ public class TareaView extends VerticalLayout {
         closeEditor();
     }
 
-    private void deleteTarea(TareaForm.DeleteEvent event) {
-        dataService.deleteTarea(event.getTarea());
-        updateList();
-        closeEditor();
+    private void deleteTarea(Tarea tarea) {
+        if (tarea == null)
+            return;
+        dataService.deleteTarea(tarea);
+        this.refreshGrid();
+    }
+    private void refreshGrid() {
+        if (dataService.findAllArea().size() > 0) {
+            grid.setVisible(true);
+            grid.setItems(dataService.findAllTareas());
+        } else {
+            grid.setVisible(false);
+        }
     }
 
     public void editTarea(Tarea tarea) {

@@ -32,6 +32,8 @@ import javax.annotation.security.RolesAllowed;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 /**
  *
  * @author Leinier
@@ -42,6 +44,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class AreaView extends VerticalLayout {
 
     private Grid<Area> grid = new Grid<>(Area.class, false);
+
     Editor<Area> editor = grid.getEditor();
 
     AreaForm form;
@@ -52,7 +55,6 @@ public class AreaView extends VerticalLayout {
 
     private Grid.Column<Area> nombreColumn = grid.addColumn(Area::getNombre)
             .setHeader("Nombre")
-//            .setFooter(String.format("%s total de areas", dataService.findAllArea().size()))
             .setAutoWidth(true).setFlexGrow(1);
     private Grid.Column<Area> descripcionColumn = grid.addColumn(Area::getDescripcion).setHeader("Descripción").setAutoWidth(true);
     private Grid.Column<Area> editColumn = grid.addComponentColumn(area -> {
@@ -62,7 +64,7 @@ public class AreaView extends VerticalLayout {
         editButton.addClickListener(e -> this.editArea(area));
         Button removeButton = new Button(VaadinIcon.TRASH.create());
         removeButton.addClickShortcut(Key.DELETE);
-        removeButton.addClickListener(e -> this.remove(area));
+        removeButton.addClickListener(e -> this.deleteArea(area));
         layout.add(editButton,removeButton);
         return layout;
     }).setFlexGrow(0);
@@ -80,7 +82,6 @@ public class AreaView extends VerticalLayout {
         form = new AreaForm();
         form.setWidth("25em");
         form.addListener(AreaForm.SaveEvent.class, this::saveArea);
-        form.addListener(AreaForm.DeleteEvent.class, this::deleteArea);
         form.addListener(AreaForm.CloseEvent.class, e -> closeEditor());
 
         FlexLayout content = new FlexLayout(grid, form);
@@ -116,7 +117,6 @@ public class AreaView extends VerticalLayout {
 
     }
 
-
     private HorizontalLayout getToolbar() {
 
         addClassName("menu-items");
@@ -129,8 +129,7 @@ public class AreaView extends VerticalLayout {
         HorizontalLayout toolbar = new HorizontalLayout(total, addButton);
         toolbar.setAlignItems(FlexComponent.Alignment.BASELINE);
         toolbar.setWidth("100%");
-        //toolbar.expand(total);
-        toolbar.setFlexGrow(1, total);
+        toolbar.expand(total);
 
         return toolbar;
     }
@@ -141,11 +140,22 @@ public class AreaView extends VerticalLayout {
         closeEditor();
     }
 
-    private void deleteArea(AreaForm.DeleteEvent event) {
-        dataService.deleteArea(event.getArea());
-        updateList();
-        closeEditor();
+    private void deleteArea(Area area) {
+        if (area == null)
+            return;
+        dataService.deleteArea(area);
+        this.refreshGrid();
     }
+
+    private void refreshGrid() {
+        if (dataService.findAllArea().size() > 0) {
+            grid.setVisible(true);
+            grid.setItems(dataService.findAllArea());
+        } else {
+            grid.setVisible(false);
+        }
+    }
+
 
     public void editArea(Area area) {
         if (area == null) {
@@ -168,21 +178,7 @@ public class AreaView extends VerticalLayout {
         removeClassName("editing");
     }
 
-    private void remove(Area area) {
-        if (area == null)
-            return;
-        dataService.deleteArea(area);
-        this.refreshGrid();
-    }
 
-    private void refreshGrid() {
-        if (dataService.findAllArea().size() > 0) {
-            grid.setVisible(true);
-            grid.setItems(dataService.findAllArea());
-        } else {
-            grid.setVisible(false);
-        }
-    }
 
 
     private void updateList() {

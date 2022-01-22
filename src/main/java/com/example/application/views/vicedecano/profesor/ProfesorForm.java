@@ -5,6 +5,7 @@
  */
 package com.example.application.views.vicedecano.profesor;
 
+import com.example.application.data.ValidationMessage;
 import com.example.application.data.entity.*;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -39,8 +40,8 @@ public class ProfesorForm extends FormLayout {
     private ComboBox<Area> a = new ComboBox<>("Area");
 
     private Button save = new Button("Añadir", VaadinIcon.PLUS.create());
-    private Button close = new Button("Cancelar", VaadinIcon.ERASER.create());
-    private Button delete = new Button("Eliminar", VaadinIcon.REFRESH.create());
+    private Button close = new Button("Cancelar", VaadinIcon.REFRESH.create());
+
 
     private BeanValidationBinder<Profesor> binder = new BeanValidationBinder<>(Profesor.class);
 
@@ -48,13 +49,38 @@ public class ProfesorForm extends FormLayout {
 
         addClassName("rofesor-form");
 
+        ValidationMessage nombreValidationMessage = new ValidationMessage();
+        ValidationMessage apellidosValidationMessage = new ValidationMessage();
+        ValidationMessage userValidationMessage = new ValidationMessage();
+        ValidationMessage emailValidationMessage = new ValidationMessage();
+        ValidationMessage solapinValidationMessage = new ValidationMessage();
+        ValidationMessage areaValidationMessage = new ValidationMessage();
+
         binder.bindInstanceFields(this);
-        binder.forField(nombre).asRequired().bind(Profesor::getNombre, Profesor::setNombre);
-        binder.forField(apellidos).asRequired().bind(Profesor ::getApellidos, Profesor::setApellidos);
-        binder.forField(user).asRequired().bind(Profesor::getUser, Profesor::setUser);
-        binder.forField(email).asRequired().bind(Profesor::getEmail, Profesor::setEmail);
-        binder.forField(solapin).asRequired().bind(Profesor::getSolapin, Profesor::setSolapin);
-        binder.forField(a).asRequired().bind(Profesor::getA , Profesor::setA);
+        binder.forField(nombre)
+                .asRequired("El campo nombre no debe estar vacío")
+                .withStatusLabel(nombreValidationMessage)
+                .bind(Profesor::getNombre, Profesor::setNombre);
+        binder.forField(apellidos)
+                .asRequired("El campo apellidos no debe estar vacío")
+                .withStatusLabel(apellidosValidationMessage)
+                .bind(Profesor ::getApellidos, Profesor::setApellidos);
+        binder.forField(user)
+                .asRequired("Debe seleccionar un usuario")
+                .withStatusLabel(userValidationMessage)
+                .bind(Profesor::getUser, Profesor::setUser);
+        binder.forField(email)
+                .asRequired("El campo correo no debe estar vacío")
+                .withStatusLabel(emailValidationMessage)
+                .bind(Profesor::getEmail, Profesor::setEmail);
+        binder.forField(solapin)
+                .asRequired("El campo solapín no debe estar vacío")
+                .withStatusLabel(solapinValidationMessage)
+                .bind(Profesor::getSolapin, Profesor::setSolapin);
+        binder.forField(a)
+                .asRequired("Debe seleccionar un área")
+                .withStatusLabel(areaValidationMessage)
+                .bind(Profesor::getA , Profesor::setA);
 
         user.setItems(users);
         user.setItemLabelGenerator(User::getName);
@@ -90,17 +116,13 @@ public class ProfesorForm extends FormLayout {
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         save.addClickShortcut(Key.ENTER);
 
-        delete.addClickListener(event -> fireEvent(new DeleteEvent(this, profesor)));
-        delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        delete.addClickShortcut(Key.DELETE);
-
         close.addClickListener(event -> fireEvent(new CloseEvent(this)));
         close.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         close.addClickShortcut(Key.ESCAPE);
 
         binder.addStatusChangeListener(e -> save.setEnabled(binder.isValid()));
 
-        return new HorizontalLayout(save, delete, close);
+        return new HorizontalLayout(save, close);
     }
 
     public void setProfesor(Profesor profesor) {

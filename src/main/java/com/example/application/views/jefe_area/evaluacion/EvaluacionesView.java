@@ -6,17 +6,20 @@
 package com.example.application.views.jefe_area.evaluacion;
 
 import com.example.application.data.DataService;
+import com.example.application.data.entity.Area;
 import com.example.application.data.entity.Evaluacion;
 import com.example.application.data.entity.Estudiante;
 import com.example.application.data.entity.Tarea;
 import com.example.application.views.MainLayout;
 import com.example.application.views.estudiante.Client;
 import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.icon.Icon;
@@ -54,12 +57,22 @@ public class EvaluacionesView extends VerticalLayout {
 
     private GridListDataView<Evaluacion> gridListDataView;
 
-    private Grid.Column<Evaluacion> notaColumn = grid.addColumn(Evaluacion::getNota).setHeader("Nota").setFrozen(true).setAutoWidth(true).setFlexGrow(0);
-    private Grid.Column<Evaluacion> descripcionColumn = grid.addColumn(Evaluacion::getDescripcion).setHeader("Descripción").setAutoWidth(true);
-    private Grid.Column<Evaluacion> estudianteColumn = grid.addColumn(evaluacion -> evaluacion.getEstudiante().getStringNombreApellidos()).setHeader("Estudiante").setAutoWidth(true);
-    private Grid.Column<Evaluacion> tareaColumn = grid.addColumn(evaluacion -> evaluacion.getTarea().getNombre()).setHeader("Tarea").setAutoWidth(true);
-    private Grid.Column<Evaluacion> statusColumn = grid.addColumn(evaluacion -> evaluacion.getStatus()).setHeader("Status").setAutoWidth(true);
-
+    private Grid.Column<Evaluacion> notaColumn = grid.addColumn(Evaluacion::getNota).setHeader("Nota").setAutoWidth(true).setFlexGrow(0);
+    private Grid.Column<Evaluacion> descripcionColumn = grid.addColumn(Evaluacion::getDescripcion).setHeader("Descripción").setAutoWidth(true).setFlexGrow(0);
+    private Grid.Column<Evaluacion> estudianteColumn = grid.addColumn(evaluacion -> evaluacion.getEstudiante().getStringNombreApellidos()).setHeader("Estudiante").setAutoWidth(true).setFlexGrow(0);
+    private Grid.Column<Evaluacion> tareaColumn = grid.addColumn(evaluacion -> evaluacion.getTarea().getNombre()).setHeader("Tarea").setAutoWidth(true).setFlexGrow(0);
+    private Grid.Column<Evaluacion> statusColumn = grid.addColumn(evaluacion -> evaluacion.getStatus()).setHeader("Status").setAutoWidth(true).setFlexGrow(0);
+    private Grid.Column<Evaluacion> editColumn = grid.addComponentColumn(evaluacion -> {
+        HorizontalLayout layout = new HorizontalLayout();
+        Button editButton = new Button(VaadinIcon.EDIT.create());
+        editButton.addClickShortcut(Key.F2);
+        editButton.addClickListener(e -> this.editEvaluacion(evaluacion));
+        Button removeButton = new Button(VaadinIcon.TRASH.create());
+        removeButton.addClickShortcut(Key.DELETE);
+        removeButton.addClickListener(e -> this.deleteEvaluacion(evaluacion));
+        layout.add(editButton,removeButton);
+        return layout;
+    }).setFlexGrow(0);
     public EvaluacionesView(
             @Autowired DataService dataService
     ) {
@@ -72,7 +85,6 @@ public class EvaluacionesView extends VerticalLayout {
         form = new EvaluacionForm();
         form.setWidth("25em");
         form.addListener(EvaluacionForm.SaveEvent.class, this::saveEvaluacion);
-        form.addListener(EvaluacionForm.DeleteEvent.class, this::deleteEvaluacion);
         form.addListener(EvaluacionForm.CloseEvent.class, e -> closeEditor());
 
         FlexLayout content = new FlexLayout(grid, form);
@@ -104,6 +116,9 @@ public class EvaluacionesView extends VerticalLayout {
         grid.setSizeFull();
         grid.setHeightFull();
         grid.getColumns().forEach(col -> col.setAutoWidth(true));
+        grid.addThemeVariants(GridVariant.LUMO_COMPACT);
+        grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
+        grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
     }
 
     private HorizontalLayout getToolbar() {
@@ -129,10 +144,19 @@ public class EvaluacionesView extends VerticalLayout {
         closeEditor();
     }
 
-    private void deleteEvaluacion(EvaluacionForm.DeleteEvent event) {
-        dataService.deleteEvaluacion(event.getEvaluacion());
-        updateList();
-        closeEditor();
+    private void deleteEvaluacion(Evaluacion evaluacion) {
+        if (evaluacion == null)
+            return;
+        dataService.deleteEvaluacion(evaluacion);
+        this.refreshGrid();
+    }
+    private void refreshGrid() {
+        if (dataService.findAllArea().size() > 0) {
+            grid.setVisible(true);
+            grid.setItems(dataService.findAllEvaluacion());
+        } else {
+            grid.setVisible(false);
+        }
     }
 
     public void editEvaluacion(Evaluacion evaluacion) {

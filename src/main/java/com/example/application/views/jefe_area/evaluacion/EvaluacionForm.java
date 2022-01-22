@@ -6,6 +6,7 @@
 package com.example.application.views.jefe_area.evaluacion;
 
 
+import com.example.application.data.ValidationMessage;
 import com.example.application.data.entity.Estudiante;
 import com.example.application.data.entity.Evaluacion;
 import com.example.application.data.entity.Tarea;
@@ -39,19 +40,37 @@ public class EvaluacionForm extends FormLayout{
     private ComboBox<String> status = new ComboBox<>("Status");
 
     private Button save = new Button("Añadir", VaadinIcon.PLUS.create());
-    private Button close = new Button("Cancelar", VaadinIcon.ERASER.create());
-    private Button delete = new Button("Eliminar", VaadinIcon.REFRESH.create());
+    private Button close = new Button("Cancelar", VaadinIcon.REFRESH.create());
 
     private BeanValidationBinder<Evaluacion> binder = new BeanValidationBinder<>(Evaluacion.class);
 
     public EvaluacionForm() {
         
         addClassName("evaluacion-form");
+
+        ValidationMessage notaValidationMessage = new ValidationMessage();
+        ValidationMessage fecha_inicioValidationMessage = new ValidationMessage();
+        ValidationMessage tareaalidationMessage = new ValidationMessage();
+        ValidationMessage estudianteValidationMessage = new ValidationMessage();
+        ValidationMessage statusValidationMessage = new ValidationMessage();
+
         binder.bindInstanceFields(this);
-        binder.forField(nota).asRequired().bind(Evaluacion::getNota, Evaluacion::setNota);
-        binder.forField(estudiante).asRequired().bind(Evaluacion::getEstudiante, Evaluacion::setEstudiante);
-        binder.forField(tarea).asRequired().bind(Evaluacion::getTarea , Evaluacion::setTarea);
-        binder.forField(status).asRequired().bind(Evaluacion::getStatus , Evaluacion::setStatus);
+        binder.forField(nota)
+                .asRequired("El campo nota no debe estar vacío")
+                .withStatusLabel(notaValidationMessage)
+                .bind(Evaluacion::getNota, Evaluacion::setNota);
+        binder.forField(estudiante)
+                .asRequired("Debe seleccionar un estudiante")
+                .withStatusLabel(fecha_inicioValidationMessage)
+                .bind(Evaluacion::getEstudiante, Evaluacion::setEstudiante);
+        binder.forField(tarea)
+                .asRequired("Debe seleccionar una tarea")
+                .withStatusLabel(tareaalidationMessage)
+                .bind(Evaluacion::getTarea , Evaluacion::setTarea);
+        binder.forField(status)
+                .asRequired("Debe seleccionar un Status")
+                .withStatusLabel(statusValidationMessage)
+                .bind(Evaluacion::getStatus , Evaluacion::setStatus);
 
 
         //Config form
@@ -76,20 +95,14 @@ public class EvaluacionForm extends FormLayout{
         save.addClickListener(event -> validateAndSave());
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         save.addClickShortcut(Key.ENTER);
-      
-        
-        delete.addClickListener(event -> fireEvent(new DeleteEvent(this, evaluacion)));
-        delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        delete.addClickShortcut(Key.DELETE);
-        
-        
+
         close.addClickListener(event -> fireEvent(new CloseEvent(this)));
         close.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         close.addClickShortcut(Key.ESCAPE);
         
         binder.addStatusChangeListener(e -> save.setEnabled(binder.isValid()));
 
-        return new HorizontalLayout(save, delete, close);
+        return new HorizontalLayout(save, close);
     }
 
     public void setEvaluacion(Evaluacion evaluacion) {

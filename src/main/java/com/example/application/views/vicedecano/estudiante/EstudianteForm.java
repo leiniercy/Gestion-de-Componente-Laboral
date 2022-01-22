@@ -59,7 +59,6 @@ public class EstudianteForm extends FormLayout {
     public EstudianteForm(List<User> users, List<Area> areas, List<Grupo> grupos) {
         addClassName("estudiante-form");
 
-        //
         ValidationMessage nombreValidationMessage = new ValidationMessage();
         ValidationMessage apellidosValidationMessage = new ValidationMessage();
         ValidationMessage userValidationMessage = new ValidationMessage();
@@ -88,7 +87,8 @@ public class EstudianteForm extends FormLayout {
                 .withStatusLabel(emailValidationMessage)
                 .bind(Estudiante::getEmail, Estudiante::setEmail);
         binder.forField(solapin)
-                .asRequired()
+                .asRequired("El campo solapín no debe estar vacío")
+                .withStatusLabel(solapinValidationMessage)
                 .bind(Estudiante::getSolapin, Estudiante::setSolapin);
         binder.forField(anno_repitencia)
                 .asRequired("El campo no debe ser vacío")
@@ -96,6 +96,7 @@ public class EstudianteForm extends FormLayout {
                 .bind(Estudiante::getAnno_repitencia, Estudiante::setAnno_repitencia);
         binder.forField(cantidad_asignaturas)
                 .asRequired("El campo no debe ser vacío")
+                .withStatusLabel(cantidadAsignaturasValidationMessage)
                 .bind(Estudiante::getCantidad_asignaturas , Estudiante::setCantidad_asignaturas);
         binder.forField(area)
                 .asRequired("Debe seleccionar un área")

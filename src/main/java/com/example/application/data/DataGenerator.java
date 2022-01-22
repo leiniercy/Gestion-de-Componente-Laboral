@@ -38,14 +38,14 @@ public class DataGenerator {
             areaRepositoryGenerator.setData(Area::setId, DataType.ID);
             areaRepositoryGenerator.setData(Area::setNombre, DataType.WORD);
             areaRepositoryGenerator.setData(Area::setDescripcion, DataType.WORD);
-            areaRepository.saveAll(areaRepositoryGenerator.create(50, seed));
+            areaRepository.saveAll(areaRepositoryGenerator.create(10, seed));
 
             logger.info("... generating 100 Grupo entities...");
             ExampleDataGenerator<Grupo> grupoRepositoryGenerator = new ExampleDataGenerator<>(Grupo.class,
                     LocalDateTime.of(2022, 1, 10, 0, 0, 0));
             grupoRepositoryGenerator.setData(Grupo::setId, DataType.ID);
             grupoRepositoryGenerator.setData(Grupo::setNumero, DataType.WORD);
-            grupoRepository.saveAll(grupoRepositoryGenerator.create(100, seed));
+            grupoRepository.saveAll(grupoRepositoryGenerator.create(10, seed));
 
             
 

@@ -9,6 +9,7 @@ package com.example.application.views.vicedecano.estudiante;
 import com.example.application.data.entity.*;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
@@ -17,7 +18,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.example.application.data.DataService;
-import com.example.application.data.service.EstudianteService;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Html;
@@ -26,12 +26,7 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Header;
-import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.menubar.MenuBar;
-import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.router.PageTitle;
@@ -39,7 +34,6 @@ import com.vaadin.flow.router.Route;
 import javax.annotation.security.RolesAllowed;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.crudui.crud.Crud;
 
 /**
  *
@@ -58,23 +52,23 @@ public class EstudiantesView extends VerticalLayout {
 
     private GridListDataView<Estudiante> gridListDataView;
 
-    private Grid.Column<Estudiante> nombreColumn = grid.addColumn(Estudiante::getNombre).setHeader("Nombre").setFrozen(true).setAutoWidth(true).setFlexGrow(0);
-    private Grid.Column<Estudiante> apellidosColumn = grid.addColumn(Estudiante::getApellidos).setHeader("Apellidos").setAutoWidth(true);
-    private Grid.Column<Estudiante> userColumn = grid.addColumn(estudiante -> estudiante.getUser().getName()).setHeader("Usuario").setAutoWidth(true);
-    private Grid.Column<Estudiante> emailColumn = grid.addColumn(Estudiante::getEmail).setHeader("Correo").setAutoWidth(true);
-    private Grid.Column<Estudiante> solapinColumn = grid.addColumn(Estudiante::getSolapin).setHeader("Solapín").setAutoWidth(true);
-    private Grid.Column<Estudiante> anno_repitenciaColumn = grid.addColumn(Estudiante::getAnno_repitencia).setHeader("Año de repitencia").setAutoWidth(true);
-    private Grid.Column<Estudiante> cantidad_asignaturasColumn = grid.addColumn(Estudiante::getCantidad_asignaturas).setHeader("Cantidad de asignaturas").setAutoWidth(true);
-    private Grid.Column<Estudiante> areaColumn = grid.addColumn(estudiante -> estudiante.getArea().getNombre()).setHeader("Área").setAutoWidth(true);
-    private Grid.Column<Estudiante> grupoColumn = grid.addColumn(estudiante -> estudiante.getGrupo().getNumero()).setHeader("Grupo").setAutoWidth(true);
+    private Grid.Column<Estudiante> nombreColumn = grid.addColumn(Estudiante::getNombre).setHeader("Nombre").setAutoWidth(true).setFlexGrow(0);
+    private Grid.Column<Estudiante> apellidosColumn = grid.addColumn(Estudiante::getApellidos).setHeader("Apellidos").setAutoWidth(true).setFlexGrow(0);
+    private Grid.Column<Estudiante> userColumn = grid.addColumn(estudiante -> estudiante.getUser().getName()).setHeader("Usuario").setAutoWidth(true).setFlexGrow(0);
+    private Grid.Column<Estudiante> emailColumn = grid.addColumn(Estudiante::getEmail).setHeader("Correo").setAutoWidth(true).setFlexGrow(0);
+    private Grid.Column<Estudiante> solapinColumn = grid.addColumn(Estudiante::getSolapin).setHeader("Solapín").setAutoWidth(true).setFlexGrow(0);
+    private Grid.Column<Estudiante> anno_repitenciaColumn = grid.addColumn(Estudiante::getAnno_repitencia).setHeader("Año de repitencia").setAutoWidth(true).setFlexGrow(0);
+    private Grid.Column<Estudiante> cantidad_asignaturasColumn = grid.addColumn(Estudiante::getCantidad_asignaturas).setHeader("Cantidad de asignaturas").setAutoWidth(true).setFlexGrow(0);
+    private Grid.Column<Estudiante> areaColumn = grid.addColumn(estudiante -> estudiante.getArea().getNombre()).setHeader("Área").setAutoWidth(true).setFlexGrow(0);
+    private Grid.Column<Estudiante> grupoColumn = grid.addColumn(estudiante -> estudiante.getGrupo().getNumero()).setHeader("Grupo").setAutoWidth(true).setFlexGrow(0);
     private Grid.Column<Estudiante> editColumn = grid.addComponentColumn(estudiante -> {
         HorizontalLayout layout = new HorizontalLayout();
         Button editButton = new Button(VaadinIcon.EDIT.create());
         editButton.addClickShortcut(Key.F2);
-        editButton.addClickListener(e -> this.editEstudiante(estudiante));
+        editButton.addClickListener(event -> this.editEstudiante(estudiante));
         Button removeButton = new Button(VaadinIcon.TRASH.create());
         removeButton.addClickShortcut(Key.DELETE);
-        removeButton.addClickListener(e -> this.remove(estudiante));
+        removeButton.addClickListener(event -> this.deleteEstudiante(estudiante));
         layout.add(editButton,removeButton);
         return layout;
     }).setFlexGrow(0);
@@ -90,7 +84,6 @@ public class EstudiantesView extends VerticalLayout {
         form = new EstudianteForm(service.findAllUser(), service.findAllArea(), service.findAllGrupo());
         form.setWidth("25em");
         form.addListener(EstudianteForm.SaveEvent.class, this::saveEstudiante);
-        form.addListener(EstudianteForm.DeleteEvent.class, this::deleteEstudiante);
         form.addListener(EstudianteForm.CloseEvent.class, e -> closeEditor());
 
         FlexLayout content = new FlexLayout(grid, form);
@@ -136,18 +129,50 @@ public class EstudiantesView extends VerticalLayout {
         addClassName("menu-items");
         Html total = new Html("<span>Total: <b>" + dataService.countEstudiante() + "</b> estudiantes</span>");
 
+        Button menuButton = new Button("Mostar/Ocultar Columnas");
+        menuButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+        ColumnToggleContextMenu columnToggleContextMenu = new ColumnToggleContextMenu(
+                menuButton);
+        columnToggleContextMenu.addColumnToggleItem("Nombre", nombreColumn);
+        columnToggleContextMenu.addColumnToggleItem("Apellidos", apellidosColumn);
+        columnToggleContextMenu.addColumnToggleItem("Usuario", userColumn);
+        columnToggleContextMenu.addColumnToggleItem("Correo", emailColumn);
+        columnToggleContextMenu.addColumnToggleItem("Solapín", solapinColumn);
+        columnToggleContextMenu.addColumnToggleItem("Año de repitencia", anno_repitenciaColumn);
+        columnToggleContextMenu.addColumnToggleItem("Cantidad de asignaturas", cantidad_asignaturasColumn);
+        columnToggleContextMenu.addColumnToggleItem("Área", areaColumn);
+        columnToggleContextMenu.addColumnToggleItem("Grupo", grupoColumn);
+
+
         Button addButton = new Button("Añadir Estudiante", VaadinIcon.USER.create());
         addButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         addButton.addClickListener(click -> addEstudiante());
 
-        HorizontalLayout toolbar = new HorizontalLayout(total, addButton);
+        HorizontalLayout toolbar = new HorizontalLayout(total, menuButton,addButton);
         toolbar.setAlignItems(FlexComponent.Alignment.BASELINE);
         toolbar.setWidth("100%");
-        //toolbar.expand(total);
-        toolbar.setFlexGrow(1, total);
+        toolbar.expand(total);
+
 
         return toolbar;
     }
+
+
+    private static class ColumnToggleContextMenu extends ContextMenu {
+        public ColumnToggleContextMenu(Component target) {
+            super(target);
+            setOpenOnClick(true);
+        }
+
+        void addColumnToggleItem(String label, Grid.Column<Estudiante> column) {
+            MenuItem menuItem = this.addItem(label, e -> {
+                column.setVisible(e.getSource().isChecked());
+            });
+            menuItem.setCheckable(true);
+            menuItem.setChecked(column.isVisible());
+        }
+    }
+
 
     private void saveEstudiante(EstudianteForm.SaveEvent event) {
         dataService.saveEstudiante(event.getEstudiante());
@@ -155,12 +180,7 @@ public class EstudiantesView extends VerticalLayout {
         closeEditor();
     }
 
-    private void deleteEstudiante(EstudianteForm.DeleteEvent event) {
-        dataService.deleteEstudiante(event.getEstudiante());
-        updateList();
-        closeEditor();
-    }
-    private void remove(Estudiante estudiante) {
+    private void deleteEstudiante(Estudiante estudiante) {
         if (estudiante == null)
             return;
         dataService.deleteEstudiante(estudiante);
