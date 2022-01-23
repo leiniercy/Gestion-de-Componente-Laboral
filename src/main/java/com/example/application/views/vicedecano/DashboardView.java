@@ -8,6 +8,8 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.board.Board;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.*;
+import com.vaadin.flow.component.charts.themes.LumoDarkTheme;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Main;
@@ -22,7 +24,9 @@ import com.vaadin.flow.component.select.Select;;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
+
 import javax.annotation.security.RolesAllowed;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -41,9 +45,9 @@ public class DashboardView extends VerticalLayout {
         addClassName("dashboard-view");
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
 
-        add(getBoard(), createViewEvents(), getGraficosPasteles());
+        add(getBoard(), getGraficosPasteles());
     }
-    
+
 
     private Component getBoard() {
         addClassName("basic-board");
@@ -59,19 +63,12 @@ public class DashboardView extends VerticalLayout {
     }
 
     private Component createHighlight(String title, Span span) {
-//        VaadinIcon icon = VaadinIcon.ARROW_UP;
-        String prefix = "";
-        String theme = "badge";
 
         H1 h1 = new H1(title);
         h1.addClassNames("font-normal", "m-0", "text-secondary", "text-xs");
 
         span.addClassNames("font-semibold", "text-3xl");
-//        Icon i = icon.create();
-//        i.addClassNames("box-border", "p-xs");
 
-//        Span badge = new Span(i, new Span(prefix));
-//        badge.getElement().getThemeList().add(theme);
         VerticalLayout layout = new VerticalLayout(h1, span /*, badge*/);
         layout.addClassName("p-l");
         layout.setPadding(false);
@@ -86,46 +83,13 @@ public class DashboardView extends VerticalLayout {
         stats.addClassNames("text-xl", "mt-m");
         return stats;
     }
+
     private Component getProfesores() {
         Span stats = new Span(service.countProfesor() + "");
         stats.addClassNames("text-xl", "mt-m");
         return stats;
     }
 
-    
-    private Component createViewEvents() {
-
-        // Chart
-        Chart chart = new Chart(ChartType.COLUMN);
-        Configuration conf = chart.getConfiguration();
-        conf.setTitle("Gráfica de evaluaciones: ");
-        conf.setSubTitle("Evaluaciones agrupadas por nota");
-
-        XAxis xAxis = new XAxis();
-        xAxis.setCategories("Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiempbre", "Octubre", "Noviembre", "Diciembre");
-        conf.addxAxis(xAxis);
-
-        conf.getyAxis().setTitle("Cantidad de estudiantes");
-
-        PlotOptionsArea plotOptions = new PlotOptionsArea();
-        plotOptions.setPointPlacement(PointPlacement.ON);
-        conf.addPlotOptions(plotOptions);
-
-        conf.addSeries(new ListSeries("Regular", 189, 191, 191, 196, 201, 203, 209, 212, 229, 242, 244, 247));
-        conf.addSeries(new ListSeries("Mal", 138, 146, 148, 148, 152, 153, 163, 173, 178, 179, 185, 187));
-        conf.addSeries(new ListSeries("Bien", 65, 65, 66, 71, 93, 102, 108, 117, 127, 129, 135, 136));
-
-
-        // Add it all together
-        VerticalLayout viewEvents = new VerticalLayout(chart);
-        viewEvents.addClassName("p-l");
-        viewEvents.setPadding(false);
-        viewEvents.setSpacing(false);
-        viewEvents.getElement().getThemeList().add("spacing-l");
-        return viewEvents;
-    }
-    
-    
     //Graficos de pasteles
     private Component getGraficosPasteles() {
         addClassName("grafics_key-board");
@@ -155,20 +119,19 @@ public class DashboardView extends VerticalLayout {
     }
 
 
-
     private Component getEstudiante_Mal_Area() {
 
         HorizontalLayout header = createHeader("Total de tareas evaluadas de Mal por Área");
         Chart chart = new Chart(ChartType.PIE);
 
-        List<Evaluacion> list =  service.findAllEvaluacion();
+        List<Evaluacion> list = service.findAllEvaluacion();
 
         DataSeries dataSeries = new DataSeries();
         service.findAllArea().forEach(
-                area-> dataSeries.add(
-                        new DataSeriesItem( String.format(
-                                area.getNombre()+" %d"
-                                ,list.stream().filter(evaluacion -> "M".equals(evaluacion.getNota()) && evaluacion.getEstudiante().getArea().getNombre().equals(area.getNombre()) ).count()
+                area -> dataSeries.add(
+                        new DataSeriesItem(String.format(
+                                area.getNombre() + " %d"
+                                , list.stream().filter(evaluacion -> "M".equals(evaluacion.getNota()) && evaluacion.getEstudiante().getArea().getNombre().equals(area.getNombre())).count()
                         )
                                 , service.countArea()
                         )
@@ -180,7 +143,7 @@ public class DashboardView extends VerticalLayout {
                 .filter(evaluacion -> "M".equals(evaluacion.getNota()))
                 .count();
 
-        Span stats = new Span(String.format( "%d", malCount ));
+        Span stats = new Span(String.format("%d", malCount));
         stats.addClassNames("text-xl", "mt-m");
 
         VerticalLayout serviceHealth = new VerticalLayout(header, stats, chart);
@@ -196,14 +159,14 @@ public class DashboardView extends VerticalLayout {
 
         HorizontalLayout header = createHeader("Total de tareas evaluadas de Regular por Área");
         Chart chart = new Chart(ChartType.PIE);
-        List<Evaluacion> list =  service.findAllEvaluacion();
+        List<Evaluacion> list = service.findAllEvaluacion();
 
         DataSeries dataSeries = new DataSeries();
         service.findAllArea().forEach(
-                area-> dataSeries.add(
-                        new DataSeriesItem( String.format(
-                                area.getNombre()+" %d"
-                                ,list.stream().filter(evaluacion -> "R".equals(evaluacion.getNota()) && evaluacion.getEstudiante().getArea().getNombre().equals(area.getNombre()) ).count()
+                area -> dataSeries.add(
+                        new DataSeriesItem(String.format(
+                                area.getNombre() + " %d"
+                                , list.stream().filter(evaluacion -> "R".equals(evaluacion.getNota()) && evaluacion.getEstudiante().getArea().getNombre().equals(area.getNombre())).count()
                         )
                                 , service.countArea()
                         )
@@ -215,10 +178,10 @@ public class DashboardView extends VerticalLayout {
                 .filter(evaluacion -> "R".equals(evaluacion.getNota()))
                 .count();
 
-        Span stats = new Span(String.format( "%d",regularCount ));
+        Span stats = new Span(String.format("%d", regularCount));
         stats.addClassNames("text-xl", "mt-m");
 
-        VerticalLayout serviceHealth = new VerticalLayout(header,stats ,chart);
+        VerticalLayout serviceHealth = new VerticalLayout(header, stats, chart);
         serviceHealth.addClassName("p-l");
         serviceHealth.setPadding(false);
         serviceHealth.setSpacing(false);
@@ -231,14 +194,14 @@ public class DashboardView extends VerticalLayout {
 
         HorizontalLayout header = createHeader("Total de tareas evaluadas de Bien por Área");
         Chart chart = new Chart(ChartType.PIE);
-        List<Evaluacion> list =  service.findAllEvaluacion();
+        List<Evaluacion> list = service.findAllEvaluacion();
 
         DataSeries dataSeries = new DataSeries();
         service.findAllArea().forEach(
-                area-> dataSeries.add(
-                        new DataSeriesItem( String.format(
-                                area.getNombre()+" %d"
-                                ,list.stream().filter(evaluacion -> "B".equals(evaluacion.getNota()) && evaluacion.getEstudiante().getArea().getNombre().equals(area.getNombre()) ).count()
+                area -> dataSeries.add(
+                        new DataSeriesItem(String.format(
+                                area.getNombre() + " %d"
+                                , list.stream().filter(evaluacion -> "B".equals(evaluacion.getNota()) && evaluacion.getEstudiante().getArea().getNombre().equals(area.getNombre())).count()
                         )
                                 , service.countArea()
                         )
@@ -250,10 +213,10 @@ public class DashboardView extends VerticalLayout {
                 .filter(evaluacion -> "B".equals(evaluacion.getNota()))
                 .count();
 
-        Span stats = new Span(String.format( "%d",bienCount ));
+        Span stats = new Span(String.format("%d", bienCount));
         stats.addClassNames("text-xl", "mt-m");
 
-        VerticalLayout serviceHealth = new VerticalLayout(header,stats,chart);
+        VerticalLayout serviceHealth = new VerticalLayout(header, stats, chart);
         serviceHealth.addClassName("p-l");
         serviceHealth.setPadding(false);
         serviceHealth.setSpacing(false);
