@@ -36,13 +36,15 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.function.SerializableBiConsumer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+
 import javax.annotation.security.RolesAllowed;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.Arrays;
 
 /**
- *
  * @author Leinier
  */
 @PageTitle("Evaluaciones")
@@ -65,17 +67,22 @@ public class EvaluacionesView extends VerticalLayout {
 
     private Grid.Column<Evaluacion> notaColumn = grid.addColumn(Evaluacion::getNota).setHeader("Nota").setAutoWidth(true).setFlexGrow(0);
     private Grid.Column<Evaluacion> descripcionColumn = grid.addColumn(Evaluacion::getDescripcion).setHeader("Descripción").setAutoWidth(true).setFlexGrow(0);
-    private Grid.Column<Evaluacion> estudianteColumn = grid.addColumn(evaluacion -> evaluacion.getEstudiante().getStringNombreApellidos()).setHeader("Estudiante").setAutoWidth(true).setFlexGrow(0);
-    private Grid.Column<Evaluacion> tareaColumn = grid.addColumn(evaluacion -> evaluacion.getTarea().getNombre()).setHeader("Tarea").setAutoWidth(true).setFlexGrow(0);
-
+    private Grid.Column<Evaluacion> estudianteColumn
+            = grid.addColumn(evaluacion -> evaluacion.getEstudiante().getStringNombreApellidos())
+            .setComparator(evaluacion -> evaluacion.getEstudiante().getStringNombreApellidos())
+            .setHeader("Estudiante").setAutoWidth(true).setFlexGrow(0);
+    private Grid.Column<Evaluacion> tareaColumn
+            = grid.addColumn(evaluacion -> evaluacion.getTarea().getNombre())
+            .setComparator(evaluacion -> evaluacion.getTarea().getNombre())
+            .setHeader("Tarea").setAutoWidth(true).setFlexGrow(0);
     private Grid.Column<Evaluacion> statusColumn
-         = grid.addEditColumn(Evaluacion::getStatus, new ComponentRenderer<>(evaluacion -> {
-            Span span = new Span();
-            span.setText(evaluacion.getStatus());
-            span.getElement().setAttribute("theme", "badge " + evaluacion.getStatus().toLowerCase());
-            return span;
-        })).select((item, newValue) -> item.setStatus(newValue), Arrays.asList("Pendiente", "Completado", "No Completado"))
-        .setComparator(evaluacion -> evaluacion.getStatus()).setHeader("Estatus");
+            = grid.addEditColumn(Evaluacion::getStatus, new ComponentRenderer<>(evaluacion -> {
+                Span span = new Span();
+                span.setText(evaluacion.getStatus());
+                span.getElement().setAttribute("theme", "badge " + evaluacion.getStatus().toLowerCase());
+                return span;
+            })).select((item, newValue) -> item.setStatus(newValue), Arrays.asList("Pendiente", "Completado", "No Completado"))
+            .setComparator(evaluacion -> evaluacion.getStatus()).setHeader("Estatus");
 
     private Grid.Column<Evaluacion> editColumn = grid.addComponentColumn(evaluacion -> {
         HorizontalLayout layout = new HorizontalLayout();
@@ -85,9 +92,10 @@ public class EvaluacionesView extends VerticalLayout {
         Button removeButton = new Button(VaadinIcon.TRASH.create());
         removeButton.addClickShortcut(Key.DELETE);
         removeButton.addClickListener(e -> this.deleteEvaluacion(evaluacion));
-        layout.add(editButton,removeButton);
+        layout.add(editButton, removeButton);
         return layout;
     }).setFlexGrow(0);
+
     public EvaluacionesView(
             @Autowired DataService dataService
     ) {
@@ -97,7 +105,7 @@ public class EvaluacionesView extends VerticalLayout {
         setSizeFull();
         configureGrid();
 
-        form = new EvaluacionForm(dataService.findAllEstudiante(),dataService.findAllTareas());
+        form = new EvaluacionForm(dataService.findAllEstudiante(), dataService.findAllTareas());
         form.setWidth("25em");
         form.addListener(EvaluacionForm.SaveEvent.class, this::saveEvaluacion);
         form.addListener(EvaluacionForm.CloseEvent.class, e -> closeEditor());
@@ -140,7 +148,7 @@ public class EvaluacionesView extends VerticalLayout {
     private HorizontalLayout getToolbar() {
 
         addClassName("menu-items");
-        Html total = new Html("<span>Total: <b>" + dataService.countEvaluacion()+ "</b> evaluaciones</span>");
+        Html total = new Html("<span>Total: <b>" + dataService.countEvaluacion() + "</b> evaluaciones</span>");
 
         Button addButton = new Button("Añadir Evaluación ", VaadinIcon.USER.create());
         addButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
@@ -166,6 +174,7 @@ public class EvaluacionesView extends VerticalLayout {
         dataService.deleteEvaluacion(evaluacion);
         this.refreshGrid();
     }
+
     private void refreshGrid() {
         if (dataService.findAllArea().size() > 0) {
             grid.setVisible(true);
@@ -224,8 +233,8 @@ public class EvaluacionesView extends VerticalLayout {
         filterDescripcion.setWidth("100%");
         filterDescripcion.setValueChangeMode(ValueChangeMode.LAZY);
         filterDescripcion.addValueChangeListener(
-            event -> gridListDataView
-                    .addFilter(evaluacion -> StringUtils.containsIgnoreCase(evaluacion.getDescripcion(), filterDescripcion.getValue()))
+                event -> gridListDataView
+                        .addFilter(evaluacion -> StringUtils.containsIgnoreCase(evaluacion.getDescripcion(), filterDescripcion.getValue()))
         );
         return filterDescripcion;
     }
@@ -239,8 +248,8 @@ public class EvaluacionesView extends VerticalLayout {
         filterEstudiante.setClearButtonVisible(true);
         filterEstudiante.setWidth("100%");
         filterEstudiante.addValueChangeListener(
-            event -> gridListDataView
-                    .addFilter(evaluacion -> areEstudiantesEqual(evaluacion , filterEstudiante))
+                event -> gridListDataView
+                        .addFilter(evaluacion -> areEstudiantesEqual(evaluacion, filterEstudiante))
         );
         return filterEstudiante;
     }
@@ -262,8 +271,8 @@ public class EvaluacionesView extends VerticalLayout {
         filterTarea.setClearButtonVisible(true);
         filterTarea.setWidth("100%");
         filterTarea.addValueChangeListener(
-            event -> gridListDataView
-                    .addFilter(evaluacion -> StringUtils.containsIgnoreCase(evaluacion.getTarea().getNombre(), filterTarea.getValue().getNombre()))
+                event -> gridListDataView
+                        .addFilter(evaluacion -> areTareasEqual(evaluacion, filterTarea))
         );
 
         return filterTarea;
@@ -285,12 +294,13 @@ public class EvaluacionesView extends VerticalLayout {
         statusFilter.setClearButtonVisible(true);
         statusFilter.setWidth("100%");
         statusFilter.addValueChangeListener(
-            event -> gridListDataView
-                    .addFilter(evaluacion -> areStatusesEqual(evaluacion, statusFilter))
+                event -> gridListDataView
+                        .addFilter(evaluacion -> areStatusesEqual(evaluacion, statusFilter))
         );
 
         return statusFilter;
     }
+
     private boolean areStatusesEqual(Evaluacion evaluacion, ComboBox<String> statusFilter) {
         String statusFilterValue = statusFilter.getValue();
         if (statusFilterValue != null) {

@@ -1,7 +1,9 @@
 package com.example.application.views.vicedecano.lista_tareas;
 
+import com.example.application.data.DataService;
+import com.example.application.data.entity.Estudiante;
+import com.example.application.data.entity.Tarea;
 import com.example.application.views.MainLayout;
-import com.example.application.views.estudiante.Client;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.grid.Grid;
@@ -22,7 +24,7 @@ import com.vaadin.flow.data.renderer.NumberRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.auth.AnonymousAllowed;
+
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -30,24 +32,30 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import javax.annotation.security.RolesAllowed;
-import org.apache.commons.lang3.StringUtils;
 
-@PageTitle("Lista de Tareas ")
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+@PageTitle("Tareas")
 @Route(value = "list-tareas", layout = MainLayout.class)
 @RolesAllowed("vicedecano")
 public class ListadeTareasVicedecanoView extends Div {
 
-    private GridPro<Client> grid;
-    private GridListDataView<Client> gridListDataView;
+    private GridPro<Tarea> grid;
+    private GridListDataView<Tarea> gridListDataView;
 
-    private Grid.Column<Client> idColumn;
-    private Grid.Column<Client> clientColumn;
-    private Grid.Column<Client> amountColumn;
-    private Grid.Column<Client> statusColumn;
-    private Grid.Column<Client> dateColumn;
+    private Grid.Column<Tarea> nombreColumn;
+    private Grid.Column<Tarea> descripcionColumn;
+    private Grid.Column<Tarea> fecha_inicioColumn;
+    private Grid.Column<Tarea> fecha_finColumn;
+    private Grid.Column<Tarea> estudianteColumn;
 
-    public ListadeTareasVicedecanoView() {
-        addClassName("lista-de-tareas-view");
+
+    private DataService dataService;
+
+    public ListadeTareasVicedecanoView(@Autowired DataService dataService) {
+        this.dataService = dataService;
+        addClassName("listaTareas-view");
         setSizeFull();
         createGrid();
         add(grid);
@@ -61,160 +69,122 @@ public class ListadeTareasVicedecanoView extends Div {
 
     private void createGridComponent() {
         grid = new GridPro<>();
-        grid.setSelectionMode(SelectionMode.MULTI);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COLUMN_BORDERS);
         grid.setHeight("100%");
 
-        List<Client> clients = getClients();
-        gridListDataView = grid.setItems(clients);
+        List<Tarea> tareas = dataService.findAllTareas();
+        gridListDataView = grid.setItems(tareas);
     }
 
     private void addColumnsToGrid() {
-        createIdColumn();
-        createClientColumn();
-        createAmountColumn();
-        createStatusColumn();
-        createDateColumn();
+        createNombreColumn();
+        createDescripcionColumn();
+        createFechaInicioColumn();
+        createFechaFinColumn();
+        createEstudianteColumn();
+
     }
 
-    private void createIdColumn() {
-        idColumn = grid.addColumn(Client::getId, "id").setHeader("ID").setWidth("120px").setFlexGrow(0);
+    private void createNombreColumn() {
+        nombreColumn = grid.addColumn(Tarea::getNombre)
+                .setHeader("Nombre").setAutoWidth(true);
     }
 
-    private void createClientColumn() {
-        clientColumn = grid.addColumn(new ComponentRenderer<>(client -> {
+    private void createDescripcionColumn() {
+        descripcionColumn = grid.addColumn(Tarea::getDescripcion)
+                .setHeader("Descripción").setAutoWidth(true);
+    }
+
+    private void createFechaInicioColumn() {
+        fecha_inicioColumn =
+                grid.addColumn(Tarea::getFecha_inicio)
+                        .setComparator(tarea -> tarea.getFecha_inicio())
+                        .setHeader("Fecha de inicio").setAutoWidth(true).setFlexGrow(0);
+    }
+
+    private void createFechaFinColumn() {
+        fecha_finColumn =
+                 grid.addColumn(Tarea::getFecha_fin)
+                .setComparator(tarea -> tarea.getFecha_fin())
+                .setHeader("Fecha de fin").setAutoWidth(true).setFlexGrow(0);
+    }
+
+    private void createEstudianteColumn() {
+        estudianteColumn = grid.addColumn(new ComponentRenderer<>(tarea -> {
             HorizontalLayout hl = new HorizontalLayout();
             hl.setAlignItems(Alignment.CENTER);
-            Image img = new Image(client.getImg(), "");
             Span span = new Span();
-            span.setClassName("name");
-            span.setText(client.getClient());
-            hl.add(img, span);
+            span.setClassName("nombre-apellidos");
+            span.setText(tarea.getE().getStringNombreApellidos());
+            hl.add(span);
             return hl;
-        })).setComparator(client -> client.getClient()).setHeader("Client");
+        })).setComparator(tarea -> tarea.getE().getStringNombreApellidos()).setHeader("Estudiante").setAutoWidth(true);
     }
 
-    private void createAmountColumn() {
-        amountColumn = grid
-                .addEditColumn(Client::getAmount,
-                        new NumberRenderer<>(client -> client.getAmount(), NumberFormat.getCurrencyInstance(Locale.US)))
-                .text((item, newValue) -> item.setAmount(Double.parseDouble(newValue)))
-                .setComparator(client -> client.getAmount()).setHeader("Amount");
-    }
-
-    private void createStatusColumn() {
-        statusColumn = grid.addEditColumn(Client::getClient, new ComponentRenderer<>(client -> {
-            Span span = new Span();
-            span.setText(client.getStatus());
-            span.getElement().setAttribute("theme", "badge " + client.getStatus().toLowerCase());
-            return span;
-        })).select((item, newValue) -> item.setStatus(newValue), Arrays.asList("Pending", "Success", "Error"))
-                .setComparator(client -> client.getStatus()).setHeader("Status");
-    }
-
-    private void createDateColumn() {
-        dateColumn = grid
-                .addColumn(new LocalDateRenderer<>(client -> LocalDate.parse(client.getDate()),
-                        DateTimeFormatter.ofPattern("M/d/yyyy")))
-                .setComparator(client -> client.getDate()).setHeader("Date").setWidth("180px").setFlexGrow(0);
-    }
 
     private void addFiltersToGrid() {
         HeaderRow filterRow = grid.appendHeaderRow();
 
-        TextField idFilter = new TextField();
-        idFilter.setPlaceholder("Filter");
-        idFilter.setClearButtonVisible(true);
-        idFilter.setWidth("100%");
-        idFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        idFilter.addValueChangeListener(event -> gridListDataView.addFilter(
-                client -> StringUtils.containsIgnoreCase(Integer.toString(client.getId()), idFilter.getValue())));
-        filterRow.getCell(idColumn).setComponent(idFilter);
+        TextField filterNombre = new TextField();
+        filterNombre.setPlaceholder("Filtrar");
+        filterNombre.setClearButtonVisible(true);
+        filterNombre.setWidth("100%");
+        filterNombre.setValueChangeMode(ValueChangeMode.EAGER);
+        filterNombre.addValueChangeListener(
+                event -> gridListDataView
+                        .addFilter(tarea -> StringUtils.containsIgnoreCase(tarea.getNombre(), filterNombre.getValue()))
+        );
+        filterRow.getCell(nombreColumn).setComponent(filterNombre);
 
-        TextField clientFilter = new TextField();
-        clientFilter.setPlaceholder("Filter");
-        clientFilter.setClearButtonVisible(true);
-        clientFilter.setWidth("100%");
-        clientFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        clientFilter.addValueChangeListener(event -> gridListDataView
-                .addFilter(client -> StringUtils.containsIgnoreCase(client.getClient(), clientFilter.getValue())));
-        filterRow.getCell(clientColumn).setComponent(clientFilter);
+        TextField filterDescripcion = new TextField();
+        filterDescripcion.setPlaceholder("Filtrar");
+        filterDescripcion.setClearButtonVisible(true);
+        filterDescripcion.setWidth("100%");
+        filterDescripcion.setValueChangeMode(ValueChangeMode.EAGER);
+        filterDescripcion.addValueChangeListener(
+                event -> gridListDataView
+                        .addFilter(tarea -> StringUtils.containsIgnoreCase(tarea.getDescripcion(), filterDescripcion.getValue()))
+        );
+        filterRow.getCell(descripcionColumn).setComponent(filterDescripcion);
 
-        TextField amountFilter = new TextField();
-        amountFilter.setPlaceholder("Filter");
-        amountFilter.setClearButtonVisible(true);
-        amountFilter.setWidth("100%");
-        amountFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        amountFilter.addValueChangeListener(event -> gridListDataView.addFilter(client -> StringUtils
-                .containsIgnoreCase(Double.toString(client.getAmount()), amountFilter.getValue())));
-        filterRow.getCell(amountColumn).setComponent(amountFilter);
+        DatePicker fechaInicioFilter = new DatePicker();
+        fechaInicioFilter.setPlaceholder("Filter");
+        fechaInicioFilter.setClearButtonVisible(true);
+        fechaInicioFilter.setWidth("100%");
+        fechaInicioFilter.addValueChangeListener(e->{
+            grid.setItems(dataService.searchTareaByFecha( fechaInicioFilter.getValue() ) );
+        });
+        filterRow.getCell(fecha_inicioColumn).setComponent(fechaInicioFilter);
 
-        ComboBox<String> statusFilter = new ComboBox<>();
-        statusFilter.setItems(Arrays.asList("Pending", "Success", "Error"));
-        statusFilter.setPlaceholder("Filter");
-        statusFilter.setClearButtonVisible(true);
-        statusFilter.setWidth("100%");
-        statusFilter.addValueChangeListener(
-                event -> gridListDataView.addFilter(client -> areStatusesEqual(client, statusFilter)));
-        filterRow.getCell(statusColumn).setComponent(statusFilter);
+        DatePicker fechaFinFilter = new DatePicker();
+        fechaFinFilter.setPlaceholder("Filter");
+        fechaFinFilter.setClearButtonVisible(true);
+        fechaFinFilter.setWidth("100%");
+        fechaFinFilter.addValueChangeListener(e -> {
+            grid.setItems(dataService.searchTareaByFecha( fechaFinFilter.getValue() ) );
+        });
+        filterRow.getCell(fecha_finColumn).setComponent(fechaFinFilter);
 
-        DatePicker dateFilter = new DatePicker();
-        dateFilter.setPlaceholder("Filter");
-        dateFilter.setClearButtonVisible(true);
-        dateFilter.setWidth("100%");
-        dateFilter.addValueChangeListener(
-                event -> gridListDataView.addFilter(client -> areDatesEqual(client, dateFilter)));
-        filterRow.getCell(dateColumn).setComponent(dateFilter);
+        ComboBox<Estudiante> estudiantefilter = new ComboBox<>();
+        estudiantefilter.setItems(dataService.findAllEstudiante());
+        estudiantefilter.setItemLabelGenerator(Estudiante::getStringNombreApellidos);
+        estudiantefilter.setPlaceholder("Filtrar");
+        estudiantefilter.setClearButtonVisible(true);
+        estudiantefilter.setWidth("100%");
+        estudiantefilter.addValueChangeListener(
+                event -> gridListDataView
+                        .addFilter(tarea ->  areEstudiantesEqual( tarea, estudiantefilter))
+        );
+        filterRow.getCell(estudianteColumn).setComponent(estudiantefilter);
+
+
     }
 
-    private boolean areStatusesEqual(Client client, ComboBox<String> statusFilter) {
-        String statusFilterValue = statusFilter.getValue();
-        if (statusFilterValue != null) {
-            return StringUtils.equals(client.getStatus(), statusFilterValue);
+    private boolean areEstudiantesEqual(Tarea tarea, ComboBox<Estudiante> filterEstudiante) {
+        String estudianteFilterValue = filterEstudiante.getValue().getStringNombreApellidos();
+        if (estudianteFilterValue != null) {
+            return StringUtils.equals(tarea.getE().getStringNombreApellidos(), estudianteFilterValue);
         }
         return true;
-    }
-
-    private boolean areDatesEqual(Client client, DatePicker dateFilter) {
-        LocalDate dateFilterValue = dateFilter.getValue();
-        if (dateFilterValue != null) {
-            LocalDate clientDate = LocalDate.parse(client.getDate());
-            return dateFilterValue.equals(clientDate);
-        }
-        return true;
-    }
-
-    private List<Client> getClients() {
-        return Arrays.asList(
-                createClient(4957, "https://randomuser.me/api/portraits/women/42.jpg", "Amarachi Nkechi", 47427.0,
-                        "Success", "2019-05-09"),
-                createClient(675, "https://randomuser.me/api/portraits/women/24.jpg", "Bonelwa Ngqawana", 70503.0,
-                        "Success", "2019-05-09"),
-                createClient(6816, "https://randomuser.me/api/portraits/men/42.jpg", "Debashis Bhuiyan", 58931.0,
-                        "Success", "2019-05-07"),
-                createClient(5144, "https://randomuser.me/api/portraits/women/76.jpg", "Jacqueline Asong", 25053.0,
-                        "Pending", "2019-04-25"),
-                createClient(9800, "https://randomuser.me/api/portraits/men/24.jpg", "Kobus van de Vegte", 7319.0,
-                        "Pending", "2019-04-22"),
-                createClient(3599, "https://randomuser.me/api/portraits/women/94.jpg", "Mattie Blooman", 18441.0,
-                        "Error", "2019-04-17"),
-                createClient(3989, "https://randomuser.me/api/portraits/men/76.jpg", "Oea Romana", 33376.0, "Pending",
-                        "2019-04-17"),
-                createClient(1077, "https://randomuser.me/api/portraits/men/94.jpg", "Stephanus Huggins", 75774.0,
-                        "Success", "2019-02-26"),
-                createClient(8942, "https://randomuser.me/api/portraits/men/16.jpg", "Torsten Paulsson", 82531.0,
-                        "Pending", "2019-02-21"));
-    }
-
-    private Client createClient(int id, String img, String client, double amount, String status, String date) {
-        Client c = new Client();
-        c.setId(id);
-        c.setImg(img);
-        c.setClient(client);
-        c.setAmount(amount);
-        c.setStatus(status);
-        c.setDate(date);
-
-        return c;
     }
 };

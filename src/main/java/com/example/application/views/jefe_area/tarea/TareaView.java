@@ -58,9 +58,19 @@ public class TareaView extends VerticalLayout {
 
     private Grid.Column<Tarea> nombreColumn = grid.addColumn(Tarea::getNombre).setHeader("Nombre").setAutoWidth(true).setFlexGrow(0);
     private Grid.Column<Tarea> descripcionColumn = grid.addColumn(Tarea::getDescripcion).setHeader("Descripción").setAutoWidth(true).setFlexGrow(0);
-    private Grid.Column<Tarea> fecha_inicioColumn = grid.addColumn(Tarea::getFecha_inicio).setHeader("Fecha de inicio").setAutoWidth(true).setFlexGrow(0);
-    private Grid.Column<Tarea> fecha_finColumn = grid.addColumn(Tarea::getFecha_fin).setHeader("Fecha de fin").setAutoWidth(true).setFlexGrow(0);
-    private Grid.Column<Tarea> estudianteColumn = grid.addColumn(tarea -> tarea.getE().getStringNombreApellidos()).setHeader("Estudiante").setAutoWidth(true).setFlexGrow(0);
+    private Grid.Column<Tarea> fecha_inicioColumn
+            = grid.addColumn(Tarea::getFecha_inicio)
+            .setComparator(tarea -> tarea.getFecha_inicio())
+            .setHeader("Fecha de inicio").setAutoWidth(true).setFlexGrow(0);
+    private Grid.Column<Tarea> fecha_finColumn
+            = grid.addColumn(Tarea::getFecha_fin)
+            .setComparator(tarea -> tarea.getFecha_fin())
+            .setHeader("Fecha de fin").setAutoWidth(true).setFlexGrow(0);
+    private Grid.Column<Tarea> estudianteColumn =
+            grid.addColumn(tarea -> tarea.getE().getStringNombreApellidos())
+                    .setComparator(tarea -> tarea.getE().getStringNombreApellidos())
+                    .setHeader("Estudiante").setAutoWidth(true).setFlexGrow(0);
+
     private Grid.Column<Tarea> editColumn = grid.addComponentColumn(tarea -> {
         HorizontalLayout layout = new HorizontalLayout();
         Button editButton = new Button(VaadinIcon.EDIT.create());
