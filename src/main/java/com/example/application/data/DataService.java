@@ -88,46 +88,6 @@ public class DataService {
         return estudianteRepository.count();
     }
 
-    //Cantidiad estudiantes evaluados de Mal/Regular/Bien 
-    public long countEstudianteEvaluaciones(String nota) {
-
-        List<Evaluacion> list = evaluacionRepository.findAll();
-        long cont = 0;
-        switch (nota) {
-            
-            case "M":
-                
-                for (int i = 0; i < list.size(); i++) {
-                    if (list.get(i).getNota().equals("m") || list.get(i).getNota().equals("M")) {
-                        cont++;
-                    }
-                }
-                
-                break;
-                
-            case "R":
-                 for (int i = 0; i < list.size(); i++) {
-                     if (list.get(i).getNota().equals("r") || list.get(i).getNota().equals("R")) {
-                     cont++;
-                    }
-                }
-                 break;
-                
-            case "B":
-                for (int i = 0; i < list.size(); i++) {
-                    if (list.get(i).getNota().equals("b") || list.get(i).getNota().equals("M")) {
-                        cont++;
-                    }
-                }
-                break;
-
-            default: cont=-1;
-
-        }
-        return cont;
-    }
-    
-
     public void deleteEstudiante(Estudiante estudiante) {
         estudianteRepository.delete(estudiante);
     }
@@ -231,7 +191,7 @@ public class DataService {
     }
 
      public long countProfesor() {
-        return tareaRepository.count();
+        return profesorRepository.count();
     }
 
     public void deleteProfesor(Profesor profesor) {

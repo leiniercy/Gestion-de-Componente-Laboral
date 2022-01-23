@@ -7,6 +7,8 @@ package com.example.application.views.Inicio;
 
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -25,8 +27,19 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 public class InicioView extends VerticalLayout {
 
     public InicioView() {
-    H1 title = new H1("Pantalla de Inicio");
-    add(title);
+        setSpacing(false);
+
+
+        Image img = new Image("/images/empty-plant.png", "GCL");
+        img.setWidthFull();
+        img.setHeightFull();
+        add(img);
+
+
+        setSizeFull();
+        setJustifyContentMode(JustifyContentMode.CENTER);
+        setDefaultHorizontalComponentAlignment(Alignment.CENTER);
+        getStyle().set("text-align", "center");
     }
     
     
