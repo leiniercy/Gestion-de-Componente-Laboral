@@ -5,7 +5,12 @@ import com.example.application.data.entity.Estudiante;
 import com.example.application.data.entity.Evaluacion;
 import com.example.application.data.entity.Tarea;
 import com.example.application.views.MainLayout;
+import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.contextmenu.HasMenuItems;
+import com.vaadin.flow.component.contextmenu.MenuItem;
+import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.HeaderRow;
@@ -13,6 +18,11 @@ import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.gridpro.GridPro;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.menubar.MenuBar;
+import com.vaadin.flow.component.menubar.MenuBarVariant;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -51,7 +61,7 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
         addClassName("evaluacionesList-view");
         setSizeFull();
         createGrid();
-        add(grid);
+        add(getToolbar(), grid);
     }
 
     private void createGrid() {
@@ -207,5 +217,65 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
         }
         return true;
     }
+
+    private HorizontalLayout getToolbar() {
+
+        addClassName("menu-items");
+        Html total = new Html("<span>Total: <b>" + dataService.countTarea() + "</b> tareas</span>");
+
+      /*  Button reporteButton = new Button("Reporte", VaadinIcon.DOWNLOAD_ALT.create());
+        reporteButton.addClickListener(event -> {
+
+        });*/
+
+        HorizontalLayout toolbar = new HorizontalLayout(total, createMenubar() );
+        toolbar.setAlignItems(FlexComponent.Alignment.CENTER);
+        toolbar.setWidth("99%");
+        toolbar.setFlexGrow(1,total);
+
+
+        return toolbar;
+    }
+
+    private MenuBar createMenubar(){
+        MenuBar menuBar = new MenuBar();
+
+        menuBar.addThemeVariants(MenuBarVariant.LUMO_ICON);
+        MenuItem share = createIconItem(menuBar, VaadinIcon.DOWNLOAD, "Reporte", null);
+
+        SubMenu shareSubMenu = share.getSubMenu();
+        createIconItem(shareSubMenu, VaadinIcon.FILE, "Exportar como pdf", null, true);
+        createIconItem(shareSubMenu, VaadinIcon.FILE, "Exortar como excel", null, true);
+
+
+        return menuBar;
+    }
+    private MenuItem createIconItem(HasMenuItems menu, VaadinIcon iconName, String label, String ariaLabel) {
+        return createIconItem(menu, iconName, label, ariaLabel, false);
+    }
+    private MenuItem createIconItem(HasMenuItems menu, VaadinIcon iconName, String label, String ariaLabel, boolean isChild) {
+        Icon icon = new Icon(iconName);
+
+        if (isChild) {
+            icon.getStyle().set("width", "var(--lumo-icon-size-s)");
+            icon.getStyle().set("height", "var(--lumo-icon-size-s)");
+            icon.getStyle().set("marginRight", "var(--lumo-space-s)");
+        }
+
+        MenuItem item = menu.addItem(icon, e -> {
+        });
+
+        if (ariaLabel != null) {
+            item.getElement().setAttribute("aria-label", ariaLabel);
+        }
+
+        if (label != null) {
+            item.add(new Text(label));
+        }
+
+        return item;
+    }
+
+
 
 };

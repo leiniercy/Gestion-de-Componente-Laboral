@@ -190,6 +190,11 @@
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-charts-flow</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.vaadin.reports</groupId>
+            <artifactId>report-ui</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
     <build>
