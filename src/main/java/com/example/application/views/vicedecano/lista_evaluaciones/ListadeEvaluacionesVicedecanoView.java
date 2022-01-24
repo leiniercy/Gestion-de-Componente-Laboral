@@ -5,6 +5,8 @@ import com.example.application.data.entity.Estudiante;
 import com.example.application.data.entity.Evaluacion;
 import com.example.application.data.entity.Tarea;
 import com.example.application.views.MainLayout;
+import com.example.application.views.vicedecano.estudiante.EstudiantesView;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -16,6 +18,7 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.gridpro.GridPro;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
@@ -36,8 +39,11 @@ import java.util.Arrays;
 import java.util.List;
 import javax.annotation.security.RolesAllowed;
 
+import com.vaadin.flow.router.RouterLink;
+import com.vaadin.flow.server.StreamResource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.reports.PrintPreviewReport;
 
 @PageTitle("Evaluaciones")
 @Route(value = "list-evaluaicones", layout = MainLayout.class)
@@ -228,7 +234,7 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
 
         });*/
 
-        HorizontalLayout toolbar = new HorizontalLayout(total, createMenubar() );
+        HorizontalLayout toolbar = new HorizontalLayout(total, CrearReporte() );
         toolbar.setAlignItems(FlexComponent.Alignment.CENTER);
         toolbar.setWidth("99%");
         toolbar.setFlexGrow(1,total);
@@ -237,44 +243,27 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
         return toolbar;
     }
 
-    private MenuBar createMenubar(){
-        MenuBar menuBar = new MenuBar();
+    private Component CrearReporte() {
 
-        menuBar.addThemeVariants(MenuBarVariant.LUMO_ICON);
-        MenuItem share = createIconItem(menuBar, VaadinIcon.DOWNLOAD, "Reporte", null);
+        PrintPreviewReport report
+                = new PrintPreviewReport<>(Evaluacion.class, "nota", "descripcion", "estudiante", "tarea", "status");
+        report.setItems(dataService.findAllEvaluacion());
+        report.getReportBuilder().setTitle("Evaluaciones");
+        StreamResource pdf = report.getStreamResource("evaluaciones.pdf", dataService::findAllEvaluacion, PrintPreviewReport.Format.PDF);
 
-        SubMenu shareSubMenu = share.getSubMenu();
-        createIconItem(shareSubMenu, VaadinIcon.FILE, "Exportar como pdf", null, true);
-        createIconItem(shareSubMenu, VaadinIcon.FILE, "Exortar como excel", null, true);
+        Icon icon = new Icon(VaadinIcon.DOWNLOAD);
+        icon.getStyle().set("width", "var(--lumo-icon-size-s)");
+        icon.getStyle().set("height", "var(--lumo-icon-size-s)");
+        icon.getStyle().set("marginRight", "var(--lumo-space-s)");
+
+        Anchor rp = new Anchor();
+        rp.setHref(pdf);
+        rp.add(icon, new Span("Reporte"));
 
 
-        return menuBar;
+        return rp;
     }
-    private MenuItem createIconItem(HasMenuItems menu, VaadinIcon iconName, String label, String ariaLabel) {
-        return createIconItem(menu, iconName, label, ariaLabel, false);
-    }
-    private MenuItem createIconItem(HasMenuItems menu, VaadinIcon iconName, String label, String ariaLabel, boolean isChild) {
-        Icon icon = new Icon(iconName);
 
-        if (isChild) {
-            icon.getStyle().set("width", "var(--lumo-icon-size-s)");
-            icon.getStyle().set("height", "var(--lumo-icon-size-s)");
-            icon.getStyle().set("marginRight", "var(--lumo-space-s)");
-        }
-
-        MenuItem item = menu.addItem(icon, e -> {
-        });
-
-        if (ariaLabel != null) {
-            item.getElement().setAttribute("aria-label", ariaLabel);
-        }
-
-        if (label != null) {
-            item.add(new Text(label));
-        }
-
-        return item;
-    }
 
 
 

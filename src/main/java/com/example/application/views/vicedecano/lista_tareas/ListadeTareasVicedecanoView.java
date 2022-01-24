@@ -4,9 +4,8 @@ import com.example.application.data.DataService;
 import com.example.application.data.entity.Estudiante;
 import com.example.application.data.entity.Tarea;
 import com.example.application.views.MainLayout;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Html;
-import com.vaadin.flow.component.Text;
+import com.example.application.views.vicedecano.estudiante.EstudiantesView;
+import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -43,6 +42,7 @@ import javax.annotation.security.RolesAllowed;
 
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.StreamResource;
+import io.swagger.v3.oas.models.links.Link;
 import org.vaadin.reports.PrintPreviewReport;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +62,12 @@ public class ListadeTareasVicedecanoView extends Div {
     private Grid.Column<Tarea> estudianteColumn;
 
 
+    private TextField filterNombre = new TextField();
+    private TextField filterDescripcion = new TextField();
+    private DatePicker fechaInicioFilter = new DatePicker();
+    private DatePicker fechaFinFilter = new DatePicker();
+    private ComboBox<Estudiante> estudiantefilter = new ComboBox<>();
+
     private DataService dataService;
 
     public ListadeTareasVicedecanoView(@Autowired DataService dataService) {
@@ -69,7 +75,7 @@ public class ListadeTareasVicedecanoView extends Div {
         addClassName("listaTareas-view");
         setSizeFull();
         createGrid();
-        add(getToolbar(),grid);
+        add(getToolbar(), grid);
     }
 
     private void createGrid() {
@@ -115,9 +121,9 @@ public class ListadeTareasVicedecanoView extends Div {
 
     private void createFechaFinColumn() {
         fecha_finColumn =
-                 grid.addColumn(Tarea::getFecha_fin)
-                .setComparator(tarea -> tarea.getFecha_fin())
-                .setHeader("Fecha de fin").setAutoWidth(true).setFlexGrow(0);
+                grid.addColumn(Tarea::getFecha_fin)
+                        .setComparator(tarea -> tarea.getFecha_fin())
+                        .setHeader("Fecha de fin").setAutoWidth(true).setFlexGrow(0);
     }
 
     private void createEstudianteColumn() {
@@ -136,7 +142,7 @@ public class ListadeTareasVicedecanoView extends Div {
     private void addFiltersToGrid() {
         HeaderRow filterRow = grid.appendHeaderRow();
 
-        TextField filterNombre = new TextField();
+
         filterNombre.setPlaceholder("Filtrar");
         filterNombre.setClearButtonVisible(true);
         filterNombre.setWidth("100%");
@@ -147,7 +153,7 @@ public class ListadeTareasVicedecanoView extends Div {
         );
         filterRow.getCell(nombreColumn).setComponent(filterNombre);
 
-        TextField filterDescripcion = new TextField();
+
         filterDescripcion.setPlaceholder("Filtrar");
         filterDescripcion.setClearButtonVisible(true);
         filterDescripcion.setWidth("100%");
@@ -158,25 +164,25 @@ public class ListadeTareasVicedecanoView extends Div {
         );
         filterRow.getCell(descripcionColumn).setComponent(filterDescripcion);
 
-        DatePicker fechaInicioFilter = new DatePicker();
+
         fechaInicioFilter.setPlaceholder("Filter");
         fechaInicioFilter.setClearButtonVisible(true);
         fechaInicioFilter.setWidth("100%");
-        fechaInicioFilter.addValueChangeListener(e->{
-            grid.setItems(dataService.searchTareaByFecha( fechaInicioFilter.getValue() ) );
+        fechaInicioFilter.addValueChangeListener(e -> {
+            grid.setItems(dataService.searchTareaByFecha(fechaInicioFilter.getValue()));
         });
         filterRow.getCell(fecha_inicioColumn).setComponent(fechaInicioFilter);
 
-        DatePicker fechaFinFilter = new DatePicker();
+
         fechaFinFilter.setPlaceholder("Filter");
         fechaFinFilter.setClearButtonVisible(true);
         fechaFinFilter.setWidth("100%");
         fechaFinFilter.addValueChangeListener(e -> {
-            grid.setItems(dataService.searchTareaByFecha( fechaFinFilter.getValue() ) );
+            grid.setItems(dataService.searchTareaByFecha(fechaFinFilter.getValue()));
         });
         filterRow.getCell(fecha_finColumn).setComponent(fechaFinFilter);
 
-        ComboBox<Estudiante> estudiantefilter = new ComboBox<>();
+
         estudiantefilter.setItems(dataService.findAllEstudiante());
         estudiantefilter.setItemLabelGenerator(Estudiante::getStringNombreApellidos);
         estudiantefilter.setPlaceholder("Filtrar");
@@ -184,7 +190,7 @@ public class ListadeTareasVicedecanoView extends Div {
         estudiantefilter.setWidth("100%");
         estudiantefilter.addValueChangeListener(
                 event -> gridListDataView
-                        .addFilter(tarea ->  areEstudiantesEqual( tarea, estudiantefilter))
+                        .addFilter(tarea -> areEstudiantesEqual(tarea, estudiantefilter))
         );
         filterRow.getCell(estudianteColumn).setComponent(estudiantefilter);
 
@@ -204,57 +210,35 @@ public class ListadeTareasVicedecanoView extends Div {
         addClassName("menu-items");
         Html total = new Html("<span>Total: <b>" + dataService.countTarea() + "</b> tareas</span>");
 
-      /*  Button reporteButton = new Button("Reporte", VaadinIcon.DOWNLOAD_ALT.create());
-        reporteButton.addClickListener(event -> {
-
-        });*/
-
-        HorizontalLayout toolbar = new HorizontalLayout(total, createMenubar() );
+        HorizontalLayout toolbar = new HorizontalLayout(total, CrearReporte());
         toolbar.setAlignItems(FlexComponent.Alignment.CENTER);
         toolbar.setWidth("99%");
-        toolbar.setFlexGrow(1,total);
+        toolbar.setFlexGrow(1, total);
 
 
         return toolbar;
     }
 
-    private MenuBar createMenubar(){
-        MenuBar menuBar = new MenuBar();
 
-        menuBar.addThemeVariants(MenuBarVariant.LUMO_ICON);
-        MenuItem share = createIconItem(menuBar, VaadinIcon.DOWNLOAD, "Reporte", null);
+    private Component CrearReporte() {
 
-        SubMenu shareSubMenu = share.getSubMenu();
-        createIconItem(shareSubMenu, VaadinIcon.FILE, "Exportar como pdf", null, true);
-        createIconItem(shareSubMenu, VaadinIcon.FILE, "Exortar como excel", null, true);
+        PrintPreviewReport report
+                = new PrintPreviewReport<>(Tarea.class, "nombre", "descripcion", "fecha_inicio", "fecha_fin", "e");
+        report.setItems(dataService.findAllTareas());
+        report.getReportBuilder().setTitle("Tareas");
+        StreamResource pdf = report.getStreamResource("tareas.pdf", dataService::findAllTareas, PrintPreviewReport.Format.PDF);
+
+        Icon icon = new Icon(VaadinIcon.DOWNLOAD);
+        icon.getStyle().set("width", "var(--lumo-icon-size-s)");
+        icon.getStyle().set("height", "var(--lumo-icon-size-s)");
+        icon.getStyle().set("marginRight", "var(--lumo-space-s)");
+
+        Anchor rp = new Anchor();
+        rp.setHref(pdf);
+        rp.add(icon, new Span("Reporte"));
 
 
-        return menuBar;
-    }
-    private MenuItem createIconItem(HasMenuItems menu, VaadinIcon iconName, String label, String ariaLabel) {
-        return createIconItem(menu, iconName, label, ariaLabel, false);
-    }
-    private MenuItem createIconItem(HasMenuItems menu, VaadinIcon iconName, String label, String ariaLabel, boolean isChild) {
-        Icon icon = new Icon(iconName);
-
-        if (isChild) {
-            icon.getStyle().set("width", "var(--lumo-icon-size-s)");
-            icon.getStyle().set("height", "var(--lumo-icon-size-s)");
-            icon.getStyle().set("marginRight", "var(--lumo-space-s)");
-        }
-
-        MenuItem item = menu.addItem(icon, e -> {
-        });
-
-        if (ariaLabel != null) {
-            item.getElement().setAttribute("aria-label", ariaLabel);
-        }
-
-        if (label != null) {
-            item.add(new Text(label));
-        }
-
-        return item;
+        return rp;
     }
 
 };
