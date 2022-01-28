@@ -6,17 +6,15 @@
 package com.example.application.data.entity;
 
 import com.example.application.data.AbstractEntity;
+
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -24,8 +22,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.checkerframework.common.aliasing.qual.Unique;
+
 /**
- *
  * @author Leinier
  */
 @Data
@@ -37,25 +36,31 @@ import lombok.ToString;
 @ToString(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "Areas")
-public class Area  extends AbstractEntity{
-    
+public class Area extends AbstractEntity {
+
     @EqualsAndHashCode.Include
     @ToString.Include
-    
-//    @NotEmpty
-//    @NotBlank(message = "campo vacío")
-//    @Column(name = "nombre",length = 100, nullable = false)
+
+    @NotEmpty
+    @NotBlank(message = "El campo no debe estar vacío")
+    @Pattern(regexp = "^[a-zA-Z][a-zA-Z\\s]+$" , message = "Solo letras") //0 combinaciones de letras 0 o mas veces incluyendo espacios
+    @Size(message = "Mínimo 2 caracteres y máximo 50",min=2,max = 50)
+    @Column(name = "nombre",nullable = false)
     private String nombre;
-    
-//    @NotEmpty
-//    @NotBlank(message = "campo vacío")
-//    @Column(name = "descripcion",length = 255, nullable = false)
+
+    @NotEmpty
+    @NotBlank(message = "El campo no debe estar vacío")
+    @Pattern(regexp = "^[a-zA-Z0-9][a-zA-Z0-9\\s]*$", message = "Solo letras y numeros)")
+    @Size(message = "Mínimo 3 caracteres, máximo 255",min = 3,max =255)
+    @Column(name = "descripcion")
     private String descripcion;
-    
+
     @OneToMany(mappedBy = "area")
-    private List<Estudiante>estudiantes;
-    
-     @OneToMany(mappedBy = "a")
-    private List<Profesor>profesores;
-    
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<Estudiante> estudiantes;
+
+    @OneToMany(mappedBy = "a")
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<Profesor> profesores;
+
 }

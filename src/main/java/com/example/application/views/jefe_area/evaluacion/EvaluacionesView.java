@@ -26,6 +26,7 @@ import com.vaadin.flow.component.gridpro.GridPro;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -172,6 +173,7 @@ public class EvaluacionesView extends VerticalLayout {
         if (evaluacion == null)
             return;
         dataService.deleteEvaluacion(evaluacion);
+        Notification.show("Evaluación eliminada");
         this.refreshGrid();
     }
 

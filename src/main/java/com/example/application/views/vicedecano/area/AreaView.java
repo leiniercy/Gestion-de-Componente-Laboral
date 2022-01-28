@@ -19,6 +19,7 @@ import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.grid.editor.Editor;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -144,8 +145,11 @@ public class AreaView extends VerticalLayout {
     private void deleteArea(Area area) {
         if (area == null)
             return;
-        dataService.deleteArea(area);
-        this.refreshGrid();
+        else{
+            dataService.deleteArea(area);
+            Notification.show("Área eliminada");
+            this.refreshGrid();
+        }
     }
 
     private void refreshGrid() {

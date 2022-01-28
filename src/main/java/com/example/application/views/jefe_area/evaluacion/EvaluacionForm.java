@@ -6,10 +6,8 @@
 package com.example.application.views.jefe_area.evaluacion;
 
 
-import com.example.application.data.ValidationMessage;
 import com.example.application.data.entity.Estudiante;
 import com.example.application.data.entity.Evaluacion;
-import com.example.application.data.entity.Grupo;
 import com.example.application.data.entity.Tarea;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -19,26 +17,26 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.shared.Registration;
 
 import java.util.Arrays;
 import java.util.List;
 
 /**
- *
  * @author Leinier
  */
-public class EvaluacionForm extends FormLayout{
-    
+public class EvaluacionForm extends FormLayout {
+
     private Evaluacion evaluacion;
 
-    private TextField nota = new TextField("Nota");
-    private TextArea descripcion = new TextArea("Descripcion");
+    private TextField nota = new TextField();
+    private TextField descripcion = new TextField();
     private ComboBox<Estudiante> estudiante = new ComboBox<>("Estudiante");
     private ComboBox<Tarea> tarea = new ComboBox<>("Tarea");
     private ComboBox<String> status = new ComboBox<>("Status");
@@ -48,39 +46,35 @@ public class EvaluacionForm extends FormLayout{
 
     private BeanValidationBinder<Evaluacion> binder = new BeanValidationBinder<>(Evaluacion.class);
 
-    public EvaluacionForm( List<Estudiante> estudiantes,  List<Tarea>tareas) {
-        
+    public EvaluacionForm(List<Estudiante> estudiantes, List<Tarea> tareas) {
+
         addClassName("evaluacion-form");
 
-        ValidationMessage notaValidationMessage = new ValidationMessage();
-        ValidationMessage fecha_inicioValidationMessage = new ValidationMessage();
-        ValidationMessage tareaalidationMessage = new ValidationMessage();
-        ValidationMessage estudianteValidationMessage = new ValidationMessage();
-        ValidationMessage statusValidationMessage = new ValidationMessage();
-
         binder.bindInstanceFields(this);
-        binder.forField(nota)
-                .asRequired("El campo nota no debe estar vacío")
-                .withStatusLabel(notaValidationMessage)
-                .bind(Evaluacion::getNota, Evaluacion::setNota);
-        binder.forField(estudiante)
-                .asRequired("Debe seleccionar un estudiante")
-                .withStatusLabel(fecha_inicioValidationMessage)
-                .bind(Evaluacion::getEstudiante, Evaluacion::setEstudiante);
-        binder.forField(tarea)
-                .asRequired("Debe seleccionar una tarea")
-                .withStatusLabel(tareaalidationMessage)
-                .bind(Evaluacion::getTarea , Evaluacion::setTarea);
-        binder.forField(status)
-                .asRequired("Debe seleccionar un Status")
-                .withStatusLabel(statusValidationMessage)
-                .bind(Evaluacion::getStatus , Evaluacion::setStatus);
-
 
         //Config form
-        
-        //nombre
+
+        //nota
+        nota.setLabel("Nota");
+        nota.setHelperText("Cualiatativa(B,R,M)");
+        nota.getElement().setAttribute("nota", "Ejemplo: B");
+        nota.setAutofocus(true);
+        nota.setRequired(true);
+        nota.setMinLength(1);
+        nota.setMaxLength(1);
+        nota.setPattern("^(B|M|R)$");
+        nota.setErrorMessage("Solo letras, mínimo 1 caracteres y máximo 1");
+
         //descripcion
+        descripcion.setWidthFull();
+        descripcion.setMinLength(3);
+        descripcion.setMaxLength(255);
+        descripcion.setPattern("^[a-zA-Z][a-zA-Z\\s]+$");
+        descripcion.setErrorMessage("Solo caracteres y numeros, mínimo 3 caracteres y  máximo 255");
+        descripcion.setValueChangeMode(ValueChangeMode.EAGER);
+        descripcion.addValueChangeListener(e -> {
+            e.getSource().setHelperText(e.getValue().length() + "/" + 255);
+        });
         //estudiante
         estudiante.setItems(estudiantes);
         estudiante.setItemLabelGenerator(Estudiante::getStringNombreApellidos);
@@ -100,7 +94,7 @@ public class EvaluacionForm extends FormLayout{
     }
 
     private HorizontalLayout createButtonsLayout() {
-        
+
         save.addClickListener(event -> validateAndSave());
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         save.addClickShortcut(Key.ENTER);
@@ -108,7 +102,7 @@ public class EvaluacionForm extends FormLayout{
         close.addClickListener(event -> fireEvent(new CloseEvent(this)));
         close.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         close.addClickShortcut(Key.ESCAPE);
-        
+
         binder.addStatusChangeListener(e -> save.setEnabled(binder.isValid()));
 
         return new HorizontalLayout(save, close);
@@ -123,6 +117,7 @@ public class EvaluacionForm extends FormLayout{
         try {
             binder.writeBean(evaluacion);
             fireEvent(new SaveEvent(this, evaluacion));
+            Notification.show("Evaluación añadida");
         } catch (ValidationException e) {
             e.printStackTrace();
         }
@@ -166,10 +161,9 @@ public class EvaluacionForm extends FormLayout{
     }
 
     public <T extends ComponentEvent<?>> Registration addListener(Class<T> eventType,
-            ComponentEventListener<T> listener) {
+                                                                  ComponentEventListener<T> listener) {
         return getEventBus().addListener(eventType, listener);
     }
-    
-    
-    
+
+
 }

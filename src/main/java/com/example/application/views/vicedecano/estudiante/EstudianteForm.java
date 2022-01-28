@@ -5,7 +5,6 @@
  */
 package com.example.application.views.vicedecano.estudiante;
 
-import com.example.application.data.ValidationMessage;
 import com.example.application.data.entity.Area;
 import com.example.application.data.entity.Estudiante;
 import com.example.application.data.entity.Grupo;
@@ -19,32 +18,31 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
-import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.shared.Registration;
 
 import java.util.List;
 
 /**
- *
  * @author Leinier
  */
 public class EstudianteForm extends FormLayout {
 
     private Estudiante estudiante;
 
-    private TextField nombre = new TextField("Nombre");
-    private TextField apellidos = new TextField("Apellidos");
+    private TextField nombre = new TextField();
+    private TextField apellidos = new TextField();
     private ComboBox<User> user = new ComboBox<>("Usuario");
-    private EmailField email = new EmailField("Correo");
-    private TextField solapin = new TextField("Solapin");
+    private EmailField email = new EmailField();
+    private TextField solapin = new TextField();
     private IntegerField anno_repitencia = new IntegerField("Año de repitencia");
     private IntegerField cantidad_asignaturas = new IntegerField("Cantidad de asignaturas");
     private ComboBox<Area> area = new ComboBox<>("Area");
@@ -59,68 +57,58 @@ public class EstudianteForm extends FormLayout {
     public EstudianteForm(List<User> users, List<Area> areas, List<Grupo> grupos) {
         addClassName("estudiante-form");
 
-        ValidationMessage nombreValidationMessage = new ValidationMessage();
-        ValidationMessage apellidosValidationMessage = new ValidationMessage();
-        ValidationMessage userValidationMessage = new ValidationMessage();
-        ValidationMessage emailValidationMessage = new ValidationMessage();
-        ValidationMessage solapinValidationMessage = new ValidationMessage();
-        ValidationMessage annoRepitenciaValidationMessage = new ValidationMessage();
-        ValidationMessage cantidadAsignaturasValidationMessage = new ValidationMessage();
-        ValidationMessage areaValidationMessage = new ValidationMessage();
-        ValidationMessage grupoValidationMessage = new ValidationMessage();
-
         binder.bindInstanceFields(this);
-        binder.forField(nombre)
-                .asRequired("El campo nombre no debe estar vacío")
-                .withStatusLabel(nombreValidationMessage)
-                .bind(Estudiante::getNombre, Estudiante::setNombre);
-        binder.forField(apellidos)
-                .asRequired("El campo apellidos no debe estar vacío")
-                .withStatusLabel(apellidosValidationMessage)
-                .bind(Estudiante::getApellidos, Estudiante::setApellidos);
-        binder.forField(user)
-                .asRequired("Debe seleccionar un usuario")
-                .withStatusLabel(userValidationMessage)
-                .bind(Estudiante::getUser, Estudiante::setUser);
-        binder.forField(email)
-                .asRequired("El campo correo no debe estar vacío")
-                .withStatusLabel(emailValidationMessage)
-                .bind(Estudiante::getEmail, Estudiante::setEmail);
-        binder.forField(solapin)
-                .asRequired("El campo solapín no debe estar vacío")
-                .withStatusLabel(solapinValidationMessage)
-                .bind(Estudiante::getSolapin, Estudiante::setSolapin);
-        binder.forField(anno_repitencia)
-                .asRequired("El campo no debe ser vacío")
-                .withStatusLabel(annoRepitenciaValidationMessage)
-                .bind(Estudiante::getAnno_repitencia, Estudiante::setAnno_repitencia);
-        binder.forField(cantidad_asignaturas)
-                .asRequired("El campo no debe ser vacío")
-                .withStatusLabel(cantidadAsignaturasValidationMessage)
-                .bind(Estudiante::getCantidad_asignaturas , Estudiante::setCantidad_asignaturas);
-        binder.forField(area)
-                .asRequired("Debe seleccionar un área")
-                .withStatusLabel(areaValidationMessage)
-                .bind(Estudiante::getArea , Estudiante::setArea);
-        binder.forField(grupo)
-                .asRequired("Debe seleccionar un grupo")
-                .withStatusLabel(grupoValidationMessage)
-                .bind(Estudiante::getGrupo , Estudiante::setGrupo);
 
         //Config form
-        
+
         //nombre
+        nombre.setLabel("Nombre");
+        nombre.getElement().setAttribute("nombre", "Ejemplo: Daniel");
+        nombre.setAutofocus(true);
+        nombre.setRequired(true);
+        nombre.setMinLength(2);
+        nombre.setMaxLength(100);
+        nombre.setPattern("^[a-zA-Z][a-zA-Z\\s]+$");
+        nombre.setErrorMessage("Solo letras, mínimo 2 caracteres y máximo 100");
+        nombre.addValueChangeListener(event -> {
+            event.getSource().setHelperText(event.getValue().length() + "/" + 100);
+        });
         //apellidos
+        apellidos.setLabel("Apellidos");
+        apellidos.getElement().setAttribute("apellidos", "Ejemplo:Perez Diaz");
+        apellidos.setAutofocus(true);
+        apellidos.setRequired(true);
+        apellidos.setMinLength(3);
+        apellidos.setMaxLength(100);
+        apellidos.setPattern("^[a-zA-Z][a-zA-Z\\s]*$");
+        apellidos.setErrorMessage("Solo letras, mínimo 3 caracteres y máximo 100");
+        apellidos.addValueChangeListener(event -> {
+            event.getSource().setHelperText(event.getValue().length() + "/" + 100);
+        });
         //usuario
         user.setItems(users);
         user.setItemLabelGenerator(User::getName);
         //email
         email.setPlaceholder("usuario@estudiantes.uci.cu");
-        email.setPattern("^.+@estudiantes.uci\\.cu$");
+        email.setLabel("Correo");
+        email.setValue("usuario@estudiantes.uci.cu");
+        nombre.setAutoselect(true);
+        nombre.setClearButtonVisible(true);
+        email.setPattern("^[a-zA-Z][a-zA-Z0-9_\\.][a-zA-Z0-9]+(@estudiantes\\.uci\\.cu)$");
         email.setErrorMessage("Por favor escriba un correo válido");
         email.setClearButtonVisible(true);
         //solapin
-        //grupo
+        solapin.setLabel("Solapín");
+        solapin.getElement().setAttribute("solapin", "E1705587");
+        solapin.setAutofocus(true);
+        solapin.setRequired(true);
+        solapin.setMinLength(7);
+        solapin.setMaxLength(7);
+        solapin.setPattern("^[A-Z][0-9]+$");
+        solapin.setErrorMessage("Una letra , mínimo 7 caracteres y máximo 7");
+        solapin.addValueChangeListener(event -> {
+            event.getSource().setHelperText(event.getValue().length() + "/" + 7);
+        });
         //anno_repitencia
         anno_repitencia.setHelperText("Máximo 5");
         anno_repitencia.setValue(1);
@@ -154,7 +142,7 @@ public class EstudianteForm extends FormLayout {
     }
 
     private HorizontalLayout createButtonsLayout() {
-        
+
         save.addClickListener(event -> validateAndSave());
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         save.addClickShortcut(Key.ENTER);
@@ -162,10 +150,10 @@ public class EstudianteForm extends FormLayout {
         close.addClickListener(event -> fireEvent(new CloseEvent(this)));
         close.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         close.addClickShortcut(Key.ESCAPE);
-        
+
         binder.addStatusChangeListener(e -> save.setEnabled(binder.isValid()));
 
-        return new HorizontalLayout(save,close);
+        return new HorizontalLayout(save, close);
     }
 
     public void setEstudiante(Estudiante estudiante) {
@@ -177,6 +165,7 @@ public class EstudianteForm extends FormLayout {
         try {
             binder.writeBean(estudiante);
             fireEvent(new SaveEvent(this, estudiante));
+            Notification.show("Estudiante añadido");
         } catch (ValidationException e) {
             e.printStackTrace();
         }
@@ -220,7 +209,7 @@ public class EstudianteForm extends FormLayout {
     }
 
     public <T extends ComponentEvent<?>> Registration addListener(Class<T> eventType,
-            ComponentEventListener<T> listener) {
+                                                                  ComponentEventListener<T> listener) {
         return getEventBus().addListener(eventType, listener);
     }
 

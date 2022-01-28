@@ -15,10 +15,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -26,6 +24,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.validator.constraints.Length;
 
 /**
  *
@@ -45,30 +44,33 @@ public class Evaluacion extends AbstractEntity {
     @EqualsAndHashCode.Include
     @ToString.Include
 
-//    @NotEmpty
-//    @NotBlank(message = "campo vacío")
-//    @Column(name = "nota", length = 1, nullable = false)
-//    @Size(message = "La nota es cualitativa (E,B,R,M)", max = 1, min = 1)
+    @NotEmpty
+    @NotBlank(message = "campo vacío")
+    @Column(name = "nota", nullable = false)
+    @Size(message = "La nota es cualitativa (B,R,M)", max = 1, min = 1)
+    @Pattern(regexp = "^(B|M|R)$")
     private String nota;
 
 //    @NotEmpty
 //    @NotBlank(message = "campo vacío")
-//    @Column(name = "descripcion", length = 255, nullable = false)
+    @Column(name = "descripcion", nullable = false)
+    @Size(message = "La descripción no es correcta",max = 255,min=3)
+    @Pattern(regexp = "^[a-zA-Z][a-zA-Z0-9\\s]*$", message = "Solo letras y numeros")
     private String descripcion;
 
-//    @NotNull(message = "debes elegir un campo")
+    @NotNull(message = "debes elegir un campo")
     @JoinColumn(name = "estudiante_id")
     @ManyToOne()
     private Estudiante estudiante;
 
-//    @NotNull(message = "debes elegir un campo")
+    @NotNull(message = "debes elegir un campo")
     @JoinColumn(name = "tarea_id")
     @ManyToOne()
     private Tarea tarea;
 
-//    @NotEmpty
-//    @NotBlank(message = "campo vacío")
-//    @Column(name = "status", length = 50, nullable = false)
+    @NotEmpty
+    @NotBlank(message = "campo vacío")
+    @Column(name = "status", nullable = false)
     private String status;
 
 }

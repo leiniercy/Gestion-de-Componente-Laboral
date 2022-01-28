@@ -6,9 +6,7 @@
 package com.example.application.views.jefe_area.tarea;
 
 
-import com.example.application.data.ValidationMessage;
 import com.example.application.data.entity.Estudiante;
-import com.example.application.data.entity.Profesor;
 import com.example.application.data.entity.Tarea;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -19,11 +17,16 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.shared.Registration;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 /**
@@ -51,30 +54,38 @@ public class TareaForm extends FormLayout {
         
         addClassName("tarea-form");
 
-        ValidationMessage nombreValidationMessage = new ValidationMessage();
-        ValidationMessage fecha_inicioValidationMessage = new ValidationMessage();
-        ValidationMessage estudianteValidationMessage = new ValidationMessage();
-
         binder.bindInstanceFields(this);
-        binder.forField(nombre)
-                .asRequired("El campo nombre no debe estar vacío")
-                .withStatusLabel(nombreValidationMessage)
-                .bind(Tarea::getNombre, Tarea::setNombre);
-        binder.forField(fecha_inicio)
-                .asRequired("Debe elegir una fecha")
-                .withStatusLabel(fecha_inicioValidationMessage)
-                .bind(Tarea::getFecha_inicio, Tarea::setFecha_inicio);
-        binder.forField(e)
-                .asRequired("El campo estudiante no debe estar vacío")
-                .withStatusLabel(estudianteValidationMessage)
-                .bind(Tarea::getE, Tarea::setE);
+
 
         //Config form
         
         //nombre
+        nombre.setLabel("Nombre");
+        nombre.getElement().setAttribute("nombre", "Ejemplo: Mi Área");
+        nombre.setAutofocus(true);
+        nombre.setRequired(true);
+        nombre.setMinLength(2);
+        nombre.setMaxLength(50);
+        nombre.setPattern("^[a-zA-Z][a-zA-Z\\s]+$");
+        nombre.setErrorMessage("Solo letras, mínimo 2 caracteres y máximo 50");
+        nombre.addValueChangeListener(event -> {
+            event.getSource().setHelperText(event.getValue().length() + "/" +50);
+        });
         //descripcion
+        descripcion.setLabel("Descripión");
+        descripcion.setWidthFull();
+        descripcion.setMinLength(3);
+        descripcion.setMaxLength(255);
+        descripcion.setPattern("^[a-zA-Z][a-zA-Z0-9\\s]*$");
+        descripcion.setErrorMessage("Solo caracteres y numeros, mínimo 3 caracteres y  máximo 255");
+        descripcion.setValueChangeMode(ValueChangeMode.EAGER);
+        descripcion.addValueChangeListener(e -> {
+            e.getSource().setHelperText(e.getValue().length() + "/" + 255);
+        });
         //fecha_inicio
+        fecha_inicio.setMin( LocalDate.now(ZoneId.systemDefault()) );
         //fecha_fin
+        fecha_fin.setMin( LocalDate.now(ZoneId.systemDefault()) );
         //e
         e.setItems(estudiantes);
         e.setItemLabelGenerator(Estudiante::getStringNombreApellidos);
@@ -112,6 +123,7 @@ public class TareaForm extends FormLayout {
         try {
             binder.writeBean(tarea);
             fireEvent(new SaveEvent(this, tarea));
+            Notification.show("Tarea añadida");
         } catch (ValidationException e) {
             e.printStackTrace();
         }

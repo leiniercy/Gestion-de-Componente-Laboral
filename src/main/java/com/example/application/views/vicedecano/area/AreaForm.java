@@ -5,9 +5,7 @@
  */
 package com.example.application.views.vicedecano.area;
 
-import com.example.application.data.ValidationMessage;
 import com.example.application.data.entity.Area;
-import com.example.application.data.entity.Profesor;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Key;
@@ -17,44 +15,71 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.shared.Registration;
 
+
 /**
- *
  * @author Leinier
  */
-public class AreaForm extends FormLayout{
-    
+public class AreaForm extends FormLayout {
+
     private Area area;
 
-    private TextField nombre = new TextField("Nombre");
-    private TextField descripcion  = new TextField("Descripcion");
-    
+    private TextField nombre = new TextField();
+    private TextField descripcion = new TextField();
+
     private Button save = new Button("Añadir", VaadinIcon.PLUS.create());
     private Button close = new Button("Cancelar", VaadinIcon.REFRESH.create());
 
     private BeanValidationBinder<Area> binder = new BeanValidationBinder<>(Area.class);
 
     public AreaForm() {
-        
+
         addClassName("area-form");
 
-        ValidationMessage nombreValidationMessage = new ValidationMessage();
-
         binder.bindInstanceFields(this);
-        binder.forField(nombre)
-                .asRequired("El campo nombre no debe estar vacío")
-                .withStatusLabel(nombreValidationMessage)
-                .bind(Area::getNombre, Area::setNombre);
 
-        //Config form
-        
         //nombre
-        //descripcion
-      
+        nombre.setLabel("Nombre");
+        nombre.getElement().setAttribute("nombre", "Ejemplo: Mi Área");
+        nombre.setAutofocus(true);
+        nombre.setRequired(true);
+        nombre.setMinLength(2);
+        nombre.setMaxLength(50);
+        nombre.setPattern("^[a-zA-Z][a-zA-Z\\s]+$");
+        nombre.setErrorMessage("Solo letras, mínimo 2 caracteres y máximo 50");
+        nombre.addValueChangeListener(event -> {
+            event.getSource().setHelperText(event.getValue().length() + "/" +50);
+        });
 
+        /*
+        nombre.setPlaceholder("Nombre de área...");
+        nombre.focus();
+        nombre.setValue("Mi Área");
+        nombre.setAutoselect(true);
+        nombre.setClearButtonVisible(true);
+        nombre.addValueChangeListener(event -> {
+            if (nombre.isInvalid()) {
+                Notification.show("Nombre Incorrecto ");
+            }
+        });
+        */
+
+        //descripcion
+        descripcion.setLabel("Descripión");
+        descripcion.setWidthFull();
+        descripcion.setMinLength(3);
+        descripcion.setMaxLength(255);
+        descripcion.setPattern("^[a-zA-Z0-9][a-zA-Z0-9\\s]*$");
+        descripcion.setErrorMessage("Solo caracteres y numeros, mínimo 3 caracteres y  máximo 255");
+        descripcion.setValueChangeMode(ValueChangeMode.EAGER);
+        descripcion.addValueChangeListener(e -> {
+            e.getSource().setHelperText(e.getValue().length() + "/" + 255);
+        });
         add(
                 nombre,
                 descripcion,
@@ -62,18 +87,18 @@ public class AreaForm extends FormLayout{
     }
 
     private HorizontalLayout createButtonsLayout() {
-        
+
         save.addClickListener(event -> validateAndSave());
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         save.addClickShortcut(Key.ENTER);
-      
+
         close.addClickListener(event -> fireEvent(new CloseEvent(this)));
         close.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         close.addClickShortcut(Key.ESCAPE);
-        
+
         binder.addStatusChangeListener(e -> save.setEnabled(binder.isValid()));
 
-        return new HorizontalLayout(save,close);
+        return new HorizontalLayout(save, close);
     }
 
     public void setArea(Area area) {
@@ -85,6 +110,7 @@ public class AreaForm extends FormLayout{
         try {
             binder.writeBean(area);
             fireEvent(new SaveEvent(this, area));
+            Notification.show("Área añadida");
         } catch (ValidationException e) {
             e.printStackTrace();
         }
@@ -128,9 +154,9 @@ public class AreaForm extends FormLayout{
     }
 
     public <T extends ComponentEvent<?>> Registration addListener(Class<T> eventType,
-            ComponentEventListener<T> listener) {
+                                                                  ComponentEventListener<T> listener) {
         return getEventBus().addListener(eventType, listener);
     }
-    
-    
+
+
 }

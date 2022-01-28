@@ -15,10 +15,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 
-@SpringComponent
+//@SpringComponent
 public class DataGenerator {
 
-    @Bean
+  /*  @Bean
     public CommandLineRunner loadData(AreaRepository areaRepository, EvaluacionRepository evaluacionRepository,
             EstudianteRepository estudianteRepository, GrupoRepository grupoRepository, TareaRepository tareaRepository
             ) {
@@ -51,6 +51,6 @@ public class DataGenerator {
 
             logger.info("Generated demo data");
         };
-    }
+    }*/
 
 }

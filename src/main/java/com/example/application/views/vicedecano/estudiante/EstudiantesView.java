@@ -12,6 +12,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -185,6 +186,7 @@ public class EstudiantesView extends VerticalLayout {
         if (estudiante == null)
             return;
         dataService.deleteEstudiante(estudiante);
+        Notification.show("Estudiante eliminado");
         this.refreshGrid();
     }
 

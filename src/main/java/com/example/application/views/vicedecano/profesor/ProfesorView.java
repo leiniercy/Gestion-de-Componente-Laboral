@@ -24,6 +24,7 @@ import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -178,6 +179,7 @@ public class ProfesorView extends VerticalLayout{
         if (profesor == null)
             return;
         dataService.deleteProfesor(profesor);
+        Notification.show("Profesor añadido");
         this.refreshGrid();
     }
 
