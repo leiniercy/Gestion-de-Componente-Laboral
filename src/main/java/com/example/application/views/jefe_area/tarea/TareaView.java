@@ -16,6 +16,7 @@ import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.grid.Grid;
@@ -154,19 +155,33 @@ public class TareaView extends VerticalLayout {
     }
 
     private void deleteTarea(Tarea tarea) {
+
+        ConfirmDialog dialog = new ConfirmDialog();
+        dialog.setHeader(String.format("Eliminar %s?", tarea.getNombre()));
+        dialog.setText("Está seguro/a de que quiere eliminar esta tarea?");
+
+        dialog.setCancelText("Cancelar");
+        dialog.setCancelable(true);
+        dialog.addCancelListener(event ->{
+            this.refreshGrid();
+        });
+
+        dialog.setConfirmText("Eliminar");
+        dialog.setConfirmButtonTheme("error primary");
+        dialog.addConfirmListener(event -> {
+            dataService.deleteTarea(tarea);
+            Notification.show("Tarea eliminada");
+            this.refreshGrid();
+        });
+
         if (tarea == null)
             return;
-        dataService.deleteTarea(tarea);
-        Notification.show("Tarea eliminada");
-        this.refreshGrid();
+        else
+            dialog.open();
     }
     private void refreshGrid() {
-        if (dataService.findAllArea().size() > 0) {
             grid.setVisible(true);
             grid.setItems(dataService.findAllTareas());
-        } else {
-            grid.setVisible(false);
-        }
     }
 
     public void editTarea(Tarea tarea) {

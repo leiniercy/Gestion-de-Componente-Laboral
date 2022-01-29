@@ -15,6 +15,7 @@ import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.dependency.Uses;
@@ -33,12 +34,13 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+
 import javax.annotation.security.RolesAllowed;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- *
  * @author Leinier
  */
 
@@ -46,16 +48,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Route(value = "profesor-view", layout = MainLayout.class)
 @Uses(Icon.class)
 @RolesAllowed("vicedecano")
-public class ProfesorView extends VerticalLayout{
-    
+public class ProfesorView extends VerticalLayout {
+
     private Grid<Profesor> grid = new Grid<>(Profesor.class, false);
-    
+
     private DataService dataService;
 
     ProfesorForm form;
-    
+
     private GridListDataView<Profesor> gridListDataView;
-    
+
     private Grid.Column<Profesor> nombreColumn = grid.addColumn(Profesor::getNombre).setHeader("Nombre").setAutoWidth(true).setFlexGrow(0);
     private Grid.Column<Profesor> apellidosColumn = grid.addColumn(Profesor::getApellidos).setHeader("Apellidos").setAutoWidth(true).setFlexGrow(0);
     private Grid.Column<Profesor> userColumn = grid.addColumn(profesor -> profesor.getUser().getName()).setHeader("Usuario").setAutoWidth(true).setFlexGrow(0);
@@ -70,13 +72,13 @@ public class ProfesorView extends VerticalLayout{
         Button removeButton = new Button(VaadinIcon.TRASH.create());
         removeButton.addClickShortcut(Key.DELETE);
         removeButton.addClickListener(event -> this.deleteProfesor(profesor));
-        layout.add(editButton,removeButton);
+        layout.add(editButton, removeButton);
         return layout;
     }).setFlexGrow(0);
-    
 
-    public ProfesorView( @Autowired DataService service) {
-     
+
+    public ProfesorView(@Autowired DataService service) {
+
         this.dataService = service;
         addClassNames("profesor-view", "flex", "flex-col", "h-full");
         setSizeFull();
@@ -100,9 +102,9 @@ public class ProfesorView extends VerticalLayout{
         grid.asSingleSelect().addValueChangeListener(event
                 -> editProfesor(event.getValue()));
 
-        
+
     }
-    
+
     private void configureGrid() {
 
         HeaderRow headerRow = grid.appendHeaderRow();
@@ -112,7 +114,7 @@ public class ProfesorView extends VerticalLayout{
         headerRow.getCell(userColumn).setComponent(FiltrarUser());
         headerRow.getCell(solapinColumn).setComponent(FiltrarSolapin());
         headerRow.getCell(areaColumn).setComponent(FiltrarArea());
-        
+
 
         gridListDataView = grid.setItems(dataService.findAllProfesor());
         grid.addClassNames("profesor-grid");
@@ -128,7 +130,7 @@ public class ProfesorView extends VerticalLayout{
     private HorizontalLayout getToolbar() {
 
         addClassName("menu-items");
-        Html total = new Html("<span>Total: <b>" + dataService.countProfesor()+ "</b> profesores</span>");
+        Html total = new Html("<span>Total: <b>" + dataService.countProfesor() + "</b> profesores</span>");
 
         Button menuButton = new Button("Mostar/Ocultar Columnas");
         menuButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
@@ -146,7 +148,7 @@ public class ProfesorView extends VerticalLayout{
         addButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         addButton.addClickListener(click -> addProfesor());
 
-        HorizontalLayout toolbar = new HorizontalLayout(total,menuButton,addButton);
+        HorizontalLayout toolbar = new HorizontalLayout(total, menuButton, addButton);
         toolbar.setAlignItems(FlexComponent.Alignment.BASELINE);
         toolbar.setWidth("100%");
         toolbar.expand(total);
@@ -154,6 +156,7 @@ public class ProfesorView extends VerticalLayout{
 
         return toolbar;
     }
+
     private static class ColumnToggleContextMenu extends ContextMenu {
         public ColumnToggleContextMenu(Component target) {
             super(target);
@@ -176,20 +179,36 @@ public class ProfesorView extends VerticalLayout{
     }
 
     private void deleteProfesor(Profesor profesor) {
-        if (profesor == null)
+
+        ConfirmDialog dialog = new ConfirmDialog();
+        dialog.setHeader(String.format("Eliminar %s?", profesor.getStringNombreApellidos()));
+        dialog.setText("Está seguro/a de que quiere eliminar a este profesor?");
+
+        dialog.setCancelText("Cancelar");
+        dialog.setCancelable(true);
+        dialog.addCancelListener(event -> {
+            this.refreshGrid();
+        });
+
+        dialog.setConfirmText("Eliminar");
+        dialog.setConfirmButtonTheme("error primary");
+        dialog.addConfirmListener(event -> {
+            dataService.deleteProfesor(profesor);
+            Notification.show("Profesor eliminado");
+            this.refreshGrid();
+        });
+
+        if (profesor == null){
             return;
-        dataService.deleteProfesor(profesor);
-        Notification.show("Profesor añadido");
-        this.refreshGrid();
+        }else{
+            dialog.open();
+        }
+
     }
 
     private void refreshGrid() {
-        if (dataService.findAllArea().size() > 0) {
-            grid.setVisible(true);
-            grid.setItems(dataService.findAllProfesor());
-        } else {
-            grid.setVisible(false);
-        }
+        grid.setVisible(true);
+        grid.setItems(dataService.findAllProfesor());
     }
 
 
@@ -286,7 +305,7 @@ public class ProfesorView extends VerticalLayout{
         areaFilter.setWidth("100%");
         areaFilter.addValueChangeListener(
                 event -> gridListDataView
-                        .addFilter(profesor -> areAreaEqual(profesor, areaFilter) )
+                        .addFilter(profesor -> areAreaEqual(profesor, areaFilter))
         );
         return areaFilter;
     }
@@ -322,7 +341,5 @@ public class ProfesorView extends VerticalLayout{
         return true;
     }
 
-    
-    
-    
+
 }

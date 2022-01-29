@@ -17,6 +17,7 @@ import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -170,20 +171,36 @@ public class EvaluacionesView extends VerticalLayout {
     }
 
     private void deleteEvaluacion(Evaluacion evaluacion) {
+
+        ConfirmDialog dialog = new ConfirmDialog();
+        dialog.setHeader(String.format("Eliminar %s?", evaluacion.getNota()));
+        dialog.setText("Está seguro/a de que quiere eliminar esta evaluación?");
+
+        dialog.setCancelText("Cancelar");
+        dialog.setCancelable(true);
+        dialog.addCancelListener(event ->{
+            this.refreshGrid();
+        });
+
+        dialog.setConfirmText("Eliminar");
+        dialog.setConfirmButtonTheme("error primary");
+        dialog.addConfirmListener(event -> {
+            dataService.deleteEvaluacion(evaluacion);
+            Notification.show("Evaluación eliminada");
+            this.refreshGrid();
+        });
+
         if (evaluacion == null)
             return;
-        dataService.deleteEvaluacion(evaluacion);
-        Notification.show("Evaluación eliminada");
-        this.refreshGrid();
+        else {
+            dialog.open();
+        }
+
     }
 
     private void refreshGrid() {
-        if (dataService.findAllArea().size() > 0) {
             grid.setVisible(true);
             grid.setItems(dataService.findAllEvaluacion());
-        } else {
-            grid.setVisible(false);
-        }
     }
 
     public void editEvaluacion(Evaluacion evaluacion) {

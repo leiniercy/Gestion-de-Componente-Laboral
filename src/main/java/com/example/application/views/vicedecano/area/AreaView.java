@@ -12,11 +12,13 @@ import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.grid.editor.Editor;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -29,14 +31,15 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+
 import javax.annotation.security.RolesAllowed;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 /**
- *
  * @author Leinier
  */
 @PageTitle("Area")
@@ -66,7 +69,7 @@ public class AreaView extends VerticalLayout {
         Button removeButton = new Button(VaadinIcon.TRASH.create());
         removeButton.addClickShortcut(Key.DELETE);
         removeButton.addClickListener(e -> this.deleteArea(area));
-        layout.add(editButton,removeButton);
+        layout.add(editButton, removeButton);
         return layout;
     }).setFlexGrow(0);
 
@@ -74,7 +77,7 @@ public class AreaView extends VerticalLayout {
     public AreaView(
             @Autowired DataService dataService
     ) {
-        
+
         this.dataService = dataService;
         addClassNames("area-view", "flex", "flex-col", "h-full");
         setSizeFull();
@@ -142,23 +145,38 @@ public class AreaView extends VerticalLayout {
         closeEditor();
     }
 
+
     private void deleteArea(Area area) {
-        if (area == null)
-            return;
-        else{
+
+        ConfirmDialog dialog = new ConfirmDialog();
+        dialog.setHeader(String.format("Eliminar %s?", area.getNombre()));
+        dialog.setText("Está seguro/a de que quiere eliminar esta área?");
+
+        dialog.setCancelText("Cancelar");
+        dialog.setCancelable(true);
+        dialog.addCancelListener(event ->{
+            this.refreshGrid();
+        });
+
+        dialog.setConfirmText("Eliminar");
+        dialog.setConfirmButtonTheme("error primary");
+        dialog.addConfirmListener(event -> {
             dataService.deleteArea(area);
             Notification.show("Área eliminada");
             this.refreshGrid();
+        });
+
+        if (area == null)
+            return;
+        else {
+            dialog.open();
         }
     }
 
+
     private void refreshGrid() {
-        if (dataService.findAllArea().size() > 0) {
             grid.setVisible(true);
             grid.setItems(dataService.findAllArea());
-        } else {
-            grid.setVisible(false);
-        }
     }
 
 
@@ -182,8 +200,6 @@ public class AreaView extends VerticalLayout {
         form.setVisible(false);
         removeClassName("editing");
     }
-
-
 
 
     private void updateList() {
