@@ -5,7 +5,6 @@
  */
 package com.example.application.views.jefe_area.tarea;
 
-
 import com.example.application.data.entity.Estudiante;
 import com.example.application.data.entity.Tarea;
 import com.vaadin.flow.component.ComponentEvent;
@@ -19,6 +18,7 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
@@ -34,31 +34,27 @@ import java.util.List;
  * @author Leinier
  */
 public class TareaForm extends FormLayout {
-    
-    
-     private Tarea tarea;
+
+    private Tarea tarea;
 
     private TextField nombre = new TextField("Nombre");
-    private TextField descripcion  = new TextField("Descripción");
-     private DatePicker fecha_inicio = new DatePicker("Fecha de Inicio");
+    private TextArea descripcion = new TextArea("Descripción");
+    private DatePicker fecha_inicio = new DatePicker("Fecha de Inicio");
     private DatePicker fecha_fin = new DatePicker("Fecha de fin");
     private ComboBox<Estudiante> e = new ComboBox<>("Estudiante");
-    
+
     private Button save = new Button("Añadir", VaadinIcon.PLUS.create());
     private Button close = new Button("Cancelar", VaadinIcon.REFRESH.create());
 
-
     private BeanValidationBinder<Tarea> binder = new BeanValidationBinder<>(Tarea.class);
 
-    public TareaForm(List<Estudiante> estudiantes ) {
-        
+    public TareaForm(List<Estudiante> estudiantes) {
+
         addClassName("tarea-form");
 
         binder.bindInstanceFields(this);
 
-
         //Config form
-        
         //nombre
         nombre.setLabel("Nombre");
         nombre.getElement().setAttribute("nombre", "Ejemplo: Mi Área");
@@ -69,23 +65,25 @@ public class TareaForm extends FormLayout {
         nombre.setPattern("^[a-zA-Z][a-zA-Z\\s]+$");
         nombre.setErrorMessage("Solo letras, mínimo 2 caracteres y máximo 50");
         nombre.addValueChangeListener(event -> {
-            event.getSource().setHelperText(event.getValue().length() + "/" +50);
+            event.getSource().setHelperText(event.getValue().length() + "/" + 50);
         });
         //descripcion
         descripcion.setLabel("Descripión");
         descripcion.setWidthFull();
         descripcion.setMinLength(3);
         descripcion.setMaxLength(255);
-        descripcion.setPattern("^[a-zA-Z][a-zA-Z0-9\\s]*$");
+        descripcion.setMinHeight("100px");
+        descripcion.setMaxHeight("150px");
+//        descripcion.setPattern("^[a-zA-Z][a-zA-Z0-9\\s]*$");
         descripcion.setErrorMessage("Solo caracteres y numeros, mínimo 3 caracteres y  máximo 255");
         descripcion.setValueChangeMode(ValueChangeMode.EAGER);
         descripcion.addValueChangeListener(e -> {
             e.getSource().setHelperText(e.getValue().length() + "/" + 255);
         });
         //fecha_inicio
-        fecha_inicio.setMin( LocalDate.now(ZoneId.systemDefault()) );
+        fecha_inicio.setMin(LocalDate.now(ZoneId.systemDefault()));
         //fecha_fin
-        fecha_fin.setMin( LocalDate.now(ZoneId.systemDefault()) );
+        fecha_fin.setMin(LocalDate.now(ZoneId.systemDefault()));
         //e
         e.setItems(estudiantes);
         e.setItemLabelGenerator(Estudiante::getStringNombreApellidos);
@@ -100,7 +98,7 @@ public class TareaForm extends FormLayout {
     }
 
     private HorizontalLayout createButtonsLayout() {
-        
+
         save.addClickListener(event -> validateAndSave());
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         save.addClickShortcut(Key.ENTER);
@@ -108,10 +106,10 @@ public class TareaForm extends FormLayout {
         close.addClickListener(event -> fireEvent(new CloseEvent(this)));
         close.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         close.addClickShortcut(Key.ESCAPE);
-        
+
         binder.addStatusChangeListener(e -> save.setEnabled(binder.isValid()));
 
-        return new HorizontalLayout(save,close);
+        return new HorizontalLayout(save, close);
     }
 
     public void setTarea(Tarea tarea) {
@@ -170,8 +168,5 @@ public class TareaForm extends FormLayout {
             ComponentEventListener<T> listener) {
         return getEventBus().addListener(eventType, listener);
     }
-    
-    
-    
-    
+
 }

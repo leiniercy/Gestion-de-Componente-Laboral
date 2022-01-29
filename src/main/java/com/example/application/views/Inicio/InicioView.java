@@ -6,8 +6,6 @@
 package com.example.application.views.Inicio;
 
 import com.example.application.views.MainLayout;
-import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
@@ -30,11 +28,10 @@ public class InicioView extends VerticalLayout {
         setSpacing(false);
 
 
-        Image img = new Image("/images/empty-plant.png", "GCL");
+        Image img = new Image("/images/Fac4.png", "GCL");
         img.setWidthFull();
         img.setHeightFull();
         add(img);
-
 
         setSizeFull();
         setJustifyContentMode(JustifyContentMode.CENTER);

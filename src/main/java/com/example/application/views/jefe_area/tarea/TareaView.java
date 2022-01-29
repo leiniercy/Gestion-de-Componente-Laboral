@@ -6,9 +6,7 @@
 package com.example.application.views.jefe_area.tarea;
 
 import com.example.application.data.DataService;
-import com.example.application.data.entity.Area;
 import com.example.application.data.entity.Estudiante;
-import com.example.application.data.entity.Evaluacion;
 import com.example.application.data.entity.Tarea;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Html;
@@ -30,15 +28,15 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import java.time.LocalDate;
-import javax.annotation.security.RolesAllowed;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.annotation.security.RolesAllowed;
+import java.time.LocalDate;
 
 /**
  *
@@ -266,10 +264,19 @@ public class TareaView extends VerticalLayout {
         dateFilter.setPlaceholder("Filter");
         dateFilter.setClearButtonVisible(true);
         dateFilter.setWidth("100%");
-        dateFilter.addValueChangeListener(e->{
-            grid.setItems(dataService.searchTareaByFecha( dateFilter.getValue() ) );
-        });
+        dateFilter.addValueChangeListener(
+                event-> gridListDataView.addFilter(tarea -> areFechaInicioEqual(tarea,dateFilter))
+        );
         return dateFilter;
+    }
+
+    private boolean areFechaInicioEqual(Tarea tarea, DatePicker dateFilter) {
+        LocalDate dateFilterValue = dateFilter.getValue();
+        if (dateFilterValue != null) {
+            LocalDate tareaDate = tarea.getFecha_inicio();
+            return dateFilterValue.equals(tareaDate);
+        }
+        return true;
     }
 
     private DatePicker FiltrarFechaFin() {
@@ -277,10 +284,19 @@ public class TareaView extends VerticalLayout {
         dateFilter.setPlaceholder("Filter");
         dateFilter.setClearButtonVisible(true);
         dateFilter.setWidth("100%");
-        dateFilter.addValueChangeListener(e -> {
-            grid.setItems(dataService.searchTareaByFecha( dateFilter.getValue() ) );
-        });
+        dateFilter.addValueChangeListener(
+                event -> gridListDataView.addFilter(tarea -> areFechaInicioEqual(tarea,dateFilter))
+        );
         return dateFilter;
+    }
+
+    private boolean areFechaFinEqual(Tarea tarea, DatePicker dateFilter) {
+        LocalDate dateFilterValue = dateFilter.getValue();
+        if (dateFilterValue != null) {
+            LocalDate tareaDate = tarea.getFecha_fin();
+            return dateFilterValue.equals(tareaDate);
+        }
+        return true;
     }
 
 }

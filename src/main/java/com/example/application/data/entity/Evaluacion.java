@@ -6,25 +6,10 @@
 package com.example.application.data.entity;
 
 import com.example.application.data.AbstractEntity;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.validation.constraints.*;
+import lombok.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import org.hibernate.validator.constraints.Length;
+import javax.persistence.*;
+import javax.validation.constraints.*;
 
 /**
  *
@@ -48,7 +33,7 @@ public class Evaluacion extends AbstractEntity {
     @NotBlank(message = "campo vacío")
     @Column(name = "nota", nullable = false)
     @Size(message = "La nota es cualitativa (B,R,M)", max = 1, min = 1)
-    @Pattern(regexp = "^(B|M|R)$")
+    @Pattern(regexp = "^(B|M|R)$", message = "Evaluación incorrecta")
     private String nota;
 
 //    @NotEmpty

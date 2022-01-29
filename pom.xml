@@ -143,16 +143,16 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
         </dependency>
-
-       <!-- <dependency>
+-->
+        <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
-        </dependency>-->
+        </dependency>
 
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
@@ -208,7 +208,6 @@
                     <maxAttempts>240</maxAttempts>
                 </configuration>
             </plugin>
-
             <!--
                 Take care of synchronizing java dependencies and imports in
                 package.json and main.js files.
@@ -226,8 +225,25 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludeDevtools>false</excludeDevtools>
+                </configuration>
+            </plugin>
+            <!--Complemento de implementación en caliente-->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <fork>true</fork> <!--Sin esta configuración, devtools no funcionará-->
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+
 
     <profiles>
         <profile>

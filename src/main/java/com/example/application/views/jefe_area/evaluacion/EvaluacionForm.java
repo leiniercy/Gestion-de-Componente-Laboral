@@ -19,6 +19,7 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
@@ -36,7 +37,7 @@ public class EvaluacionForm extends FormLayout {
     private Evaluacion evaluacion;
 
     private TextField nota = new TextField();
-    private TextField descripcion = new TextField();
+    private TextArea descripcion = new TextArea();
     private ComboBox<Estudiante> estudiante = new ComboBox<>("Estudiante");
     private ComboBox<Tarea> tarea = new ComboBox<>("Tarea");
     private ComboBox<String> status = new ComboBox<>("Status");
@@ -66,10 +67,14 @@ public class EvaluacionForm extends FormLayout {
         nota.setErrorMessage("Solo letras, mínimo 1 caracteres y máximo 1");
 
         //descripcion
+        descripcion.setLabel("Descripción");
         descripcion.setWidthFull();
         descripcion.setMinLength(3);
         descripcion.setMaxLength(255);
-        descripcion.setPattern("^[a-zA-Z][a-zA-Z\\s]+$");
+        descripcion.setMinHeight("100px");
+        descripcion.setMaxHeight("150px");
+
+      //  descripcion.setPattern("^[a-zA-Z][a-zA-Z\\s]+$");
         descripcion.setErrorMessage("Solo caracteres y numeros, mínimo 3 caracteres y  máximo 255");
         descripcion.setValueChangeMode(ValueChangeMode.EAGER);
         descripcion.addValueChangeListener(e -> {

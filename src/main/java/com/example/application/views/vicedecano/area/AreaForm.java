@@ -13,9 +13,10 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.value.ValueChangeMode;
@@ -30,7 +31,7 @@ public class AreaForm extends FormLayout {
     private Area area;
 
     private TextField nombre = new TextField();
-    private TextField descripcion = new TextField();
+    private TextArea descripcion = new TextArea();
 
     private Button save = new Button("Añadir", VaadinIcon.PLUS.create());
     private Button close = new Button("Cancelar", VaadinIcon.REFRESH.create());
@@ -53,7 +54,7 @@ public class AreaForm extends FormLayout {
         nombre.setPattern("^[a-zA-Z][a-zA-Z\\s]+$");
         nombre.setErrorMessage("Solo letras, mínimo 2 caracteres y máximo 50");
         nombre.addValueChangeListener(event -> {
-            event.getSource().setHelperText(event.getValue().length() + "/" +50);
+            event.getSource().setHelperText(event.getValue().length() + "/" + 50);
         });
 
         /*
@@ -74,7 +75,9 @@ public class AreaForm extends FormLayout {
         descripcion.setWidthFull();
         descripcion.setMinLength(3);
         descripcion.setMaxLength(255);
-        descripcion.setPattern("^[a-zA-Z0-9][a-zA-Z0-9\\s]*$");
+        descripcion.setMinHeight("100px");
+        descripcion.setMaxHeight("150px");
+        //descripcion.setPattern("^[a-zA-Z0-9][a-zA-Z0-9\\s]*$");
         descripcion.setErrorMessage("Solo caracteres y numeros, mínimo 3 caracteres y  máximo 255");
         descripcion.setValueChangeMode(ValueChangeMode.EAGER);
         descripcion.addValueChangeListener(e -> {
