@@ -8,36 +8,28 @@ package com.example.application.views.vicedecano.area;
 import com.example.application.data.DataService;
 import com.example.application.data.entity.Area;
 import com.example.application.views.MainLayout;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.grid.editor.Editor;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.orderedlayout.*;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-
-import javax.annotation.security.RolesAllowed;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
+import javax.annotation.security.RolesAllowed;
 
 /**
  * @author Leinier
@@ -79,7 +71,7 @@ public class AreaView extends VerticalLayout {
     ) {
 
         this.dataService = dataService;
-        addClassNames("area-view", "flex", "flex-col", "h-full");
+        addClassNames("area-view", "flex", "flex-col");
         setSizeFull();
         configureGrid();
 
@@ -88,14 +80,29 @@ public class AreaView extends VerticalLayout {
         form.addListener(AreaForm.SaveEvent.class, this::saveArea);
         form.addListener(AreaForm.CloseEvent.class, e -> closeEditor());
 
-        FlexLayout content = new FlexLayout(grid, form);
-        content.setFlexGrow(2, grid);
+
+        Section section1 = new Section(grid);
+        Scroller scroller = new Scroller(new Div(section1));
+        scroller.setScrollDirection(Scroller.ScrollDirection.VERTICAL);
+        scroller.getStyle()
+                .set("border-bottom", "1px solid var(--lumo-contrast-20pct)")
+                .set("padding", "var(--lumo-space-m)");
+
+
+        FlexLayout content = new FlexLayout(scroller, form);
+        content.setFlexGrow(2, scroller);
         content.setFlexGrow(1, form);
         content.setFlexShrink(0, form);
         content.addClassNames("content", "gap-m");
         content.setSizeFull();
 
-        add(getToolbar(), content);
+        HorizontalLayout ly = new HorizontalLayout(new Span(VaadinIcon.ACADEMY_CAP.create()),new H6("Universidad de Ciencias Informáticas") );
+        ly.setAlignItems(Alignment.BASELINE);
+        Footer footer = new Footer(ly);
+        footer.getStyle().set("padding", "var(--lumo-space-wide-m)");
+
+
+        add(getToolbar(), content,footer);
         updateList();
         closeEditor();
         grid.asSingleSelect().addValueChangeListener(event
@@ -110,31 +117,34 @@ public class AreaView extends VerticalLayout {
         headerRow.getCell(descripcionColumn).setComponent(FiltrarDescripcion());
 
         gridListDataView = grid.setItems(dataService.findAllArea());
-        grid.addClassNames("estudiante-grid");
+        grid.addClassNames("area-grid");
         grid.setAllRowsVisible(true);
         grid.setSizeFull();
         grid.setHeightFull();
-        //grid.addThemeVariants(GridVariant.LUMO_COLUMN_BORDERS);
+        grid.addThemeVariants(GridVariant.LUMO_COLUMN_BORDERS);
         grid.addThemeVariants(GridVariant.LUMO_COMPACT);
         grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
         grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
-        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COLUMN_BORDERS);
+//        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COLUMN_BORDERS);
 
     }
 
-    private HorizontalLayout getToolbar() {
+    private Component getToolbar() {
 
         addClassName("menu-items");
         Html total = new Html("<span>Total: <b>" + dataService.countArea() + "</b> areas</span>");
 
         Button addButton = new Button("Añadir Área", VaadinIcon.USER.create());
-        addButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+//        addButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         addButton.addClickListener(click -> addArea());
+
 
         HorizontalLayout toolbar = new HorizontalLayout(total, addButton);
         toolbar.setAlignItems(FlexComponent.Alignment.BASELINE);
         toolbar.setWidth("100%");
         toolbar.expand(total);
+        toolbar.getStyle()
+                .set("padding", "var(--lumo-space-wide-m)");
 
         return toolbar;
     }

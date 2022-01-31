@@ -24,14 +24,11 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.gridpro.GridPro;
-import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.orderedlayout.*;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
@@ -112,14 +109,28 @@ public class EvaluacionesView extends VerticalLayout {
         form.addListener(EvaluacionForm.SaveEvent.class, this::saveEvaluacion);
         form.addListener(EvaluacionForm.CloseEvent.class, e -> closeEditor());
 
-        FlexLayout content = new FlexLayout(grid, form);
-        content.setFlexGrow(2, grid);
+        Section section1 = new Section(grid);
+        Scroller scroller = new Scroller(new Div(section1));
+        scroller.setScrollDirection(Scroller.ScrollDirection.VERTICAL);
+        scroller.getStyle()
+                .set("border-bottom", "1px solid var(--lumo-contrast-20pct)")
+                .set("padding", "var(--lumo-space-m)");
+
+
+        FlexLayout content = new FlexLayout(scroller, form);
+        content.setFlexGrow(2, scroller);
         content.setFlexGrow(1, form);
         content.setFlexShrink(0, form);
         content.addClassNames("content", "gap-m");
         content.setSizeFull();
 
-        add(getToolbar(), content);
+        HorizontalLayout ly = new HorizontalLayout(new Span(VaadinIcon.ACADEMY_CAP.create()),new H6("Universidad de Ciencias Informáticas") );
+        ly.setAlignItems(Alignment.BASELINE);
+        Footer footer = new Footer(ly);
+        footer.getStyle().set("padding", "var(--lumo-space-wide-m)");
+
+
+        add(getToolbar(), content,footer);
         updateList();
         closeEditor();
         grid.asSingleSelect().addValueChangeListener(event
@@ -138,10 +149,10 @@ public class EvaluacionesView extends VerticalLayout {
 
         gridListDataView = grid.setItems(dataService.findAllEvaluacion());
         grid.addClassNames("evaluacion-grid");
+        grid.setAllRowsVisible(true);
         grid.setSizeFull();
         grid.setHeightFull();
-        grid.getColumns().forEach(col -> col.setAutoWidth(true));
-        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COLUMN_BORDERS);
+        grid.addThemeVariants(GridVariant.LUMO_COLUMN_BORDERS);
         grid.addThemeVariants(GridVariant.LUMO_COMPACT);
         grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
         grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
@@ -153,13 +164,15 @@ public class EvaluacionesView extends VerticalLayout {
         Html total = new Html("<span>Total: <b>" + dataService.countEvaluacion() + "</b> evaluaciones</span>");
 
         Button addButton = new Button("Añadir Evaluación ", VaadinIcon.USER.create());
-        addButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+      //  addButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         addButton.addClickListener(click -> addEvaluacion());
 
         HorizontalLayout toolbar = new HorizontalLayout(total, addButton);
         toolbar.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
         toolbar.setWidth("100%");
         toolbar.expand(total);
+        toolbar.getStyle()
+                .set("padding", "var(--lumo-space-wide-m)");
 
         return toolbar;
     }

@@ -57,7 +57,7 @@ public class Profesor extends AbstractEntity {
     @Email
     @NotEmpty
     @NotBlank(message = "El campo no debe estar vacío")
-    @Pattern(regexp = "^[a-zA-Z][a-zA-Z0-9_\\.][a-zA-Z0-9]+(@estudiantes\\.uci\\.cu)$" , message = "Por favor escriba un correo válido" )
+    @Pattern(regexp = "^[a-zA-Z][a-zA-Z0-9_\\.][a-zA-Z0-9]+(@uci\\.cu)$" , message = "Por favor escriba un correo válido" )
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 

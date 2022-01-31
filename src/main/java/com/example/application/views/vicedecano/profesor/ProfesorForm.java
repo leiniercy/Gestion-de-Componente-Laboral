@@ -83,12 +83,9 @@ public class ProfesorForm extends FormLayout {
         user.setItemLabelGenerator(User::getName);
         //email
         email.setLabel("Correo");
-        email.setValue("usuario");
-        email.setSuffixComponent(new Div(new Text("@estudiantes.uci.cu")));
-        email.addThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
-        nombre.setAutoselect(true);
-        nombre.setClearButtonVisible(true);
-        email.setPattern("^[a-zA-Z][a-zA-Z0-9_\\.][a-zA-Z0-9]+(@estudiantes\\.uci\\.cu)$");
+        email.setPlaceholder("usuario@uci.cu");
+        email.setClearButtonVisible(true);
+        email.setPattern("^[a-zA-Z][a-zA-Z0-9_\\.][a-zA-Z0-9]+(@uci\\.cu)$");
         email.setErrorMessage("Por favor escriba un correo válido");
         email.setClearButtonVisible(true);
         //solapin

@@ -3,12 +3,12 @@ package com.example.application.views;
 import com.example.application.data.entity.User;
 import com.example.application.security.AuthenticatedUser;
 import com.example.application.views.Inicio.InicioView;
-import com.example.application.views.jefe_area.tarea.TareaView;
 import com.example.application.views.estudiante.ListadeTareasEstudianteView;
 import com.example.application.views.jefe_area.EstadisticasJAView;
 import com.example.application.views.jefe_area.evaluacion.EvaluacionesView;
-import com.example.application.views.vicedecano.area.AreaView;
+import com.example.application.views.jefe_area.tarea.TareaView;
 import com.example.application.views.vicedecano.DashboardView;
+import com.example.application.views.vicedecano.area.AreaView;
 import com.example.application.views.vicedecano.estudiante.EstudiantesView;
 import com.example.application.views.vicedecano.lista_evaluaciones.ListadeEvaluacionesVicedecanoView;
 import com.example.application.views.vicedecano.lista_tareas.ListadeTareasVicedecanoView;
@@ -19,21 +19,13 @@ import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
-import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.html.Footer;
-import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.ListItem;
-import com.vaadin.flow.component.html.Nav;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.html.UnorderedList;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.tabs.Tab;
-import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -164,9 +156,9 @@ public class MainLayout extends AppLayout {
 
             //Vicedecano
             new MenuItemInfo("Estadisticas", "la la-chart-bar", DashboardView.class), //
+            new MenuItemInfo("Area", "la la-university", AreaView.class), //
             new MenuItemInfo("Jefe de Área", "la la-user", ProfesorView.class), //
             new MenuItemInfo("Estudiantes", "la la-user-graduate", EstudiantesView.class), //
-            new MenuItemInfo("Area", "la la-university", AreaView.class), //
             new MenuItemInfo("Lista de Evaluaciones", "la la-etsy", ListadeEvaluacionesVicedecanoView.class), //
             new MenuItemInfo("Lista de Tareas", "la la-tasks", ListadeTareasVicedecanoView.class), //
 

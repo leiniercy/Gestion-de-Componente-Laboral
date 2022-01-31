@@ -23,13 +23,11 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.orderedlayout.*;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
@@ -89,14 +87,28 @@ public class ProfesorView extends VerticalLayout {
         form.addListener(ProfesorForm.SaveEvent.class, this::saveProfesor);
         form.addListener(ProfesorForm.CloseEvent.class, e -> closeEditor());
 
-        FlexLayout content = new FlexLayout(grid, form);
-        content.setFlexGrow(2, grid);
+        Section section1 = new Section(grid);
+        Scroller scroller = new Scroller(new Div(section1));
+        scroller.setScrollDirection(Scroller.ScrollDirection.VERTICAL);
+        scroller.getStyle()
+                .set("border-bottom", "1px solid var(--lumo-contrast-20pct)")
+                .set("padding", "var(--lumo-space-m)");
+
+
+        FlexLayout content = new FlexLayout(scroller, form);
+        content.setFlexGrow(2, scroller);
         content.setFlexGrow(1, form);
         content.setFlexShrink(0, form);
         content.addClassNames("content", "gap-m");
         content.setSizeFull();
 
-        add(getToolbar(), content);
+        HorizontalLayout ly = new HorizontalLayout(new Span(VaadinIcon.ACADEMY_CAP.create()),new H6("Universidad de Ciencias Informáticas") );
+        ly.setAlignItems(Alignment.BASELINE);
+        Footer footer = new Footer(ly);
+        footer.getStyle().set("padding", "var(--lumo-space-wide-m)");
+
+
+        add(getToolbar(), content,footer);
         updateList();
         closeEditor();
         grid.asSingleSelect().addValueChangeListener(event
@@ -118,13 +130,13 @@ public class ProfesorView extends VerticalLayout {
 
         gridListDataView = grid.setItems(dataService.findAllProfesor());
         grid.addClassNames("profesor-grid");
+        grid.setAllRowsVisible(true);
         grid.setSizeFull();
         grid.setHeightFull();
-        grid.getColumns().forEach(col -> col.setAutoWidth(true));
+        grid.addThemeVariants(GridVariant.LUMO_COLUMN_BORDERS);
         grid.addThemeVariants(GridVariant.LUMO_COMPACT);
         grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
         grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
-        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COLUMN_BORDERS);
     }
 
     private HorizontalLayout getToolbar() {
@@ -133,7 +145,7 @@ public class ProfesorView extends VerticalLayout {
         Html total = new Html("<span>Total: <b>" + dataService.countProfesor() + "</b> profesores</span>");
 
         Button menuButton = new Button("Mostar/Ocultar Columnas");
-        menuButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+        //menuButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         ProfesorView.ColumnToggleContextMenu columnToggleContextMenu = new ProfesorView.ColumnToggleContextMenu(
                 menuButton);
         columnToggleContextMenu.addColumnToggleItem("Nombre", nombreColumn);
@@ -145,14 +157,15 @@ public class ProfesorView extends VerticalLayout {
 
 
         Button addButton = new Button("Añadir Profesor", VaadinIcon.USER.create());
-        addButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+     //   addButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         addButton.addClickListener(click -> addProfesor());
 
         HorizontalLayout toolbar = new HorizontalLayout(total, menuButton, addButton);
         toolbar.setAlignItems(FlexComponent.Alignment.BASELINE);
         toolbar.setWidth("100%");
         toolbar.expand(total);
-
+        toolbar.getStyle()
+                .set("padding", "var(--lumo-space-wide-m)");
 
         return toolbar;
     }
