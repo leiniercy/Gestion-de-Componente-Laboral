@@ -27,6 +27,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.*;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.renderer.LocalDateRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -35,9 +36,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.security.RolesAllowed;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
- *
  * @author Leinier
  */
 @PageTitle("Tarea")
@@ -56,12 +57,12 @@ public class TareaView extends VerticalLayout {
 
     private Grid.Column<Tarea> nombreColumn = grid.addColumn(Tarea::getNombre).setHeader("Nombre").setAutoWidth(true).setFlexGrow(0);
     private Grid.Column<Tarea> descripcionColumn = grid.addColumn(Tarea::getDescripcion).setHeader("Descripción").setAutoWidth(true).setFlexGrow(0);
-    private Grid.Column<Tarea> fecha_inicioColumn
-            = grid.addColumn(Tarea::getFecha_inicio)
+    private Grid.Column<Tarea> fecha_inicioColumn =
+             grid.addColumn(new LocalDateRenderer<>(tarea -> tarea.getFecha_inicio(), DateTimeFormatter.ofPattern("dd/MM/yyyy")))
             .setComparator(tarea -> tarea.getFecha_inicio())
             .setHeader("Fecha de inicio").setAutoWidth(true).setFlexGrow(0);
     private Grid.Column<Tarea> fecha_finColumn
-            = grid.addColumn(Tarea::getFecha_fin)
+            = grid.addColumn(new LocalDateRenderer<>(tarea -> tarea.getFecha_fin(), DateTimeFormatter.ofPattern("dd/MM/yyyy")))
             .setComparator(tarea -> tarea.getFecha_fin())
             .setHeader("Fecha de fin").setAutoWidth(true).setFlexGrow(0);
     private Grid.Column<Tarea> estudianteColumn =
@@ -77,9 +78,10 @@ public class TareaView extends VerticalLayout {
         Button removeButton = new Button(VaadinIcon.TRASH.create());
         removeButton.addClickShortcut(Key.DELETE);
         removeButton.addClickListener(e -> this.deleteTarea(tarea));
-        layout.add(editButton,removeButton);
+        layout.add(editButton, removeButton);
         return layout;
     }).setFlexGrow(0);
+
     public TareaView(@Autowired DataService dataService) {
 
         this.dataService = dataService;
@@ -107,13 +109,13 @@ public class TareaView extends VerticalLayout {
         content.addClassNames("content", "gap-m");
         content.setSizeFull();
 
-        HorizontalLayout ly = new HorizontalLayout(new Span(VaadinIcon.ACADEMY_CAP.create()),new H6("Universidad de Ciencias Informáticas") );
+        HorizontalLayout ly = new HorizontalLayout(new Span(VaadinIcon.ACADEMY_CAP.create()), new H6("Universidad de Ciencias Informáticas"));
         ly.setAlignItems(Alignment.BASELINE);
         Footer footer = new Footer(ly);
         footer.getStyle().set("padding", "var(--lumo-space-wide-m)");
 
 
-        add(getToolbar(), content,footer);
+        add(getToolbar(), content, footer);
         updateList();
         closeEditor();
         grid.asSingleSelect().addValueChangeListener(event
@@ -146,7 +148,7 @@ public class TareaView extends VerticalLayout {
         Html total = new Html("<span>Total: <b>" + dataService.countTarea() + "</b> tareas</span>");
 
         Button addButton = new Button("Añadir Tarea", VaadinIcon.USER.create());
-      //  addButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+        //  addButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         addButton.addClickListener(click -> addTarea());
 
         HorizontalLayout toolbar = new HorizontalLayout(total, addButton);
@@ -173,7 +175,7 @@ public class TareaView extends VerticalLayout {
 
         dialog.setCancelText("Cancelar");
         dialog.setCancelable(true);
-        dialog.addCancelListener(event ->{
+        dialog.addCancelListener(event -> {
             this.refreshGrid();
         });
 
@@ -190,9 +192,10 @@ public class TareaView extends VerticalLayout {
         else
             dialog.open();
     }
+
     private void refreshGrid() {
-            grid.setVisible(true);
-            grid.setItems(dataService.findAllTareas());
+        grid.setVisible(true);
+        grid.setItems(dataService.findAllTareas());
     }
 
     public void editTarea(Tarea tarea) {
@@ -256,11 +259,12 @@ public class TareaView extends VerticalLayout {
         estudiantefilter.setPlaceholder("Filtrar");
         estudiantefilter.setClearButtonVisible(true);
         estudiantefilter.setWidth("100%");
-        estudiantefilter.addValueChangeListener(
-                event -> gridListDataView
-                        .addFilter(tarea ->  areEstudiantesEqual( tarea, estudiantefilter))
-        );
+        estudiantefilter.addValueChangeListener(event -> {
+            if (estudiantefilter.getValue() == null)
+                gridListDataView = grid.setItems(dataService.findAllTareas());
+            else gridListDataView.addFilter(tarea -> areEstudiantesEqual(tarea, estudiantefilter));
 
+        });
         return estudiantefilter;
     }
 
@@ -277,17 +281,19 @@ public class TareaView extends VerticalLayout {
         dateFilter.setPlaceholder("Filter");
         dateFilter.setClearButtonVisible(true);
         dateFilter.setWidth("100%");
-        dateFilter.addValueChangeListener(
-                event-> gridListDataView.addFilter(tarea -> areFechaInicioEqual(tarea,dateFilter))
-        );
+        dateFilter.addValueChangeListener(event -> {
+            if(dateFilter.getValue() == null)
+                gridListDataView =  grid.setItems(dataService.findAllTareas());
+            else gridListDataView.addFilter(tarea -> areFechaInicioEqual(tarea, dateFilter));
+        });
         return dateFilter;
     }
 
     private boolean areFechaInicioEqual(Tarea tarea, DatePicker dateFilter) {
-        LocalDate dateFilterValue = dateFilter.getValue();
+        String dateFilterValue = dateFilter.getValue().toString();
+        String tareaDate = tarea.getFecha_inicio().toString();
         if (dateFilterValue != null) {
-            LocalDate tareaDate = tarea.getFecha_inicio();
-            return dateFilterValue.equals(tareaDate);
+            return StringUtils.equals(dateFilterValue,tareaDate);
         }
         return true;
     }
@@ -297,19 +303,23 @@ public class TareaView extends VerticalLayout {
         dateFilter.setPlaceholder("Filter");
         dateFilter.setClearButtonVisible(true);
         dateFilter.setWidth("100%");
-        dateFilter.addValueChangeListener(
-                event -> gridListDataView.addFilter(tarea -> areFechaInicioEqual(tarea,dateFilter))
-        );
+        dateFilter.addValueChangeListener(event -> {
+            if(dateFilter.getValue() == null)
+                gridListDataView =  grid.setItems(dataService.findAllTareas());
+            else  gridListDataView.addFilter(tarea -> areFechaFinEqual(tarea, dateFilter));
+        });
         return dateFilter;
     }
 
     private boolean areFechaFinEqual(Tarea tarea, DatePicker dateFilter) {
-        LocalDate dateFilterValue = dateFilter.getValue();
+        String dateFilterValue = dateFilter.getValue().toString();
+        String date = tarea.getFecha_fin().toString();
         if (dateFilterValue != null) {
-            LocalDate tareaDate = tarea.getFecha_fin();
-            return dateFilterValue.equals(tareaDate);
+            return StringUtils.equals(dateFilterValue,date);
         }
         return true;
     }
+
+
 
 }

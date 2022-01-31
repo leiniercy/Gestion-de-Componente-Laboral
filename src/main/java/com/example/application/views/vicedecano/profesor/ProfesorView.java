@@ -316,10 +316,11 @@ public class ProfesorView extends VerticalLayout {
         areaFilter.setPlaceholder("Filtrar");
         areaFilter.setClearButtonVisible(true);
         areaFilter.setWidth("100%");
-        areaFilter.addValueChangeListener(
-                event -> gridListDataView
-                        .addFilter(profesor -> areAreaEqual(profesor, areaFilter))
-        );
+        areaFilter.addValueChangeListener(event -> {
+            if (areaFilter.getValue() == null)
+                gridListDataView = grid.setItems(dataService.findAllProfesor());
+            else gridListDataView.addFilter(profesor -> areAreaEqual(profesor, areaFilter));
+        });
         return areaFilter;
     }
 
@@ -338,11 +339,11 @@ public class ProfesorView extends VerticalLayout {
         userFilter.setPlaceholder("Filtrar");
         userFilter.setClearButtonVisible(true);
         userFilter.setWidth("100%");
-        userFilter.addValueChangeListener(
-                event -> gridListDataView
-                        .addFilter(profesor -> areUserEqual(profesor, userFilter))
-        );
-
+        userFilter.addValueChangeListener(event -> {
+            if(userFilter.getValue() == null)
+                gridListDataView = grid.setItems(dataService.findAllProfesor());
+            else gridListDataView.addFilter(profesor -> areUserEqual(profesor, userFilter));
+        });
         return userFilter;
     }
 

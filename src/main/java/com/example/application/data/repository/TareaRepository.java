@@ -6,12 +6,13 @@
 package com.example.application.data.repository;
 
 import com.example.application.data.entity.Tarea;
-import java.time.LocalDate;
-import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
+import java.util.List;
 
 /**
  *
@@ -31,8 +32,8 @@ public interface TareaRepository extends JpaRepository<Tarea, Integer> {
 
     //filtrar pot fecha
     @Query("SELECT t from Tarea t JOIN Estudiante e on t.id = e.id "
-            + " WHERE t.fecha_inicio = searchTerm "
-            + " or t.fecha_fin = searchTerm"
+            + " WHERE t.fecha_inicio = :searchTerm "
+            + " or t.fecha_fin = :searchTerm "
     )
     List<Tarea> searchFecha(@Param("searchTerm") LocalDate searchTerm);
 

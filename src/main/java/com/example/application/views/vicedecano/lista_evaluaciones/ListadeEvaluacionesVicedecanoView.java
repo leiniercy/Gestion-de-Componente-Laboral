@@ -169,10 +169,11 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
         filterEstudiante.setPlaceholder("Filtrar");
         filterEstudiante.setClearButtonVisible(true);
         filterEstudiante.setWidth("100%");
-        filterEstudiante.addValueChangeListener(
-                event -> gridListDataView
-                        .addFilter(evaluacion -> areEstudiantesEqual(evaluacion , filterEstudiante))
-        );
+        filterEstudiante.addValueChangeListener(event -> {
+            if (filterEstudiante.getValue() == null)
+                gridListDataView = grid.setItems(dataService.findAllEvaluacion());
+            else gridListDataView.addFilter(evaluacion -> areEstudiantesEqual(evaluacion, filterEstudiante));
+        });
         filterRow.getCell(estudianteColumn).setComponent(filterEstudiante);
 
         ComboBox<Tarea> filterTarea = new ComboBox<>();
@@ -181,10 +182,11 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
         filterTarea.setPlaceholder("Filter");
         filterTarea.setClearButtonVisible(true);
         filterTarea.setWidth("100%");
-        filterTarea.addValueChangeListener(
-                event -> gridListDataView
-                        .addFilter(evaluacion -> areTareasEqual(evaluacion, filterTarea))
-        );
+        filterTarea.addValueChangeListener(event -> {
+            if (filterTarea.getValue() == null)
+                gridListDataView = grid.setItems(dataService.findAllEvaluacion());
+            else gridListDataView.addFilter(evaluacion -> areTareasEqual(evaluacion, filterTarea));
+        });
         filterRow.getCell(tareaColumn).setComponent(filterTarea);
 
         ComboBox<String> statusFilter = new ComboBox<>();
@@ -216,6 +218,7 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
         }
         return true;
     }
+
     private boolean areTareasEqual(Evaluacion evaluacion, ComboBox<Tarea> filterTarea) {
         String tareaFilterValue = filterTarea.getValue().getNombre();
         if (tareaFilterValue != null) {

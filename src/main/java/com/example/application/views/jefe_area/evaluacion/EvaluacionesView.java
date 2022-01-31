@@ -76,11 +76,11 @@ public class EvaluacionesView extends VerticalLayout {
             .setHeader("Tarea").setAutoWidth(true).setFlexGrow(0);
     private Grid.Column<Evaluacion> statusColumn
             = grid.addEditColumn(Evaluacion::getStatus, new ComponentRenderer<>(evaluacion -> {
-                Span span = new Span();
-                span.setText(evaluacion.getStatus());
-                span.getElement().setAttribute("theme", "badge " + evaluacion.getStatus().toLowerCase());
-                return span;
-            })).select((item, newValue) -> item.setStatus(newValue), Arrays.asList("Pendiente", "Completado", "No Completado"))
+        Span span = new Span();
+        span.setText(evaluacion.getStatus());
+        span.getElement().setAttribute("theme", "badge " + evaluacion.getStatus().toLowerCase());
+        return span;
+    })).select((item, newValue) -> item.setStatus(newValue), Arrays.asList("Pendiente", "Completado", "No Completado"))
             .setComparator(evaluacion -> evaluacion.getStatus()).setHeader("Estatus");
 
     private Grid.Column<Evaluacion> editColumn = grid.addComponentColumn(evaluacion -> {
@@ -124,13 +124,13 @@ public class EvaluacionesView extends VerticalLayout {
         content.addClassNames("content", "gap-m");
         content.setSizeFull();
 
-        HorizontalLayout ly = new HorizontalLayout(new Span(VaadinIcon.ACADEMY_CAP.create()),new H6("Universidad de Ciencias Informáticas") );
+        HorizontalLayout ly = new HorizontalLayout(new Span(VaadinIcon.ACADEMY_CAP.create()), new H6("Universidad de Ciencias Informáticas"));
         ly.setAlignItems(Alignment.BASELINE);
         Footer footer = new Footer(ly);
         footer.getStyle().set("padding", "var(--lumo-space-wide-m)");
 
 
-        add(getToolbar(), content,footer);
+        add(getToolbar(), content, footer);
         updateList();
         closeEditor();
         grid.asSingleSelect().addValueChangeListener(event
@@ -164,7 +164,7 @@ public class EvaluacionesView extends VerticalLayout {
         Html total = new Html("<span>Total: <b>" + dataService.countEvaluacion() + "</b> evaluaciones</span>");
 
         Button addButton = new Button("Añadir Evaluación ", VaadinIcon.USER.create());
-      //  addButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+        //  addButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         addButton.addClickListener(click -> addEvaluacion());
 
         HorizontalLayout toolbar = new HorizontalLayout(total, addButton);
@@ -191,7 +191,7 @@ public class EvaluacionesView extends VerticalLayout {
 
         dialog.setCancelText("Cancelar");
         dialog.setCancelable(true);
-        dialog.addCancelListener(event ->{
+        dialog.addCancelListener(event -> {
             this.refreshGrid();
         });
 
@@ -212,8 +212,8 @@ public class EvaluacionesView extends VerticalLayout {
     }
 
     private void refreshGrid() {
-            grid.setVisible(true);
-            grid.setItems(dataService.findAllEvaluacion());
+        grid.setVisible(true);
+        grid.setItems(dataService.findAllEvaluacion());
     }
 
     public void editEvaluacion(Evaluacion evaluacion) {
@@ -279,10 +279,11 @@ public class EvaluacionesView extends VerticalLayout {
         filterEstudiante.setPlaceholder("Filtrar");
         filterEstudiante.setClearButtonVisible(true);
         filterEstudiante.setWidth("100%");
-        filterEstudiante.addValueChangeListener(
-                event -> gridListDataView
-                        .addFilter(evaluacion -> areEstudiantesEqual(evaluacion, filterEstudiante))
-        );
+        filterEstudiante.addValueChangeListener(event -> {
+            if (filterEstudiante.getValue() == null)
+                gridListDataView = grid.setItems(dataService.findAllEvaluacion());
+            else gridListDataView.addFilter(evaluacion -> areEstudiantesEqual(evaluacion, filterEstudiante));
+        });
         return filterEstudiante;
     }
 
@@ -302,11 +303,11 @@ public class EvaluacionesView extends VerticalLayout {
         filterTarea.setPlaceholder("Filter");
         filterTarea.setClearButtonVisible(true);
         filterTarea.setWidth("100%");
-        filterTarea.addValueChangeListener(
-                event -> gridListDataView
-                        .addFilter(evaluacion -> areTareasEqual(evaluacion, filterTarea))
-        );
-
+        filterTarea.addValueChangeListener(event -> {
+            if (filterTarea.getValue() == null)
+                gridListDataView = grid.setItems(dataService.findAllEvaluacion());
+            else gridListDataView.addFilter(evaluacion -> areTareasEqual(evaluacion, filterTarea));
+        });
         return filterTarea;
     }
 

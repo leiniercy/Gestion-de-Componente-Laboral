@@ -23,6 +23,7 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.data.renderer.LocalDateRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -32,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.reports.PrintPreviewReport;
 
 import javax.annotation.security.RolesAllowed;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @PageTitle("Tareas")
@@ -101,14 +103,14 @@ public class ListadeTareasVicedecanoView extends Div {
 
     private void createFechaInicioColumn() {
         fecha_inicioColumn =
-                grid.addColumn(Tarea::getFecha_inicio)
+                grid.addColumn(new LocalDateRenderer<>(tarea -> tarea.getFecha_inicio(), DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                         .setComparator(tarea -> tarea.getFecha_inicio())
                         .setHeader("Fecha de inicio").setAutoWidth(true).setFlexGrow(0);
     }
 
     private void createFechaFinColumn() {
         fecha_finColumn =
-                grid.addColumn(Tarea::getFecha_fin)
+                grid.addColumn(new LocalDateRenderer<>(tarea -> tarea.getFecha_fin(), DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                         .setComparator(tarea -> tarea.getFecha_fin())
                         .setHeader("Fecha de fin").setAutoWidth(true).setFlexGrow(0);
     }
@@ -155,8 +157,10 @@ public class ListadeTareasVicedecanoView extends Div {
         fechaInicioFilter.setPlaceholder("Filter");
         fechaInicioFilter.setClearButtonVisible(true);
         fechaInicioFilter.setWidth("100%");
-        fechaInicioFilter.addValueChangeListener(e -> {
-            grid.setItems(dataService.searchTareaByFecha(fechaInicioFilter.getValue()));
+        fechaInicioFilter.addValueChangeListener(event -> {
+            if (fechaInicioFilter.getValue() == null)
+                gridListDataView = grid.setItems(dataService.findAllTareas());
+            else gridListDataView.addFilter(tarea -> areFechaInicioEqual(tarea, fechaInicioFilter));
         });
         filterRow.getCell(fecha_inicioColumn).setComponent(fechaInicioFilter);
 
@@ -164,8 +168,10 @@ public class ListadeTareasVicedecanoView extends Div {
         fechaFinFilter.setPlaceholder("Filter");
         fechaFinFilter.setClearButtonVisible(true);
         fechaFinFilter.setWidth("100%");
-        fechaFinFilter.addValueChangeListener(e -> {
-            grid.setItems(dataService.searchTareaByFecha(fechaFinFilter.getValue()));
+        fechaFinFilter.addValueChangeListener(event -> {
+            if (fechaFinFilter.getValue() == null)
+                gridListDataView = grid.setItems(dataService.findAllTareas());
+            else gridListDataView.addFilter(tarea -> areFechaFinEqual(tarea, fechaFinFilter));
         });
         filterRow.getCell(fecha_finColumn).setComponent(fechaFinFilter);
 
@@ -175,12 +181,12 @@ public class ListadeTareasVicedecanoView extends Div {
         estudiantefilter.setPlaceholder("Filtrar");
         estudiantefilter.setClearButtonVisible(true);
         estudiantefilter.setWidth("100%");
-        estudiantefilter.addValueChangeListener(
-                event -> gridListDataView
-                        .addFilter(tarea -> areEstudiantesEqual(tarea, estudiantefilter))
-        );
+        estudiantefilter.addValueChangeListener(event -> {
+            if (estudiantefilter.getValue() == null)
+                gridListDataView = grid.setItems(dataService.findAllTareas());
+            else gridListDataView.addFilter(tarea -> areEstudiantesEqual(tarea, estudiantefilter));
+        });
         filterRow.getCell(estudianteColumn).setComponent(estudiantefilter);
-
 
     }
 
@@ -188,6 +194,24 @@ public class ListadeTareasVicedecanoView extends Div {
         String estudianteFilterValue = filterEstudiante.getValue().getStringNombreApellidos();
         if (estudianteFilterValue != null) {
             return StringUtils.equals(tarea.getE().getStringNombreApellidos(), estudianteFilterValue);
+        }
+        return true;
+    }
+
+    private boolean areFechaInicioEqual(Tarea tarea, DatePicker dateFilter) {
+        String dateFilterValue = dateFilter.getValue().toString();
+        String tareaDate = tarea.getFecha_inicio().toString();
+        if (dateFilterValue != null) {
+            return StringUtils.equals(dateFilterValue, tareaDate);
+        }
+        return true;
+    }
+
+    private boolean areFechaFinEqual(Tarea tarea, DatePicker dateFilter) {
+        String dateFilterValue = dateFilter.getValue().toString();
+        String date = tarea.getFecha_fin().toString();
+        if (dateFilterValue != null) {
+            return StringUtils.equals(dateFilterValue, date);
         }
         return true;
     }
