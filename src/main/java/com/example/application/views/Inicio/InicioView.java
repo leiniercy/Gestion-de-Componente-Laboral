@@ -35,10 +35,6 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 public class InicioView extends VerticalLayout {
 
     
-    
-    
-    
-    
     public InicioView() {
 
         addClassNames("image-list-view", "flex", "flex-col", "h-full");
