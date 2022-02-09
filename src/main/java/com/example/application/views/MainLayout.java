@@ -20,11 +20,14 @@ import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
+import com.vaadin.flow.component.menubar.MenuBar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,14 +108,23 @@ public class MainLayout extends AppLayout {
 
             Span name = new Span(user.getName());
             name.addClassNames("font-medium", "text-s", "text-secondary");
-
             layout.add(avatar, name);
+
         } else {
-            Anchor loginLink = new Anchor("login", "Sign in");
+            
+            Icon icon = new Icon(VaadinIcon.LOCK);
+            icon.getStyle().set("width", "var(--lumo-icon-size-s)");
+            icon.getStyle().set("height", "var(--lumo-icon-size-s)");
+            icon.getStyle().set("marginRight", "var(--lumo-space-s)");
+
+            Anchor loginLink = new Anchor(/*"login", "Sign in"*/);
+            loginLink.setHref("login");
+            loginLink.add(new Span("Acceder"), icon);
             layout.add(loginLink);
+            layout.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.BASELINE);
         }
 
-        HorizontalLayout header = new HorizontalLayout(toggle, viewTitle, layout);
+        HorizontalLayout header = new HorizontalLayout(toggle, viewTitle, barraDeMenu(), layout);
         header.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
         header.setWidth("100%");
         header.expand(viewTitle);
@@ -126,7 +138,7 @@ public class MainLayout extends AppLayout {
         appName.addClassNames("flex", "items-center", "h-xl", "m-0", "px-m", "text-m");
 
         com.vaadin.flow.component.html.Section section = new com.vaadin.flow.component.html.Section(appName,
-                createNavigation(), createFooter());
+                createNavigation());
         section.addClassNames("flex", "flex-col", "items-stretch", "max-h-full", "min-h-full");
         return section;
     }
@@ -197,12 +209,12 @@ public class MainLayout extends AppLayout {
         return link;
     }
 
-    private Footer createFooter() {
-        Footer layout = new Footer();
-        layout.addClassNames("flex", "items-center", "my-s", "px-m", "py-xs");
-
-        return layout;
-    }
+//    private Footer createFooter() {
+//        Footer layout = new Footer();
+//        layout.addClassNames("flex", "items-center", "my-s", "px-m", "py-xs");
+//
+//        return layout;
+//    }
 
     @Override
     protected void afterNavigation() {
@@ -214,4 +226,15 @@ public class MainLayout extends AppLayout {
         PageTitle title = getContent().getClass().getAnnotation(PageTitle.class);
         return title == null ? "" : title.value();
     }
+
+    private Component barraDeMenu() {
+
+        MenuBar menuBar = new MenuBar();
+        menuBar.addItem(new Span(VaadinIcon.HOME.create()));
+        menuBar.addItem(new Span(VaadinIcon.COG.create()));
+        menuBar.addItem(new Span(VaadinIcon.BELL.create()));
+
+        return menuBar;
+    }
+
 }

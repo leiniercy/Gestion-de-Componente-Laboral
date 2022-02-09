@@ -1,9 +1,11 @@
+import { html, LitElement, customElement } from 'lit-element';
 import '@vaadin/vaadin-ordered-layout/vaadin-horizontal-layout';
 import '@vaadin/vaadin-ordered-layout/vaadin-vertical-layout';
 import '@vaadin/vaadin-select';
-import { applyTheme } from 'Frontend/generated/theme';
-import { html, LitElement } from 'lit';
-import { customElement } from 'lit/decorators.js';
+// @ts-ignore
+import { applyTheme } from '../../generated/theme';
+
+
 
 @customElement('image-list-view')
 export class ImageListView extends LitElement {
@@ -19,7 +21,7 @@ export class ImageListView extends LitElement {
         <vaadin-horizontal-layout class="items-center justify-between">
           <vaadin-vertical-layout>
             <h2 class="mb-0 mt-xl text-3xl">Beautiful photos</h2>
-            <p class="mb-xl mt-0 text-secondary">Royalty free photos and pictures, courtesy of Unsplash</p>
+            <p class="mb-xl mt-0 text-secondary"></p>
           </vaadin-vertical-layout>
           <vaadin-select label="Sort by" id="sortBy"></vaadin-select>
         </vaadin-horizontal-layout>
