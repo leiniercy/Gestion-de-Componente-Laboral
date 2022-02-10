@@ -10,10 +10,16 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Footer;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.H4;
+import com.vaadin.flow.component.html.H5;
 import com.vaadin.flow.component.html.H6;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -21,6 +27,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
+import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
 /**
@@ -34,7 +41,6 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 @AnonymousAllowed
 public class InicioView extends VerticalLayout {
 
-    
     public InicioView() {
 
         addClassNames("image-list-view", "flex", "flex-col", "h-full");
@@ -46,29 +52,75 @@ public class InicioView extends VerticalLayout {
         Image img = new Image("images/Fac4.png", "placeholder plant");
         img.setWidthFull();
         img.setHeightFull();
-        
-        
-        HorizontalLayout ly = new HorizontalLayout(new Span(VaadinIcon.ACADEMY_CAP.create()),new H6("Universidad de Ciencias Informáticas") );
+
+        HorizontalLayout ly = new HorizontalLayout(new Span(VaadinIcon.ACADEMY_CAP.create()), new H3("Universidad de Ciencias Informáticas"));
         ly.setAlignItems(Alignment.BASELINE);
-        
+
         Footer footer = new Footer(ly);
         footer.getStyle().set("padding", "var(--lumo-space-wide-m)");
-        
-        add(img, PostDeContactos(), footer);
+
+        add(img, PostDeContactos(), Links(), footer);
 
     }
-    
-    
-    private Component PostDeContactos(){
-        
-         ImageListViewCard post1 = new ImageListViewCard(
+
+    private Component Links() {
+
+        HorizontalLayout layout = new HorizontalLayout();
+
+        H2 sitiosInteres = new H2("SITIOS DE INTERÉS");
+        HorizontalLayout link1 = new HorizontalLayout(VaadinIcon.LINK.create(), new H3("Repositorio Institucional"));
+        link1.setAlignItems(Alignment.BASELINE);
+        Anchor repositorioInstitucional = new Anchor("https://repositorio.uci.cu/jspui/", link1);
+        HorizontalLayout link2 = new HorizontalLayout(VaadinIcon.LINK.create(), new H3("Biblioteca"));
+        link2.setAlignItems(Alignment.BASELINE);
+        Anchor biblioteca = new Anchor("https://biblioteca.uci.cu/", link2);
+        HorizontalLayout link3 = new HorizontalLayout(VaadinIcon.LINK.create(), new H3("Internos"));
+        link3.setAlignItems(Alignment.BASELINE);
+        Anchor internos = new Anchor("https://internos.uci.cu/", link3);
+        VerticalLayout sitiosDeInteres = new VerticalLayout(sitiosInteres, repositorioInstitucional, biblioteca, internos);
+
+        H2 otroSitios = new H2("OTROS SITIOS");
+        HorizontalLayout link4 = new HorizontalLayout(VaadinIcon.LINK.create(), new H3("Portal UCI"));
+        link4.setAlignItems(Alignment.BASELINE);
+        Anchor portalUCI = new Anchor("https://www.uci.cu/", link4);
+        HorizontalLayout link5 = new HorizontalLayout(VaadinIcon.LINK.create(), new H3("Intranet"));
+        link5.setAlignItems(Alignment.BASELINE);
+        Anchor intranet = new Anchor("https://intranet.uci.cu/", link5);
+        HorizontalLayout link6 = new HorizontalLayout(VaadinIcon.LINK.create(), new H3("Periódico Mella"));
+        link6.setAlignItems(Alignment.BASELINE);
+        Anchor periodicoMella = new Anchor("https://periodico.uci.cu/", link6);
+        VerticalLayout otrosSitios = new VerticalLayout(otroSitios, portalUCI, intranet, periodicoMella);
+
+        H2 comunidadessUCI = new H2("COMUNIDADES UCI");
+        HorizontalLayout link7 = new HorizontalLayout(VaadinIcon.LINK.create(), new H3("HumanOS"));
+        link7.setAlignItems(Alignment.BASELINE);
+        Anchor humanos = new Anchor("https://humanos.uci.cu/", link7);
+        HorizontalLayout link8 = new HorizontalLayout(VaadinIcon.LINK.create(), new H3("FirefoxManía"));
+        link8.setAlignItems(Alignment.BASELINE);
+        Anchor fireFoxMania = new Anchor("https://firefoxmania.uci.cu/", link8);
+        HorizontalLayout link9 = new HorizontalLayout(VaadinIcon.LINK.create(), new H3("iBlog"));
+        link9.setAlignItems(Alignment.BASELINE);
+        Anchor blog = new Anchor("https://iblog.uci.cu/", link9);
+        VerticalLayout comunidadesUCI = new VerticalLayout(comunidadessUCI, humanos, fireFoxMania, blog);
+
+        layout.add(sitiosDeInteres, otrosSitios, comunidadesUCI);
+        layout.setDefaultVerticalComponentAlignment(Alignment.CENTER);
+        layout.addClassNames("bg-base");
+        layout.setWidthFull();
+
+        return layout;
+    }
+
+    private Component PostDeContactos() {
+
+        ImageListViewCard post1 = new ImageListViewCard(
                 "leiniercy",
                 "images/leinier.png",
                 "Contacto",
                 "Nombre: Leinier Caraballo Yanes",
                 "Móvil: +53 58503871"
         );
-        
+
         ImageListViewCard post2 = new ImageListViewCard(
                 "christiansj",
                 "images/christian.png",
@@ -76,7 +128,7 @@ public class InicioView extends VerticalLayout {
                 "Nombre: Christian Sosa Jiménez",
                 "Móvil: +53 54571775"
         );
-        
+
         ImageListViewCard post3 = new ImageListViewCard(
                 "felixacg",
                 "images/andry.png",
@@ -84,11 +136,10 @@ public class InicioView extends VerticalLayout {
                 "Nombre: Félix Andrés Corría Gutiérrez",
                 "Móvil: +53 55360989"
         );
-        HorizontalLayout layout =  new HorizontalLayout(post1,post2,post3);
+        HorizontalLayout layout = new HorizontalLayout(post1, post2, post3);
         layout.setAlignItems(Alignment.CENTER);
-        
+
         return layout;
     }
-    
-   
+
 }
