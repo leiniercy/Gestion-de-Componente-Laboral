@@ -37,6 +37,11 @@ public class TareaService {
     public List<Tarea> searchTareaByFecha(LocalDate searchTerm) {
         return repository.searchFecha(searchTerm);
     }
+    
+       public Tarea findById(Integer id){
+       return repository.findById(id).get();
+    }
+    
 
     public long countTarea() {
         return repository.count();

@@ -39,7 +39,11 @@ public class ProfesorService {
     public List<Profesor> searchProfesor(String searchTerm) {
         return repository.searchProfesor(searchTerm);
     }
-
+    
+       public Profesor findById(Integer id){
+       return repository.findById(id).get();
+    }
+    
      public long countProfesor() {
         return repository.count();
     }

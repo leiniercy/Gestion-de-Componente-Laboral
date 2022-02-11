@@ -38,6 +38,10 @@ public class EstudianteService {
      public List<Estudiante> findAllEstudiante() {
         return estudianteRepository.findAll();
     }
+    
+    public Estudiante findById(Integer id){
+        return estudianteRepository.findById(id).get();
+    }
        
     public List<Estudiante> searchEstudiante(String searchTerm) {
         return estudianteRepository.searchEstudiante(searchTerm);

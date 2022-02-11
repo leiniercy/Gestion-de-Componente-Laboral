@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.vaadin.crudui.crud.CrudListener;
 import com.example.application.data.repository.GrupoRepository;
 
-
 @Service
 public class GrupoService {
 
@@ -29,6 +28,10 @@ public class GrupoService {
 
     public List<Grupo> searchGrupo(Integer searchTerm) {
         return repository.search(searchTerm);
+    }
+
+    public Grupo findById(Integer id) {
+        return repository.findById(id).get();
     }
 
     public long countGrupo() {
@@ -47,5 +50,4 @@ public class GrupoService {
         repository.save(grupo);
     }
 
- 
 }

@@ -37,6 +37,11 @@ public class EvaluacionService {
     public List<Evaluacion> searchEvaluacion(String searchTerm) {
         return repository.search(searchTerm);
     }
+    
+    public Evaluacion findById(Integer id){
+       return repository.findById(id).get();
+    }
+    
 
     public long countEvaluacion() {
         return repository.count();

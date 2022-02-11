@@ -37,6 +37,11 @@ public class AreaService {
     public List<Area> searchArea(String stringFilter) {
         return repository.search(stringFilter);
     }
+    
+    public Area findById(Integer id){
+       return repository.findById(id).get();
+    }
+    
 
     public long countArea() {
         return repository.count();

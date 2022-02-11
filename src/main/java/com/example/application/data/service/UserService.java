@@ -30,6 +30,11 @@ public class UserService {
      public List<User> findAllUser() {
         return repository.findAll();
     }
+     
+    public User findById(Long id){
+       return repository.findById(id).get();
+    }
+    
 
     public long countUser() {
         return repository.count();
