@@ -5,8 +5,8 @@
  */
 package com.example.application.views.vicedecano.estudiante;
 
-
 import com.example.application.data.entity.*;
+import com.example.application.data.service.*;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
@@ -18,7 +18,6 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.*;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
-import com.example.application.data.service.DataService;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Html;
@@ -49,7 +48,13 @@ public class EstudiantesView extends VerticalLayout {
 
     EstudianteForm form;
 
-    private DataService dataService;
+    private UserService userService;
+    private AreaService areaService;
+    private EstudianteService estudianteService;
+    private ProfesorService profesorService;
+    private EvaluacionService evaluacionService;
+    private GrupoService grupoService;
+    private TareaService tareaService;
 
     private GridListDataView<Estudiante> gridListDataView;
 
@@ -74,15 +79,29 @@ public class EstudiantesView extends VerticalLayout {
         return layout;
     }).setFlexGrow(0);
 
+    public EstudiantesView(
+            @Autowired UserService userService,
+            @Autowired AreaService areaService,
+            @Autowired EstudianteService estudianteService,
+            @Autowired ProfesorService profesorService,
+            @Autowired EvaluacionService evaluacionService,
+            @Autowired GrupoService grupoService,
+            @Autowired TareaService tareaService
+    ) {
 
-    public EstudiantesView(@Autowired DataService service) {
-
-        this.dataService = service;
+        this.userService = userService;
+        this.grupoService = grupoService;
+        this.areaService = areaService;
+        this.estudianteService = estudianteService;
+        this.profesorService = profesorService;
+        this.evaluacionService = evaluacionService;
+        this.evaluacionService = evaluacionService;
+        this.tareaService = tareaService;
         addClassNames("list-est-view", "flex", "flex-col", "h-full");
         setSizeFull();
         configureGrid();
 
-        form = new EstudianteForm(service.findAllUser(), service.findAllArea(), service.findAllGrupo());
+        form = new EstudianteForm(userService.findAllUser(), areaService.findAllArea(), grupoService.findAllGrupo());
         form.setWidth("25em");
         form.addListener(EstudianteForm.SaveEvent.class, this::saveEstudiante);
         form.addListener(EstudianteForm.CloseEvent.class, e -> closeEditor());
@@ -93,7 +112,6 @@ public class EstudiantesView extends VerticalLayout {
         scroller.getStyle()
                 .set("border-bottom", "1px solid var(--lumo-contrast-20pct)")
                 .set("padding", "var(--lumo-space-m)");
-
 
         FlexLayout content = new FlexLayout(scroller, form);
         content.setFlexGrow(2, scroller);
@@ -106,7 +124,6 @@ public class EstudiantesView extends VerticalLayout {
         ly.setAlignItems(Alignment.BASELINE);
         Footer footer = new Footer(ly);
         footer.getStyle().set("padding", "var(--lumo-space-wide-m)");
-
 
         add(getToolbar(), content, footer);
         updateList();
@@ -128,7 +145,7 @@ public class EstudiantesView extends VerticalLayout {
         headerRow.getCell(areaColumn).setComponent(FiltrarArea());
         headerRow.getCell(grupoColumn).setComponent(FiltrarGrupo());
 
-        gridListDataView = grid.setItems(dataService.findAllEstudiante());
+        gridListDataView = grid.setItems(estudianteService.findAllEstudiante());
         grid.addClassNames("estudiante-grid");
         grid.setAllRowsVisible(true);
         grid.setSizeFull();
@@ -143,7 +160,7 @@ public class EstudiantesView extends VerticalLayout {
     private HorizontalLayout getToolbar() {
 
         addClassName("menu-items");
-        Html total = new Html("<span>Total: <b>" + dataService.countEstudiante() + "</b> estudiantes</span>");
+        Html total = new Html("<span>Total: <b>" + estudianteService.countEstudiante() + "</b> estudiantes</span>");
 
         Button menuButton = new Button("Mostar/Ocultar Columnas");
         //menuButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
@@ -159,7 +176,6 @@ public class EstudiantesView extends VerticalLayout {
         columnToggleContextMenu.addColumnToggleItem("Área", areaColumn);
         columnToggleContextMenu.addColumnToggleItem("Grupo", grupoColumn);
 
-
         Button addButton = new Button("Añadir Estudiante", VaadinIcon.USER.create());
         //addButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         addButton.addClickListener(click -> addEstudiante());
@@ -171,12 +187,11 @@ public class EstudiantesView extends VerticalLayout {
         toolbar.getStyle()
                 .set("padding", "var(--lumo-space-wide-m)");
 
-
         return toolbar;
     }
 
-
     private static class ColumnToggleContextMenu extends ContextMenu {
+
         public ColumnToggleContextMenu(Component target) {
             super(target);
             setOpenOnClick(true);
@@ -191,9 +206,8 @@ public class EstudiantesView extends VerticalLayout {
         }
     }
 
-
     private void saveEstudiante(EstudianteForm.SaveEvent event) {
-        dataService.saveEstudiante(event.getEstudiante());
+        estudianteService.saveEstudiante(event.getEstudiante());
         updateList();
         closeEditor();
     }
@@ -213,7 +227,7 @@ public class EstudiantesView extends VerticalLayout {
         dialog.setConfirmText("Eliminar");
         dialog.setConfirmButtonTheme("error primary");
         dialog.addConfirmListener(event -> {
-            dataService.deleteEstudiante(estudiante);
+            estudianteService.deleteEstudiante(estudiante);
             Notification.show("Estudiante eliminado");
             this.refreshGrid();
         });
@@ -228,9 +242,8 @@ public class EstudiantesView extends VerticalLayout {
 
     private void refreshGrid() {
         grid.setVisible(true);
-        grid.setItems(dataService.findAllEstudiante());
+        grid.setItems(estudianteService.findAllEstudiante());
     }
-
 
     public void editEstudiante(Estudiante estudiante) {
         if (estudiante == null) {
@@ -254,7 +267,7 @@ public class EstudiantesView extends VerticalLayout {
     }
 
     private void updateList() {
-        grid.setItems(dataService.findAllEstudiante());
+        grid.setItems(estudianteService.findAllEstudiante());
     }
 
     // Filtros
@@ -346,15 +359,17 @@ public class EstudiantesView extends VerticalLayout {
 
     private ComboBox<Area> FiltrarArea() {
         ComboBox<Area> areaFilter = new ComboBox<>();
-        areaFilter.setItems(dataService.findAllArea());
+        areaFilter.setItems(areaService.findAllArea());
         areaFilter.setItemLabelGenerator(Area::getNombre);
         areaFilter.setPlaceholder("Filtrar");
         areaFilter.setClearButtonVisible(true);
         areaFilter.setWidth("100%");
         areaFilter.addValueChangeListener(event -> {
-            if (areaFilter.getValue() == null)
-                gridListDataView = grid.setItems(dataService.findAllEstudiante());
-            else gridListDataView.addFilter(estudiante -> areAreaEqual(estudiante, areaFilter));
+            if (areaFilter.getValue() == null) {
+                gridListDataView = grid.setItems(estudianteService.findAllEstudiante());
+            } else {
+                gridListDataView.addFilter(estudiante -> areAreaEqual(estudiante, areaFilter));
+            }
         });
         return areaFilter;
     }
@@ -369,15 +384,17 @@ public class EstudiantesView extends VerticalLayout {
 
     private ComboBox<Grupo> FiltrarGrupo() {
         ComboBox<Grupo> grupoFilter = new ComboBox<>();
-        grupoFilter.setItems(dataService.findAllGrupo());
+        grupoFilter.setItems(grupoService.findAllGrupo());
         grupoFilter.setItemLabelGenerator(Grupo::getNumero);
         grupoFilter.setPlaceholder("Filtrar");
         grupoFilter.setClearButtonVisible(true);
         grupoFilter.setWidth("100%");
         grupoFilter.addValueChangeListener(event -> {
-            if (grupoFilter.getValue() == null)
-                gridListDataView = grid.setItems(dataService.findAllEstudiante());
-            else gridListDataView.addFilter(estudiante -> areGrupoEqual(estudiante, grupoFilter));
+            if (grupoFilter.getValue() == null) {
+                gridListDataView = grid.setItems(estudianteService.findAllEstudiante());
+            } else {
+                gridListDataView.addFilter(estudiante -> areGrupoEqual(estudiante, grupoFilter));
+            }
         });
         return grupoFilter;
     }
@@ -392,15 +409,17 @@ public class EstudiantesView extends VerticalLayout {
 
     private ComboBox<User> FiltrarUser() {
         ComboBox<User> userFilter = new ComboBox<>();
-        userFilter.setItems(dataService.findAllUser());
+        userFilter.setItems(userService.findAllUser());
         userFilter.setItemLabelGenerator(User::getName);
         userFilter.setPlaceholder("Filtrar");
         userFilter.setClearButtonVisible(true);
         userFilter.setWidth("100%");
         userFilter.addValueChangeListener(event -> {
-            if(userFilter.getValue() == null)
-            gridListDataView = grid.setItems(dataService.findAllEstudiante());
-           else gridListDataView.addFilter(estudiante -> areUserEqual(estudiante, userFilter));
+            if (userFilter.getValue() == null) {
+                gridListDataView = grid.setItems(estudianteService.findAllEstudiante());
+            } else {
+                gridListDataView.addFilter(estudiante -> areUserEqual(estudiante, userFilter));
+            }
         });
 
         return userFilter;

@@ -1,6 +1,6 @@
 package com.example.application.views.vicedecano.lista_evaluaciones;
 
-import com.example.application.data.service.DataService;
+import com.example.application.data.service.*;
 import com.example.application.data.entity.Estudiante;
 import com.example.application.data.entity.Evaluacion;
 import com.example.application.data.entity.Tarea;
@@ -34,7 +34,6 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.security.RolesAllowed;
@@ -59,11 +58,30 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
     private Grid.Column<Evaluacion> tareaColumn;
     private Grid.Column<Evaluacion> statusColumn;
 
-    private DataService dataService;
+    private UserService userService;
+    private AreaService areaService;
+    private EstudianteService estudianteService;
+    private ProfesorService profesorService;
+    private EvaluacionService evaluacionService;
+    private GrupoService grupoService;
+    private TareaService tareaService;
 
-
-    public ListadeEvaluacionesVicedecanoView(@Autowired DataService dataService) {
-        this.dataService = dataService;
+    public ListadeEvaluacionesVicedecanoView(
+            @Autowired UserService userService,
+            @Autowired AreaService areaService,
+            @Autowired EstudianteService estudianteService,
+            @Autowired ProfesorService profesorService,
+            @Autowired EvaluacionService evaluacionService,
+            @Autowired GrupoService grupoService,
+            @Autowired TareaService tareaService
+    ) {
+        this.userService = userService;
+        this.areaService = areaService;
+        this.estudianteService = estudianteService;
+        this.profesorService = profesorService;
+        this.evaluacionService = evaluacionService;
+        this.evaluacionService = evaluacionService;
+        this.tareaService = tareaService;
         addClassName("evaluacionesList-view");
         setSizeFull();
         createGrid();
@@ -82,7 +100,7 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COLUMN_BORDERS);
         grid.setHeight("100%");
 
-        List<Evaluacion> evaluaciones = dataService.findAllEvaluacion();
+        List<Evaluacion> evaluaciones = evaluacionService.findAllEvaluacion();
         gridListDataView = grid.setItems(evaluaciones);
     }
 
@@ -114,7 +132,6 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
         })).setComparator(evaluacion -> evaluacion.getEstudiante().getStringNombreApellidos()).setHeader("Estudiante").setAutoWidth(true);
     }
 
-
     private void createTareaColumn() {
         tareaColumn = grid.addColumn(new ComponentRenderer<>(evaluacion -> {
             HorizontalLayout hl = new HorizontalLayout();
@@ -129,14 +146,13 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
 
     private void createStatusColumn() {
         statusColumn = grid.addEditColumn(Evaluacion::getStatus, new ComponentRenderer<>(evaluacion -> {
-                    Span span = new Span();
-                    span.setText(evaluacion.getStatus());
-                    span.getElement().setAttribute("theme", "badge " + evaluacion.getStatus().toLowerCase());
-                    return span;
-                })).select((item, newValue) -> item.setStatus(newValue), Arrays.asList("Pendiente", "Completado", "No Completado"))
+            Span span = new Span();
+            span.setText(evaluacion.getStatus());
+            span.getElement().setAttribute("theme", "badge " + evaluacion.getStatus().toLowerCase());
+            return span;
+        })).select((item, newValue) -> item.setStatus(newValue), Arrays.asList("Pendiente", "Completado", "No Completado"))
                 .setComparator(evaluacion -> evaluacion.getStatus()).setHeader("Estatus").setAutoWidth(true);
     }
-
 
     private void addFiltersToGrid() {
         HeaderRow filterRow = grid.appendHeaderRow();
@@ -164,28 +180,32 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
         filterRow.getCell(descripcionColumn).setComponent(filterDescripcion);
 
         ComboBox<Estudiante> filterEstudiante = new ComboBox<>();
-        filterEstudiante.setItems(dataService.findAllEstudiante());
+        filterEstudiante.setItems(estudianteService.findAllEstudiante());
         filterEstudiante.setItemLabelGenerator(Estudiante::getStringNombreApellidos);
         filterEstudiante.setPlaceholder("Filtrar");
         filterEstudiante.setClearButtonVisible(true);
         filterEstudiante.setWidth("100%");
         filterEstudiante.addValueChangeListener(event -> {
-            if (filterEstudiante.getValue() == null)
-                gridListDataView = grid.setItems(dataService.findAllEvaluacion());
-            else gridListDataView.addFilter(evaluacion -> areEstudiantesEqual(evaluacion, filterEstudiante));
+            if (filterEstudiante.getValue() == null) {
+                gridListDataView = grid.setItems(evaluacionService.findAllEvaluacion());
+            } else {
+                gridListDataView.addFilter(evaluacion -> areEstudiantesEqual(evaluacion, filterEstudiante));
+            }
         });
         filterRow.getCell(estudianteColumn).setComponent(filterEstudiante);
 
         ComboBox<Tarea> filterTarea = new ComboBox<>();
-        filterTarea.setItems(dataService.findAllTareas());
+        filterTarea.setItems(tareaService.findAllTareas());
         filterTarea.setItemLabelGenerator(Tarea::getNombre);
         filterTarea.setPlaceholder("Filter");
         filterTarea.setClearButtonVisible(true);
         filterTarea.setWidth("100%");
         filterTarea.addValueChangeListener(event -> {
-            if (filterTarea.getValue() == null)
-                gridListDataView = grid.setItems(dataService.findAllEvaluacion());
-            else gridListDataView.addFilter(evaluacion -> areTareasEqual(evaluacion, filterTarea));
+            if (filterTarea.getValue() == null) {
+                gridListDataView = grid.setItems(evaluacionService.findAllEvaluacion());
+            } else {
+                gridListDataView.addFilter(evaluacion -> areTareasEqual(evaluacion, filterTarea));
+            }
         });
         filterRow.getCell(tareaColumn).setComponent(filterTarea);
 
@@ -199,7 +219,6 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
                         .addFilter(evaluacion -> areStatusesEqual(evaluacion, statusFilter))
         );
         filterRow.getCell(statusColumn).setComponent(statusFilter);
-
 
     }
 
@@ -230,18 +249,16 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
     private HorizontalLayout getToolbar() {
 
         addClassName("menu-items");
-        Html total = new Html("<span>Total: <b>" + dataService.countTarea() + "</b> tareas</span>");
+        Html total = new Html("<span>Total: <b>" + tareaService.countTarea() + "</b> tareas</span>");
 
-      /*  Button reporteButton = new Button("Reporte", VaadinIcon.DOWNLOAD_ALT.create());
+        /*  Button reporteButton = new Button("Reporte", VaadinIcon.DOWNLOAD_ALT.create());
         reporteButton.addClickListener(event -> {
 
         });*/
-
-        HorizontalLayout toolbar = new HorizontalLayout(total, CrearReporte() );
+        HorizontalLayout toolbar = new HorizontalLayout(total, CrearReporte());
         toolbar.setAlignItems(FlexComponent.Alignment.CENTER);
         toolbar.setWidth("99%");
-        toolbar.setFlexGrow(1,total);
-
+        toolbar.setFlexGrow(1, total);
 
         return toolbar;
     }
@@ -250,9 +267,9 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
 
         PrintPreviewReport report
                 = new PrintPreviewReport<>(Evaluacion.class, "nota", "descripcion", "estudiante", "tarea", "status");
-        report.setItems(dataService.findAllEvaluacion());
+        report.setItems(evaluacionService.findAllEvaluacion());
         report.getReportBuilder().setTitle("Evaluaciones");
-        StreamResource pdf = report.getStreamResource("evaluaciones.pdf", dataService::findAllEvaluacion, PrintPreviewReport.Format.PDF);
+        StreamResource pdf = report.getStreamResource("evaluaciones.pdf", evaluacionService::findAllEvaluacion, PrintPreviewReport.Format.PDF);
 
         Icon icon = new Icon(VaadinIcon.DOWNLOAD);
         icon.getStyle().set("width", "var(--lumo-icon-size-s)");
@@ -263,11 +280,7 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
         rp.setHref(pdf);
         rp.add(icon, new Span("Reporte"));
 
-
         return rp;
     }
-
-
-
 
 };

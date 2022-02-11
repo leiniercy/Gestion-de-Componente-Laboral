@@ -30,21 +30,21 @@ public class UserService {
      public List<User> findAllUser() {
         return repository.findAll();
     }
-    
-    public Optional<User> get(Long id) {
-        return repository.findById(id);
+
+    public long countUser() {
+        return repository.count();
     }
 
-    public User update(User entity) {
-        return repository.save(entity);
+    public void deleteUser(User user) {
+       repository.delete(user);
     }
 
-    public void delete(Long id) {
-        repository.deleteById(id);
-    }
-
-    public Page<User> list(Pageable pageable) {
-        return repository.findAll(pageable);
+    public void saveUser(User user) {
+        if (user == null) {
+            System.err.println("This field is null. Are you sure you have connected your form to the application?");
+            return;
+        }
+       repository.save(user);
     }
 
     public long count() {

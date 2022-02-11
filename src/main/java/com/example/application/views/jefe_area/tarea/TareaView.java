@@ -5,9 +5,15 @@
  */
 package com.example.application.views.jefe_area.tarea;
 
-import com.example.application.data.service.DataService;
 import com.example.application.data.entity.Estudiante;
 import com.example.application.data.entity.Tarea;
+import com.example.application.data.service.AreaService;
+import com.example.application.data.service.EstudianteService;
+import com.example.application.data.service.EvaluacionService;
+import com.example.application.data.service.GrupoService;
+import com.example.application.data.service.ProfesorService;
+import com.example.application.data.service.TareaService;
+import com.example.application.data.service.UserService;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Key;
@@ -51,22 +57,28 @@ public class TareaView extends VerticalLayout {
 
     TareaForm form;
 
-    private DataService dataService;
+    private UserService userService;
+    private AreaService areaService;
+    private EstudianteService estudianteService;
+    private ProfesorService profesorService;
+    private EvaluacionService evaluacionService;
+    private GrupoService grupoService;
+    private TareaService tareaService;
 
     private GridListDataView<Tarea> gridListDataView;
 
     private Grid.Column<Tarea> nombreColumn = grid.addColumn(Tarea::getNombre).setHeader("Nombre").setAutoWidth(true).setFlexGrow(0);
     private Grid.Column<Tarea> descripcionColumn = grid.addColumn(Tarea::getDescripcion).setHeader("Descripción").setAutoWidth(true).setFlexGrow(0);
-    private Grid.Column<Tarea> fecha_inicioColumn =
-             grid.addColumn(new LocalDateRenderer<>(tarea -> tarea.getFecha_inicio(), DateTimeFormatter.ofPattern("dd/MM/yyyy")))
-            .setComparator(tarea -> tarea.getFecha_inicio())
-            .setHeader("Fecha de inicio").setAutoWidth(true).setFlexGrow(0);
+    private Grid.Column<Tarea> fecha_inicioColumn
+            = grid.addColumn(new LocalDateRenderer<>(tarea -> tarea.getFecha_inicio(), DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+                    .setComparator(tarea -> tarea.getFecha_inicio())
+                    .setHeader("Fecha de inicio").setAutoWidth(true).setFlexGrow(0);
     private Grid.Column<Tarea> fecha_finColumn
             = grid.addColumn(new LocalDateRenderer<>(tarea -> tarea.getFecha_fin(), DateTimeFormatter.ofPattern("dd/MM/yyyy")))
-            .setComparator(tarea -> tarea.getFecha_fin())
-            .setHeader("Fecha de fin").setAutoWidth(true).setFlexGrow(0);
-    private Grid.Column<Tarea> estudianteColumn =
-            grid.addColumn(tarea -> tarea.getE().getStringNombreApellidos())
+                    .setComparator(tarea -> tarea.getFecha_fin())
+                    .setHeader("Fecha de fin").setAutoWidth(true).setFlexGrow(0);
+    private Grid.Column<Tarea> estudianteColumn
+            = grid.addColumn(tarea -> tarea.getE().getStringNombreApellidos())
                     .setComparator(tarea -> tarea.getE().getStringNombreApellidos())
                     .setHeader("Estudiante").setAutoWidth(true).setFlexGrow(0);
 
@@ -82,14 +94,27 @@ public class TareaView extends VerticalLayout {
         return layout;
     }).setFlexGrow(0);
 
-    public TareaView(@Autowired DataService dataService) {
+    public TareaView(@Autowired UserService userService,
+            @Autowired AreaService areaService,
+            @Autowired EstudianteService estudianteService,
+            @Autowired ProfesorService profesorService,
+            @Autowired EvaluacionService evaluacionService,
+            @Autowired GrupoService grupoService,
+            @Autowired TareaService tareaService
+    ) {
 
-        this.dataService = dataService;
+        this.userService = userService;
+        this.areaService = areaService;
+        this.estudianteService = estudianteService;
+        this.profesorService = profesorService;
+        this.evaluacionService = evaluacionService;
+        this.evaluacionService = evaluacionService;
+        this.tareaService = tareaService;
         addClassNames("tarea-view", "flex", "flex-col", "h-full");
         setSizeFull();
         configureGrid();
 
-        form = new TareaForm(dataService.findAllEstudiante());
+        form = new TareaForm(estudianteService.findAllEstudiante());
         form.setWidth("25em");
         form.addListener(TareaForm.SaveEvent.class, this::saveTarea);
         form.addListener(TareaForm.CloseEvent.class, e -> closeEditor());
@@ -100,7 +125,6 @@ public class TareaView extends VerticalLayout {
         scroller.getStyle()
                 .set("border-bottom", "1px solid var(--lumo-contrast-20pct)")
                 .set("padding", "var(--lumo-space-m)");
-
 
         FlexLayout content = new FlexLayout(scroller, form);
         content.setFlexGrow(2, scroller);
@@ -113,7 +137,6 @@ public class TareaView extends VerticalLayout {
         ly.setAlignItems(Alignment.BASELINE);
         Footer footer = new Footer(ly);
         footer.getStyle().set("padding", "var(--lumo-space-wide-m)");
-
 
         add(getToolbar(), content, footer);
         updateList();
@@ -131,7 +154,7 @@ public class TareaView extends VerticalLayout {
         headerRow.getCell(fecha_finColumn).setComponent(FiltrarFechaFin());
         headerRow.getCell(estudianteColumn).setComponent(FiltrarEstudiante());
 
-        gridListDataView = grid.setItems(dataService.findAllTareas());
+        gridListDataView = grid.setItems(tareaService.findAllTareas());
         grid.addClassNames("tarea-grid");
         grid.setAllRowsVisible(true);
         grid.setSizeFull();
@@ -145,7 +168,7 @@ public class TareaView extends VerticalLayout {
     private HorizontalLayout getToolbar() {
 
         addClassName("menu-items");
-        Html total = new Html("<span>Total: <b>" + dataService.countTarea() + "</b> tareas</span>");
+        Html total = new Html("<span>Total: <b>" + tareaService.countTarea() + "</b> tareas</span>");
 
         Button addButton = new Button("Añadir Tarea", VaadinIcon.USER.create());
         //  addButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
@@ -162,7 +185,7 @@ public class TareaView extends VerticalLayout {
     }
 
     private void saveTarea(TareaForm.SaveEvent event) {
-        dataService.saveTarea(event.getTarea());
+        tareaService.saveTarea(event.getTarea());
         updateList();
         closeEditor();
     }
@@ -182,20 +205,21 @@ public class TareaView extends VerticalLayout {
         dialog.setConfirmText("Eliminar");
         dialog.setConfirmButtonTheme("error primary");
         dialog.addConfirmListener(event -> {
-            dataService.deleteTarea(tarea);
+            tareaService.deleteTarea(tarea);
             Notification.show("Tarea eliminada");
             this.refreshGrid();
         });
 
-        if (tarea == null)
+        if (tarea == null) {
             return;
-        else
+        } else {
             dialog.open();
+        }
     }
 
     private void refreshGrid() {
         grid.setVisible(true);
-        grid.setItems(dataService.findAllTareas());
+        grid.setItems(tareaService.findAllTareas());
     }
 
     public void editTarea(Tarea tarea) {
@@ -220,7 +244,7 @@ public class TareaView extends VerticalLayout {
     }
 
     private void updateList() {
-        grid.setItems(dataService.findAllTareas());
+        grid.setItems(tareaService.findAllTareas());
     }
 
     // Filtros
@@ -254,15 +278,17 @@ public class TareaView extends VerticalLayout {
 
     private ComboBox<Estudiante> FiltrarEstudiante() {
         ComboBox<Estudiante> estudiantefilter = new ComboBox<>();
-        estudiantefilter.setItems(dataService.findAllEstudiante());
+        estudiantefilter.setItems(estudianteService.findAllEstudiante());
         estudiantefilter.setItemLabelGenerator(Estudiante::getStringNombreApellidos);
         estudiantefilter.setPlaceholder("Filtrar");
         estudiantefilter.setClearButtonVisible(true);
         estudiantefilter.setWidth("100%");
         estudiantefilter.addValueChangeListener(event -> {
-            if (estudiantefilter.getValue() == null)
-                gridListDataView = grid.setItems(dataService.findAllTareas());
-            else gridListDataView.addFilter(tarea -> areEstudiantesEqual(tarea, estudiantefilter));
+            if (estudiantefilter.getValue() == null) {
+                gridListDataView = grid.setItems(tareaService.findAllTareas());
+            } else {
+                gridListDataView.addFilter(tarea -> areEstudiantesEqual(tarea, estudiantefilter));
+            }
 
         });
         return estudiantefilter;
@@ -282,9 +308,11 @@ public class TareaView extends VerticalLayout {
         dateFilter.setClearButtonVisible(true);
         dateFilter.setWidth("100%");
         dateFilter.addValueChangeListener(event -> {
-            if(dateFilter.getValue() == null)
-                gridListDataView =  grid.setItems(dataService.findAllTareas());
-            else gridListDataView.addFilter(tarea -> areFechaInicioEqual(tarea, dateFilter));
+            if (dateFilter.getValue() == null) {
+                gridListDataView = grid.setItems(tareaService.findAllTareas());
+            } else {
+                gridListDataView.addFilter(tarea -> areFechaInicioEqual(tarea, dateFilter));
+            }
         });
         return dateFilter;
     }
@@ -293,7 +321,7 @@ public class TareaView extends VerticalLayout {
         String dateFilterValue = dateFilter.getValue().toString();
         String tareaDate = tarea.getFecha_inicio().toString();
         if (dateFilterValue != null) {
-            return StringUtils.equals(dateFilterValue,tareaDate);
+            return StringUtils.equals(dateFilterValue, tareaDate);
         }
         return true;
     }
@@ -304,9 +332,11 @@ public class TareaView extends VerticalLayout {
         dateFilter.setClearButtonVisible(true);
         dateFilter.setWidth("100%");
         dateFilter.addValueChangeListener(event -> {
-            if(dateFilter.getValue() == null)
-                gridListDataView =  grid.setItems(dataService.findAllTareas());
-            else  gridListDataView.addFilter(tarea -> areFechaFinEqual(tarea, dateFilter));
+            if (dateFilter.getValue() == null) {
+                gridListDataView = grid.setItems(tareaService.findAllTareas());
+            } else {
+                gridListDataView.addFilter(tarea -> areFechaFinEqual(tarea, dateFilter));
+            }
         });
         return dateFilter;
     }
@@ -315,11 +345,9 @@ public class TareaView extends VerticalLayout {
         String dateFilterValue = dateFilter.getValue().toString();
         String date = tarea.getFecha_fin().toString();
         if (dateFilterValue != null) {
-            return StringUtils.equals(dateFilterValue,date);
+            return StringUtils.equals(dateFilterValue, date);
         }
         return true;
     }
-
-
 
 }

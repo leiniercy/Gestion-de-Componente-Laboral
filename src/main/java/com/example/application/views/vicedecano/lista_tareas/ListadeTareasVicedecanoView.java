@@ -1,6 +1,6 @@
 package com.example.application.views.vicedecano.lista_tareas;
 
-import com.example.application.data.service.DataService;
+import com.example.application.data.service.*;
 import com.example.application.data.entity.Estudiante;
 import com.example.application.data.entity.Tarea;
 import com.example.application.views.MainLayout;
@@ -57,10 +57,30 @@ public class ListadeTareasVicedecanoView extends Div {
     private DatePicker fechaFinFilter = new DatePicker();
     private ComboBox<Estudiante> estudiantefilter = new ComboBox<>();
 
-    private DataService dataService;
+    private UserService userService;
+    private AreaService areaService;
+    private EstudianteService estudianteService;
+    private ProfesorService profesorService;
+    private EvaluacionService evaluacionService;
+    private GrupoService grupoService;
+    private TareaService tareaService;
 
-    public ListadeTareasVicedecanoView(@Autowired DataService dataService) {
-        this.dataService = dataService;
+    public ListadeTareasVicedecanoView(
+            @Autowired UserService userService,
+            @Autowired AreaService areaService,
+            @Autowired EstudianteService estudianteService,
+            @Autowired ProfesorService profesorService,
+            @Autowired EvaluacionService evaluacionService,
+            @Autowired GrupoService grupoService,
+            @Autowired TareaService tareaService
+    ) {
+        this.userService = userService;
+        this.areaService = areaService;
+        this.estudianteService = estudianteService;
+        this.profesorService = profesorService;
+        this.evaluacionService = evaluacionService;
+        this.evaluacionService = evaluacionService;
+        this.tareaService = tareaService;
         addClassName("listaTareas-view");
         setSizeFull();
         createGrid();
@@ -78,7 +98,7 @@ public class ListadeTareasVicedecanoView extends Div {
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COLUMN_BORDERS);
         grid.setHeight("100%");
 
-        List<Tarea> tareas = dataService.findAllTareas();
+        List<Tarea> tareas = tareaService.findAllTareas();
         gridListDataView = grid.setItems(tareas);
     }
 
@@ -159,7 +179,7 @@ public class ListadeTareasVicedecanoView extends Div {
         fechaInicioFilter.setWidth("100%");
         fechaInicioFilter.addValueChangeListener(event -> {
             if (fechaInicioFilter.getValue() == null)
-                gridListDataView = grid.setItems(dataService.findAllTareas());
+                gridListDataView = grid.setItems(tareaService.findAllTareas());
             else gridListDataView.addFilter(tarea -> areFechaInicioEqual(tarea, fechaInicioFilter));
         });
         filterRow.getCell(fecha_inicioColumn).setComponent(fechaInicioFilter);
@@ -170,20 +190,20 @@ public class ListadeTareasVicedecanoView extends Div {
         fechaFinFilter.setWidth("100%");
         fechaFinFilter.addValueChangeListener(event -> {
             if (fechaFinFilter.getValue() == null)
-                gridListDataView = grid.setItems(dataService.findAllTareas());
+                gridListDataView = grid.setItems(tareaService.findAllTareas());
             else gridListDataView.addFilter(tarea -> areFechaFinEqual(tarea, fechaFinFilter));
         });
         filterRow.getCell(fecha_finColumn).setComponent(fechaFinFilter);
 
 
-        estudiantefilter.setItems(dataService.findAllEstudiante());
+        estudiantefilter.setItems(estudianteService.findAllEstudiante());
         estudiantefilter.setItemLabelGenerator(Estudiante::getStringNombreApellidos);
         estudiantefilter.setPlaceholder("Filtrar");
         estudiantefilter.setClearButtonVisible(true);
         estudiantefilter.setWidth("100%");
         estudiantefilter.addValueChangeListener(event -> {
             if (estudiantefilter.getValue() == null)
-                gridListDataView = grid.setItems(dataService.findAllTareas());
+                gridListDataView = grid.setItems(tareaService.findAllTareas());
             else gridListDataView.addFilter(tarea -> areEstudiantesEqual(tarea, estudiantefilter));
         });
         filterRow.getCell(estudianteColumn).setComponent(estudiantefilter);
@@ -219,7 +239,7 @@ public class ListadeTareasVicedecanoView extends Div {
     private HorizontalLayout getToolbar() {
 
         addClassName("menu-items");
-        Html total = new Html("<span>Total: <b>" + dataService.countTarea() + "</b> tareas</span>");
+        Html total = new Html("<span>Total: <b>" + tareaService.countTarea() + "</b> tareas</span>");
 
         HorizontalLayout toolbar = new HorizontalLayout(total, CrearReporte());
         toolbar.setAlignItems(FlexComponent.Alignment.CENTER);
@@ -235,9 +255,9 @@ public class ListadeTareasVicedecanoView extends Div {
 
         PrintPreviewReport report
                 = new PrintPreviewReport<>(Tarea.class, "nombre", "descripcion", "fecha_inicio", "fecha_fin", "e");
-        report.setItems(dataService.findAllTareas());
+        report.setItems(tareaService.findAllTareas());
         report.getReportBuilder().setTitle("Tareas");
-        StreamResource pdf = report.getStreamResource("tareas.pdf", dataService::findAllTareas, PrintPreviewReport.Format.PDF);
+        StreamResource pdf = report.getStreamResource("tareas.pdf", tareaService::findAllTareas, PrintPreviewReport.Format.PDF);
 
         Icon icon = new Icon(VaadinIcon.DOWNLOAD);
         icon.getStyle().set("width", "var(--lumo-icon-size-s)");

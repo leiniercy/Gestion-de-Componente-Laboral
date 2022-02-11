@@ -2,7 +2,7 @@ package com.example.application.views.jefe_area;
 
 import com.example.application.data.entity.Evaluacion;
 import com.example.application.views.vicedecano.*;
-import com.example.application.data.service.DataService;
+import com.example.application.data.service.*;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.board.Board;
@@ -56,10 +56,32 @@ import java.util.List;
 @RolesAllowed("jefeArea")
 public class EstadisticasJAView extends VerticalLayout {
 
-    DataService service;
+    private UserService userService;
+    private AreaService areaService;
+    private EstudianteService estudianteService;
+    private ProfesorService profesorService;
+    private EvaluacionService evaluacionService;
+    private GrupoService grupoService;
+    private TareaService tareaService;
 
-    public EstadisticasJAView(@Autowired DataService service) {
-        this.service = service;
+    public EstadisticasJAView(
+            @Autowired UserService userService,
+            @Autowired AreaService areaService,
+            @Autowired EstudianteService estudianteService,
+            @Autowired ProfesorService profesorService,
+            @Autowired EvaluacionService evaluacionService,
+            @Autowired GrupoService grupoService,
+            @Autowired TareaService tareaService
+        ) {
+        
+        this.userService = userService;
+        this.areaService = areaService;
+        this.estudianteService = estudianteService;
+        this.profesorService = profesorService;
+        this.evaluacionService = evaluacionService;
+        this.evaluacionService = evaluacionService;
+        this.tareaService = tareaService;
+        
         addClassName("estadistica-view");
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
 
@@ -103,7 +125,7 @@ public class EstadisticasJAView extends VerticalLayout {
     }
 
     private Component getEstudiantes() {
-        Span stats = new Span(service.countEstudiante() + "");
+        Span stats = new Span(estudianteService.countEstudiante() + "");
         stats.addClassNames("text-xl", "mt-m");
         return stats;
     }
@@ -179,17 +201,17 @@ public class EstadisticasJAView extends VerticalLayout {
     private Component getEstudiante_Mal_Area() {
         HorizontalLayout header = createHeader("Total de tareas evaluadas de mal por área ");
         Chart chart = new Chart(ChartType.PIE);
-        List<Evaluacion> list = service.findAllEvaluacion();
+        List<Evaluacion> list = evaluacionService.findAllEvaluacion();
 
         long mal = list.stream()
                 .filter(evaluacion -> "M".equals(evaluacion.getNota()))
                 .count();
 
         DataSeries dataSeries = new DataSeries();
-        service.findAllArea().forEach(area
+        areaService.findAllArea().forEach(area
                         -> dataSeries.add(new DataSeriesItem(String.format(
                         area.getNombre() + " %d", list.stream().filter(evaluacion -> "M".equals(evaluacion.getNota()) && evaluacion.getEstudiante().getArea().getNombre().equals(area.getNombre())).count()
-                ), service.countArea()))
+                ), areaService.countArea()))
         );
 
         chart.getConfiguration().setSeries(dataSeries);
@@ -210,18 +232,18 @@ public class EstadisticasJAView extends VerticalLayout {
 
         HorizontalLayout header = createHeader("Total de tareas evaluadas de regular por  área");
         Chart chart = new Chart(ChartType.PIE);
-        List<Evaluacion> list = service.findAllEvaluacion();
+        List<Evaluacion> list = evaluacionService.findAllEvaluacion();
 
         long regular = list.stream()
                 .filter(evaluacion -> "R".equals(evaluacion.getNota()))
                 .count();
 
         DataSeries dataSeries = new DataSeries();
-        service.findAllArea().forEach(area
+        areaService.findAllArea().forEach(area
                 -> dataSeries.add(
                 new DataSeriesItem(
                         String.format(area.getNombre() + " %d", list.stream().filter(evaluacion -> "R".equals(evaluacion.getNota()) && evaluacion.getEstudiante().getArea().getNombre().equals(area.getNombre())).count()
-                        ), service.countArea())
+                        ), areaService.countArea())
                 )
         );
         chart.getConfiguration().setSeries(dataSeries);
@@ -242,18 +264,18 @@ public class EstadisticasJAView extends VerticalLayout {
 
         HorizontalLayout header = createHeader("Total de tareas evaluadas de bien por área");
         Chart chart = new Chart(ChartType.PIE);
-        List<Evaluacion> list = service.findAllEvaluacion();
+        List<Evaluacion> list = evaluacionService.findAllEvaluacion();
 
         long bien = list.stream()
                 .filter(evaluacion -> "B".equals(evaluacion.getNota()))
                 .count();
 
         DataSeries dataSeries = new DataSeries();
-        service.findAllArea().forEach(area
+        areaService.findAllArea().forEach(area
                         -> dataSeries.add(
                         new DataSeriesItem(
                                 String.format(area.getNombre() + " %d", list.stream().filter(evaluacion -> "B".equals(evaluacion.getNota()) && evaluacion.getEstudiante().getArea().getNombre().equals(area.getNombre())).count()
-                                ), service.countArea())
+                                ), areaService.countArea())
                 )
         );
         chart.getConfiguration().setSeries(dataSeries);

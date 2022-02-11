@@ -5,7 +5,7 @@
  */
 package com.example.application.views.jefe_area.evaluacion;
 
-import com.example.application.data.service.DataService;
+import com.example.application.data.service.*;
 import com.example.application.data.entity.Area;
 import com.example.application.data.entity.Evaluacion;
 import com.example.application.data.entity.Estudiante;
@@ -53,14 +53,19 @@ import java.util.Arrays;
 public class EvaluacionesView extends VerticalLayout {
 
 //    private Grid<Evaluacion> grid = new Grid<>(Evaluacion.class, false);
-
     private GridPro<Evaluacion> grid = new GridPro<Evaluacion>();
 
     EvaluacionForm form;
 
+    private UserService userService;
+    private AreaService areaService;
+    private EstudianteService estudianteService;
+    private ProfesorService profesorService;
+    private EvaluacionService evaluacionService;
+    private GrupoService grupoService;
+    private TareaService tareaService;
+    
     private Evaluacion evaluacion;
-
-    private DataService dataService;
 
     private GridListDataView<Evaluacion> gridListDataView;
 
@@ -68,20 +73,20 @@ public class EvaluacionesView extends VerticalLayout {
     private Grid.Column<Evaluacion> descripcionColumn = grid.addColumn(Evaluacion::getDescripcion).setHeader("Descripción").setAutoWidth(true).setFlexGrow(0);
     private Grid.Column<Evaluacion> estudianteColumn
             = grid.addColumn(evaluacion -> evaluacion.getEstudiante().getStringNombreApellidos())
-            .setComparator(evaluacion -> evaluacion.getEstudiante().getStringNombreApellidos())
-            .setHeader("Estudiante").setAutoWidth(true).setFlexGrow(0);
+                    .setComparator(evaluacion -> evaluacion.getEstudiante().getStringNombreApellidos())
+                    .setHeader("Estudiante").setAutoWidth(true).setFlexGrow(0);
     private Grid.Column<Evaluacion> tareaColumn
             = grid.addColumn(evaluacion -> evaluacion.getTarea().getNombre())
-            .setComparator(evaluacion -> evaluacion.getTarea().getNombre())
-            .setHeader("Tarea").setAutoWidth(true).setFlexGrow(0);
+                    .setComparator(evaluacion -> evaluacion.getTarea().getNombre())
+                    .setHeader("Tarea").setAutoWidth(true).setFlexGrow(0);
     private Grid.Column<Evaluacion> statusColumn
             = grid.addEditColumn(Evaluacion::getStatus, new ComponentRenderer<>(evaluacion -> {
-        Span span = new Span();
-        span.setText(evaluacion.getStatus());
-        span.getElement().setAttribute("theme", "badge " + evaluacion.getStatus().toLowerCase());
-        return span;
-    })).select((item, newValue) -> item.setStatus(newValue), Arrays.asList("Pendiente", "Completado", "No Completado"))
-            .setComparator(evaluacion -> evaluacion.getStatus()).setHeader("Estatus");
+                Span span = new Span();
+                span.setText(evaluacion.getStatus());
+                span.getElement().setAttribute("theme", "badge " + evaluacion.getStatus().toLowerCase());
+                return span;
+            })).select((item, newValue) -> item.setStatus(newValue), Arrays.asList("Pendiente", "Completado", "No Completado"))
+                    .setComparator(evaluacion -> evaluacion.getStatus()).setHeader("Estatus");
 
     private Grid.Column<Evaluacion> editColumn = grid.addComponentColumn(evaluacion -> {
         HorizontalLayout layout = new HorizontalLayout();
@@ -95,16 +100,30 @@ public class EvaluacionesView extends VerticalLayout {
         return layout;
     }).setFlexGrow(0);
 
+
+
     public EvaluacionesView(
-            @Autowired DataService dataService
+            @Autowired UserService userService,
+            @Autowired AreaService areaService,
+            @Autowired EstudianteService estudianteService,
+            @Autowired ProfesorService profesorService,
+            @Autowired EvaluacionService evaluacionService,
+            @Autowired GrupoService grupoService,
+            @Autowired TareaService tareaService
     ) {
 
-        this.dataService = dataService;
+        this.userService = userService;
+        this.areaService = areaService;
+        this.estudianteService = estudianteService;
+        this.profesorService = profesorService;
+        this.evaluacionService = evaluacionService;
+        this.evaluacionService = evaluacionService;
+        this.tareaService = tareaService;
         addClassNames("evaluacion-view", "flex", "flex-col", "h-full");
         setSizeFull();
         configureGrid();
 
-        form = new EvaluacionForm(dataService.findAllEstudiante(), dataService.findAllTareas());
+        form = new EvaluacionForm(estudianteService.findAllEstudiante(), tareaService.findAllTareas());
         form.setWidth("25em");
         form.addListener(EvaluacionForm.SaveEvent.class, this::saveEvaluacion);
         form.addListener(EvaluacionForm.CloseEvent.class, e -> closeEditor());
@@ -115,7 +134,6 @@ public class EvaluacionesView extends VerticalLayout {
         scroller.getStyle()
                 .set("border-bottom", "1px solid var(--lumo-contrast-20pct)")
                 .set("padding", "var(--lumo-space-m)");
-
 
         FlexLayout content = new FlexLayout(scroller, form);
         content.setFlexGrow(2, scroller);
@@ -128,7 +146,6 @@ public class EvaluacionesView extends VerticalLayout {
         ly.setAlignItems(Alignment.BASELINE);
         Footer footer = new Footer(ly);
         footer.getStyle().set("padding", "var(--lumo-space-wide-m)");
-
 
         add(getToolbar(), content, footer);
         updateList();
@@ -147,7 +164,7 @@ public class EvaluacionesView extends VerticalLayout {
         headerRow.getCell(tareaColumn).setComponent(FiltarTarea());
         headerRow.getCell(statusColumn).setComponent(FiltarStatus());
 
-        gridListDataView = grid.setItems(dataService.findAllEvaluacion());
+        gridListDataView = grid.setItems(evaluacionService.findAllEvaluacion());
         grid.addClassNames("evaluacion-grid");
         grid.setAllRowsVisible(true);
         grid.setSizeFull();
@@ -161,7 +178,7 @@ public class EvaluacionesView extends VerticalLayout {
     private HorizontalLayout getToolbar() {
 
         addClassName("menu-items");
-        Html total = new Html("<span>Total: <b>" + dataService.countEvaluacion() + "</b> evaluaciones</span>");
+        Html total = new Html("<span>Total: <b>" + evaluacionService.countEvaluacion() + "</b> evaluaciones</span>");
 
         Button addButton = new Button("Añadir Evaluación ", VaadinIcon.USER.create());
         //  addButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
@@ -178,7 +195,7 @@ public class EvaluacionesView extends VerticalLayout {
     }
 
     private void saveEvaluacion(EvaluacionForm.SaveEvent event) {
-        dataService.saveEvaluacion(event.getEvaluacion());
+        evaluacionService.saveEvaluacion(event.getEvaluacion());
         updateList();
         closeEditor();
     }
@@ -198,14 +215,14 @@ public class EvaluacionesView extends VerticalLayout {
         dialog.setConfirmText("Eliminar");
         dialog.setConfirmButtonTheme("error primary");
         dialog.addConfirmListener(event -> {
-            dataService.deleteEvaluacion(evaluacion);
+            evaluacionService.deleteEvaluacion(evaluacion);
             Notification.show("Evaluación eliminada");
             this.refreshGrid();
         });
 
-        if (evaluacion == null)
+        if (evaluacion == null) {
             return;
-        else {
+        } else {
             dialog.open();
         }
 
@@ -213,7 +230,7 @@ public class EvaluacionesView extends VerticalLayout {
 
     private void refreshGrid() {
         grid.setVisible(true);
-        grid.setItems(dataService.findAllEvaluacion());
+        grid.setItems(evaluacionService.findAllEvaluacion());
     }
 
     public void editEvaluacion(Evaluacion evaluacion) {
@@ -238,7 +255,7 @@ public class EvaluacionesView extends VerticalLayout {
     }
 
     private void updateList() {
-        grid.setItems(dataService.findAllEvaluacion());
+        grid.setItems(evaluacionService.findAllEvaluacion());
     }
 
     //Filtros
@@ -274,15 +291,17 @@ public class EvaluacionesView extends VerticalLayout {
     private ComboBox<Estudiante> FiltrarEstudinate() {
 
         ComboBox<Estudiante> filterEstudiante = new ComboBox<>();
-        filterEstudiante.setItems(dataService.findAllEstudiante());
+        filterEstudiante.setItems(estudianteService.findAllEstudiante());
         filterEstudiante.setItemLabelGenerator(Estudiante::getStringNombreApellidos);
         filterEstudiante.setPlaceholder("Filtrar");
         filterEstudiante.setClearButtonVisible(true);
         filterEstudiante.setWidth("100%");
         filterEstudiante.addValueChangeListener(event -> {
-            if (filterEstudiante.getValue() == null)
-                gridListDataView = grid.setItems(dataService.findAllEvaluacion());
-            else gridListDataView.addFilter(evaluacion -> areEstudiantesEqual(evaluacion, filterEstudiante));
+            if (filterEstudiante.getValue() == null) {
+                gridListDataView = grid.setItems(evaluacionService.findAllEvaluacion());
+            } else {
+                gridListDataView.addFilter(evaluacion -> areEstudiantesEqual(evaluacion, filterEstudiante));
+            }
         });
         return filterEstudiante;
     }
@@ -298,15 +317,17 @@ public class EvaluacionesView extends VerticalLayout {
     private ComboBox<Tarea> FiltarTarea() {
 
         ComboBox<Tarea> filterTarea = new ComboBox<>();
-        filterTarea.setItems(dataService.findAllTareas());
+        filterTarea.setItems(tareaService.findAllTareas());
         filterTarea.setItemLabelGenerator(Tarea::getNombre);
         filterTarea.setPlaceholder("Filter");
         filterTarea.setClearButtonVisible(true);
         filterTarea.setWidth("100%");
         filterTarea.addValueChangeListener(event -> {
-            if (filterTarea.getValue() == null)
-                gridListDataView = grid.setItems(dataService.findAllEvaluacion());
-            else gridListDataView.addFilter(evaluacion -> areTareasEqual(evaluacion, filterTarea));
+            if (filterTarea.getValue() == null) {
+                gridListDataView = grid.setItems(evaluacionService.findAllEvaluacion());
+            } else {
+                gridListDataView.addFilter(evaluacion -> areTareasEqual(evaluacion, filterTarea));
+            }
         });
         return filterTarea;
     }

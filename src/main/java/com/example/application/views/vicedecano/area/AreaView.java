@@ -5,7 +5,7 @@
  */
 package com.example.application.views.vicedecano.area;
 
-import com.example.application.data.service.DataService;
+import com.example.application.data.service.*;
 import com.example.application.data.entity.Area;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
@@ -45,7 +45,13 @@ public class AreaView extends VerticalLayout {
 
     AreaForm form;
 
-    private DataService dataService;
+    private UserService userService;
+    private AreaService areaService;
+    private EstudianteService estudianteService;
+    private ProfesorService profesorService;
+    private EvaluacionService evaluacionService;
+    private GrupoService grupoService;
+    private TareaService tareaService;
 
     private GridListDataView<Area> gridListDataView;
 
@@ -65,12 +71,23 @@ public class AreaView extends VerticalLayout {
         return layout;
     }).setFlexGrow(0);
 
-
     public AreaView(
-            @Autowired DataService dataService
+            @Autowired UserService userService,
+            @Autowired AreaService areaService,
+            @Autowired EstudianteService estudianteService,
+            @Autowired ProfesorService profesorService,
+            @Autowired EvaluacionService evaluacionService,
+            @Autowired GrupoService grupoService,
+            @Autowired TareaService tareaServiceF
     ) {
 
-        this.dataService = dataService;
+        this.userService = userService;
+        this.areaService = areaService;
+        this.estudianteService = estudianteService;
+        this.profesorService = profesorService;
+        this.evaluacionService = evaluacionService;
+        this.evaluacionService = evaluacionService;
+        this.tareaService = tareaService;
         addClassNames("area-view", "flex", "flex-col");
         setSizeFull();
         configureGrid();
@@ -80,14 +97,12 @@ public class AreaView extends VerticalLayout {
         form.addListener(AreaForm.SaveEvent.class, this::saveArea);
         form.addListener(AreaForm.CloseEvent.class, e -> closeEditor());
 
-
         Section section1 = new Section(grid);
         Scroller scroller = new Scroller(new Div(section1));
         scroller.setScrollDirection(Scroller.ScrollDirection.VERTICAL);
         scroller.getStyle()
                 .set("border-bottom", "1px solid var(--lumo-contrast-20pct)")
                 .set("padding", "var(--lumo-space-m)");
-
 
         FlexLayout content = new FlexLayout(scroller, form);
         content.setFlexGrow(2, scroller);
@@ -96,13 +111,12 @@ public class AreaView extends VerticalLayout {
         content.addClassNames("content", "gap-m");
         content.setSizeFull();
 
-        HorizontalLayout ly = new HorizontalLayout(new Span(VaadinIcon.ACADEMY_CAP.create()),new H6("Universidad de Ciencias Informáticas") );
+        HorizontalLayout ly = new HorizontalLayout(new Span(VaadinIcon.ACADEMY_CAP.create()), new H6("Universidad de Ciencias Informáticas"));
         ly.setAlignItems(Alignment.BASELINE);
         Footer footer = new Footer(ly);
         footer.getStyle().set("padding", "var(--lumo-space-wide-m)");
 
-
-        add(getToolbar(), content,footer);
+        add(getToolbar(), content, footer);
         updateList();
         closeEditor();
         grid.asSingleSelect().addValueChangeListener(event
@@ -116,7 +130,7 @@ public class AreaView extends VerticalLayout {
         headerRow.getCell(nombreColumn).setComponent(FiltrarNombre());
         headerRow.getCell(descripcionColumn).setComponent(FiltrarDescripcion());
 
-        gridListDataView = grid.setItems(dataService.findAllArea());
+        gridListDataView = grid.setItems(areaService.findAllArea());
         grid.addClassNames("area-grid");
         grid.setAllRowsVisible(true);
         grid.setSizeFull();
@@ -132,12 +146,11 @@ public class AreaView extends VerticalLayout {
     private Component getToolbar() {
 
         addClassName("menu-items");
-        Html total = new Html("<span>Total: <b>" + dataService.countArea() + "</b> areas</span>");
+        Html total = new Html("<span>Total: <b>" + areaService.countArea() + "</b> areas</span>");
 
         Button addButton = new Button("Añadir Área", VaadinIcon.USER.create());
 //        addButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         addButton.addClickListener(click -> addArea());
-
 
         HorizontalLayout toolbar = new HorizontalLayout(total, addButton);
         toolbar.setAlignItems(FlexComponent.Alignment.BASELINE);
@@ -150,11 +163,10 @@ public class AreaView extends VerticalLayout {
     }
 
     private void saveArea(AreaForm.SaveEvent event) {
-        dataService.saveArea(event.getArea());
+        areaService.saveArea(event.getArea());
         updateList();
         closeEditor();
     }
-
 
     private void deleteArea(Area area) {
 
@@ -164,31 +176,29 @@ public class AreaView extends VerticalLayout {
 
         dialog.setCancelText("Cancelar");
         dialog.setCancelable(true);
-        dialog.addCancelListener(event ->{
+        dialog.addCancelListener(event -> {
             this.refreshGrid();
         });
 
         dialog.setConfirmText("Eliminar");
         dialog.setConfirmButtonTheme("error primary");
         dialog.addConfirmListener(event -> {
-            dataService.deleteArea(area);
+            areaService.deleteArea(area);
             Notification.show("Área eliminada");
             this.refreshGrid();
         });
 
-        if (area == null)
+        if (area == null) {
             return;
-        else {
+        } else {
             dialog.open();
         }
     }
 
-
     private void refreshGrid() {
-            grid.setVisible(true);
-            grid.setItems(dataService.findAllArea());
+        grid.setVisible(true);
+        grid.setItems(areaService.findAllArea());
     }
-
 
     public void editArea(Area area) {
         if (area == null) {
@@ -211,9 +221,8 @@ public class AreaView extends VerticalLayout {
         removeClassName("editing");
     }
 
-
     private void updateList() {
-        grid.setItems(dataService.findAllArea());
+        grid.setItems(areaService.findAllArea());
     }
 
     //Filtros

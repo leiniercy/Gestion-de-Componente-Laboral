@@ -1,8 +1,8 @@
 package com.example.application.views.vicedecano;
 
-import com.example.application.data.service.DataService;
 import com.example.application.data.entity.Estudiante;
 import com.example.application.data.entity.Evaluacion;
+import com.example.application.data.service.*;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.board.Board;
@@ -20,7 +20,8 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.select.Select;;
+import com.vaadin.flow.component.select.Select;
+;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
@@ -32,22 +33,44 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
 @PageTitle("Dashboard")
 @Route(value = "dashboard", layout = MainLayout.class)
 @RouteAlias(value = "dashboard", layout = MainLayout.class)
 @RolesAllowed("vicedecano")
 public class DashboardView extends VerticalLayout {
 
-    DataService service;
+    private UserService userService;
+    private AreaService areaService;
+    private EstudianteService estudianteService;
+    private ProfesorService profesorService;
+    private EvaluacionService evaluacionService;
+    private GrupoService grupoService;
+    private TareaService tareaService;
 
-    public DashboardView(@Autowired DataService service) {
-        this.service = service;
+    public DashboardView(
+            @Autowired UserService userService,
+            @Autowired AreaService areaService,
+            @Autowired EstudianteService estudianteService,
+            @Autowired ProfesorService profesorService,
+            @Autowired EvaluacionService evaluacionService,
+            @Autowired GrupoService grupoService,
+            @Autowired TareaService tareaService
+    ) {
+        this.userService = userService;
+        this.areaService = areaService;
+        this.estudianteService = estudianteService;
+        this.profesorService = profesorService;
+        this.evaluacionService = evaluacionService;
+        this.evaluacionService = evaluacionService;
+        this.tareaService = tareaService;
+        
         addClassName("dashboard-view");
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
 
         add(getBoard(), getGraficosPasteles());
     }
-
 
     private Component getBoard() {
         addClassName("basic-board");
@@ -79,13 +102,13 @@ public class DashboardView extends VerticalLayout {
     }
 
     private Component getEstudiantes() {
-        Span stats = new Span(service.countEstudiante() + "");
+        Span stats = new Span(estudianteService.countEstudiante() + "");
         stats.addClassNames("text-xl", "mt-m");
         return stats;
     }
 
     private Component getProfesores() {
-        Span stats = new Span(service.countProfesor() + "");
+        Span stats = new Span(profesorService.countProfesor() + "");
         stats.addClassNames("text-xl", "mt-m");
         return stats;
     }
@@ -118,22 +141,21 @@ public class DashboardView extends VerticalLayout {
         return header;
     }
 
-
     private Component getEstudiante_Mal_Area() {
 
         HorizontalLayout header = createHeader("Total de tareas evaluadas de Mal por Área");
         Chart chart = new Chart(ChartType.PIE);
 
-        List<Evaluacion> list = service.findAllEvaluacion();
+        List<Evaluacion> list = evaluacionService.findAllEvaluacion();
 
         DataSeries dataSeries = new DataSeries();
-        service.findAllArea().forEach(
+        areaService.findAllArea().forEach(
                 area -> dataSeries.add(
                         new DataSeriesItem(String.format(
-                                area.getNombre() + " %d"
-                                , list.stream().filter(evaluacion -> "M".equals(evaluacion.getNota()) && evaluacion.getEstudiante().getArea().getNombre().equals(area.getNombre())).count()
-                        )
-                                , service.countArea()
+                                area.getNombre() + " %d",
+                                list.stream().filter(evaluacion -> "M".equals(evaluacion.getNota()) && evaluacion.getEstudiante().getArea().getNombre().equals(area.getNombre())).count()
+                        ),
+                                areaService.countArea()
                         )
                 )
         );
@@ -159,16 +181,16 @@ public class DashboardView extends VerticalLayout {
 
         HorizontalLayout header = createHeader("Total de tareas evaluadas de Regular por Área");
         Chart chart = new Chart(ChartType.PIE);
-        List<Evaluacion> list = service.findAllEvaluacion();
+        List<Evaluacion> list = evaluacionService.findAllEvaluacion();
 
         DataSeries dataSeries = new DataSeries();
-        service.findAllArea().forEach(
+        areaService.findAllArea().forEach(
                 area -> dataSeries.add(
                         new DataSeriesItem(String.format(
-                                area.getNombre() + " %d"
-                                , list.stream().filter(evaluacion -> "R".equals(evaluacion.getNota()) && evaluacion.getEstudiante().getArea().getNombre().equals(area.getNombre())).count()
-                        )
-                                , service.countArea()
+                                area.getNombre() + " %d",
+                                list.stream().filter(evaluacion -> "R".equals(evaluacion.getNota()) && evaluacion.getEstudiante().getArea().getNombre().equals(area.getNombre())).count()
+                        ),
+                                areaService.countArea()
                         )
                 )
         );
@@ -194,16 +216,16 @@ public class DashboardView extends VerticalLayout {
 
         HorizontalLayout header = createHeader("Total de tareas evaluadas de Bien por Área");
         Chart chart = new Chart(ChartType.PIE);
-        List<Evaluacion> list = service.findAllEvaluacion();
+        List<Evaluacion> list = evaluacionService.findAllEvaluacion();
 
         DataSeries dataSeries = new DataSeries();
-        service.findAllArea().forEach(
+        areaService.findAllArea().forEach(
                 area -> dataSeries.add(
                         new DataSeriesItem(String.format(
-                                area.getNombre() + " %d"
-                                , list.stream().filter(evaluacion -> "B".equals(evaluacion.getNota()) && evaluacion.getEstudiante().getArea().getNombre().equals(area.getNombre())).count()
-                        )
-                                , service.countArea()
+                                area.getNombre() + " %d",
+                                list.stream().filter(evaluacion -> "B".equals(evaluacion.getNota()) && evaluacion.getEstudiante().getArea().getNombre().equals(area.getNombre())).count()
+                        ),
+                                areaService.countArea()
                         )
                 )
         );

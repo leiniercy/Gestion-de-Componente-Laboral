@@ -5,7 +5,7 @@
  */
 package com.example.application.views.vicedecano.profesor;
 
-import com.example.application.data.service.DataService;
+import com.example.application.data.service.*;
 import com.example.application.data.entity.*;
 import com.example.application.views.MainLayout;
 import com.example.application.views.vicedecano.estudiante.EstudiantesView;
@@ -41,7 +41,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * @author Leinier
  */
-
 @PageTitle("Profesor")
 @Route(value = "profesor-view", layout = MainLayout.class)
 @Uses(Icon.class)
@@ -50,7 +49,13 @@ public class ProfesorView extends VerticalLayout {
 
     private Grid<Profesor> grid = new Grid<>(Profesor.class, false);
 
-    private DataService dataService;
+    private UserService userService;
+    private AreaService areaService;
+    private EstudianteService estudianteService;
+    private ProfesorService profesorService;
+    private EvaluacionService evaluacionService;
+    private GrupoService grupoService;
+    private TareaService tareaService;
 
     ProfesorForm form;
 
@@ -74,15 +79,28 @@ public class ProfesorView extends VerticalLayout {
         return layout;
     }).setFlexGrow(0);
 
+    public ProfesorView(
+            @Autowired UserService userService,
+            @Autowired AreaService areaService,
+            @Autowired EstudianteService estudianteService,
+            @Autowired ProfesorService profesorService,
+            @Autowired EvaluacionService evaluacionService,
+            @Autowired GrupoService grupoService,
+            @Autowired TareaService tareaService
+    ) {
 
-    public ProfesorView(@Autowired DataService service) {
-
-        this.dataService = service;
+        this.userService = userService;
+        this.areaService = areaService;
+        this.estudianteService = estudianteService;
+        this.profesorService = profesorService;
+        this.evaluacionService = evaluacionService;
+        this.evaluacionService = evaluacionService;
+        this.tareaService = tareaService;
         addClassNames("profesor-view", "flex", "flex-col", "h-full");
         setSizeFull();
         configureGrid();
 
-        form = new ProfesorForm(service.findAllUser(), service.findAllArea());
+        form = new ProfesorForm(userService.findAllUser(), areaService.findAllArea());
         form.setWidth("25em");
         form.addListener(ProfesorForm.SaveEvent.class, this::saveProfesor);
         form.addListener(ProfesorForm.CloseEvent.class, e -> closeEditor());
@@ -94,7 +112,6 @@ public class ProfesorView extends VerticalLayout {
                 .set("border-bottom", "1px solid var(--lumo-contrast-20pct)")
                 .set("padding", "var(--lumo-space-m)");
 
-
         FlexLayout content = new FlexLayout(scroller, form);
         content.setFlexGrow(2, scroller);
         content.setFlexGrow(1, form);
@@ -102,18 +119,16 @@ public class ProfesorView extends VerticalLayout {
         content.addClassNames("content", "gap-m");
         content.setSizeFull();
 
-        HorizontalLayout ly = new HorizontalLayout(new Span(VaadinIcon.ACADEMY_CAP.create()),new H6("Universidad de Ciencias Informáticas") );
+        HorizontalLayout ly = new HorizontalLayout(new Span(VaadinIcon.ACADEMY_CAP.create()), new H6("Universidad de Ciencias Informáticas"));
         ly.setAlignItems(Alignment.BASELINE);
         Footer footer = new Footer(ly);
         footer.getStyle().set("padding", "var(--lumo-space-wide-m)");
 
-
-        add(getToolbar(), content,footer);
+        add(getToolbar(), content, footer);
         updateList();
         closeEditor();
         grid.asSingleSelect().addValueChangeListener(event
                 -> editProfesor(event.getValue()));
-
 
     }
 
@@ -127,8 +142,7 @@ public class ProfesorView extends VerticalLayout {
         headerRow.getCell(solapinColumn).setComponent(FiltrarSolapin());
         headerRow.getCell(areaColumn).setComponent(FiltrarArea());
 
-
-        gridListDataView = grid.setItems(dataService.findAllProfesor());
+        gridListDataView = grid.setItems(profesorService.findAllProfesor());
         grid.addClassNames("profesor-grid");
         grid.setAllRowsVisible(true);
         grid.setSizeFull();
@@ -142,7 +156,7 @@ public class ProfesorView extends VerticalLayout {
     private HorizontalLayout getToolbar() {
 
         addClassName("menu-items");
-        Html total = new Html("<span>Total: <b>" + dataService.countProfesor() + "</b> profesores</span>");
+        Html total = new Html("<span>Total: <b>" + profesorService.countProfesor() + "</b> profesores</span>");
 
         Button menuButton = new Button("Mostar/Ocultar Columnas");
         //menuButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
@@ -155,9 +169,8 @@ public class ProfesorView extends VerticalLayout {
         columnToggleContextMenu.addColumnToggleItem("Solapín", solapinColumn);
         columnToggleContextMenu.addColumnToggleItem("Área", areaColumn);
 
-
         Button addButton = new Button("Añadir Profesor", VaadinIcon.USER.create());
-     //   addButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+        //   addButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         addButton.addClickListener(click -> addProfesor());
 
         HorizontalLayout toolbar = new HorizontalLayout(total, menuButton, addButton);
@@ -171,6 +184,7 @@ public class ProfesorView extends VerticalLayout {
     }
 
     private static class ColumnToggleContextMenu extends ContextMenu {
+
         public ColumnToggleContextMenu(Component target) {
             super(target);
             setOpenOnClick(true);
@@ -186,7 +200,7 @@ public class ProfesorView extends VerticalLayout {
     }
 
     private void saveProfesor(ProfesorForm.SaveEvent event) {
-        dataService.saveProfesor(event.getProfesor());
+        profesorService.saveProfesor(event.getProfesor());
         updateList();
         closeEditor();
     }
@@ -206,14 +220,14 @@ public class ProfesorView extends VerticalLayout {
         dialog.setConfirmText("Eliminar");
         dialog.setConfirmButtonTheme("error primary");
         dialog.addConfirmListener(event -> {
-            dataService.deleteProfesor(profesor);
+            profesorService.deleteProfesor(profesor);
             Notification.show("Profesor eliminado");
             this.refreshGrid();
         });
 
-        if (profesor == null){
+        if (profesor == null) {
             return;
-        }else{
+        } else {
             dialog.open();
         }
 
@@ -221,9 +235,8 @@ public class ProfesorView extends VerticalLayout {
 
     private void refreshGrid() {
         grid.setVisible(true);
-        grid.setItems(dataService.findAllProfesor());
+        grid.setItems(profesorService.findAllProfesor());
     }
-
 
     public void editProfesor(Profesor profesor) {
         if (profesor == null) {
@@ -247,7 +260,7 @@ public class ProfesorView extends VerticalLayout {
     }
 
     private void updateList() {
-        grid.setItems(dataService.findAllProfesor());
+        grid.setItems(profesorService.findAllProfesor());
     }
 
     // Filtros
@@ -311,15 +324,17 @@ public class ProfesorView extends VerticalLayout {
 
     private ComboBox<Area> FiltrarArea() {
         ComboBox<Area> areaFilter = new ComboBox<>();
-        areaFilter.setItems(dataService.findAllArea());
+        areaFilter.setItems(areaService.findAllArea());
         areaFilter.setItemLabelGenerator(Area::getNombre);
         areaFilter.setPlaceholder("Filtrar");
         areaFilter.setClearButtonVisible(true);
         areaFilter.setWidth("100%");
         areaFilter.addValueChangeListener(event -> {
-            if (areaFilter.getValue() == null)
-                gridListDataView = grid.setItems(dataService.findAllProfesor());
-            else gridListDataView.addFilter(profesor -> areAreaEqual(profesor, areaFilter));
+            if (areaFilter.getValue() == null) {
+                gridListDataView = grid.setItems(profesorService.findAllProfesor());
+            } else {
+                gridListDataView.addFilter(profesor -> areAreaEqual(profesor, areaFilter));
+            }
         });
         return areaFilter;
     }
@@ -334,15 +349,17 @@ public class ProfesorView extends VerticalLayout {
 
     private ComboBox<User> FiltrarUser() {
         ComboBox<User> userFilter = new ComboBox<>();
-        userFilter.setItems(dataService.findAllUser());
+        userFilter.setItems(userService.findAllUser());
         userFilter.setItemLabelGenerator(User::getName);
         userFilter.setPlaceholder("Filtrar");
         userFilter.setClearButtonVisible(true);
         userFilter.setWidth("100%");
         userFilter.addValueChangeListener(event -> {
-            if(userFilter.getValue() == null)
-                gridListDataView = grid.setItems(dataService.findAllProfesor());
-            else gridListDataView.addFilter(profesor -> areUserEqual(profesor, userFilter));
+            if (userFilter.getValue() == null) {
+                gridListDataView = grid.setItems(profesorService.findAllProfesor());
+            } else {
+                gridListDataView.addFilter(profesor -> areUserEqual(profesor, userFilter));
+            }
         });
         return userFilter;
     }
@@ -354,6 +371,5 @@ public class ProfesorView extends VerticalLayout {
         }
         return true;
     }
-
 
 }
