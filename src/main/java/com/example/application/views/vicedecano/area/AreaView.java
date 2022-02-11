@@ -5,7 +5,7 @@
  */
 package com.example.application.views.vicedecano.area;
 
-import com.example.application.data.DataService;
+import com.example.application.data.service.DataService;
 import com.example.application.data.entity.Area;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Component;

@@ -1,6 +1,6 @@
 package com.example.application.views.vicedecano;
 
-import com.example.application.data.DataService;
+import com.example.application.data.service.DataService;
 import com.example.application.data.entity.Estudiante;
 import com.example.application.data.entity.Evaluacion;
 import com.example.application.views.MainLayout;

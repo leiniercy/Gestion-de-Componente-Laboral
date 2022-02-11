@@ -5,7 +5,7 @@
  */
 package com.example.application.views.jefe_area.evaluacion;
 
-import com.example.application.data.DataService;
+import com.example.application.data.service.DataService;
 import com.example.application.data.entity.Area;
 import com.example.application.data.entity.Evaluacion;
 import com.example.application.data.entity.Estudiante;

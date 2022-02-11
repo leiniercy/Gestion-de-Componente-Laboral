@@ -22,7 +22,6 @@ import org.vaadin.crudui.crud.CrudListener;
  * @author Leinier
  */
 @Service
-
 public class EvaluacionService {
 
     private EvaluacionRepository repository;
@@ -31,28 +30,28 @@ public class EvaluacionService {
         this.repository = repository;
     }
 
-    public Optional<Evaluacion> get(Integer id) {
-        return repository.findById(id);
+     public List<Evaluacion> findAllEvaluacion() {
+        return repository.findAll();
     }
 
-    public Evaluacion update(Evaluacion entity) {
-        return repository.save(entity);
+    public List<Evaluacion> searchEvaluacion(String searchTerm) {
+        return repository.search(searchTerm);
     }
 
-    public void deleteById(Integer id) {
-        repository.deleteById(id);
-    }
-    
-    public void delete(Evaluacion evaluacion) {
-        repository.delete(evaluacion);
+    public long countEvaluacion() {
+        return repository.count();
     }
 
-    public Page<Evaluacion> list(Pageable pageable) {
-        return repository.findAll(pageable);
+    public void deleteEvaluacion(Evaluacion evaluacion) {
+       repository.delete(evaluacion);
     }
 
-    public int count() {
-        return (int) repository.count();
+    public void saveEvaluacion(Evaluacion evaluacion) {
+        if (evaluacion == null) {
+            System.err.println("This field is null. Are you sure you have connected your form to the application?");
+            return;
+        }
+       repository.save(evaluacion);
     }
 
 }

@@ -15,31 +15,36 @@ import com.example.application.data.repository.GrupoRepository;
 
 
 @Service
-@RequiredArgsConstructor
 public class GrupoService {
 
     private final GrupoRepository repository;
 
-
-    public Optional<Grupo> get(Integer id) {
-        return repository.findById(id);
-    }
-    
-    
-    public Grupo update(Grupo entity) {
-        return repository.save(entity);
+    public GrupoService(@Autowired GrupoRepository repository) {
+        this.repository = repository;
     }
 
-    public void deleteById (Integer id) {
-        repository.deleteById(id);
+    public List<Grupo> findAllGrupo() {
+        return repository.findAll();
     }
 
-    public Page<Grupo> list(Pageable pageable) {
-        return repository.findAll(pageable);
+    public List<Grupo> searchGrupo(Integer searchTerm) {
+        return repository.search(searchTerm);
     }
 
-    public int count() {
-        return (int) repository.count();
+    public long countGrupo() {
+        return repository.count();
+    }
+
+    public void deleteGrupo(Grupo grupo) {
+        repository.delete(grupo);
+    }
+
+    public void saveGrupo(Grupo grupo) {
+        if (grupo == null) {
+            System.err.println("This field is null. Are you sure you have connected your form to the application?");
+            return;
+        }
+        repository.save(grupo);
     }
 
  

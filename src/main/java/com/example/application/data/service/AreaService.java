@@ -30,27 +30,27 @@ public class AreaService {
         this.repository = repository;
     }
 
-    public Optional<Area> get(Integer id) {
-        return repository.findById(id);
+   public List<Area> findAllArea() {
+        return repository.findAll();
     }
 
-    public Area update(Area entity) {
-        return repository.save(entity);
+    public List<Area> searchArea(String stringFilter) {
+        return repository.search(stringFilter);
     }
 
-    public void deleteByID(Integer id) {
-        repository.deleteById(id);
+    public long countArea() {
+        return repository.count();
     }
-    
-    public void delete(Area area) {
+
+    public void deleteArea(Area area) {
         repository.delete(area);
     }
 
-    public Page<Area> list(Pageable pageable) {
-        return repository.findAll(pageable);
-    }
-
-    public int count() {
-        return (int) repository.count();
+    public void saveArea(Area area) {
+        if (area == null) {
+            System.err.println("This field is null. Are you sure you have connected your form to the application?");
+            return;
+        }
+        repository.save(area);
     }
 }

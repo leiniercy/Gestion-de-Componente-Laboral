@@ -5,7 +5,7 @@
  */
 package com.example.application.views.vicedecano.profesor;
 
-import com.example.application.data.DataService;
+import com.example.application.data.service.DataService;
 import com.example.application.data.entity.*;
 import com.example.application.views.MainLayout;
 import com.example.application.views.vicedecano.estudiante.EstudiantesView;

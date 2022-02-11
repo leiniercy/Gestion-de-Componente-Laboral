@@ -7,6 +7,7 @@ package com.example.application.data.service;
 
 import com.example.application.data.entity.Tarea;
 import com.example.application.data.repository.TareaRepository;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -30,28 +31,31 @@ public class TareaService {
         this.repository = repository;
     }
 
-    public Optional<Tarea> get(Integer id) {
-        return repository.findById(id);
+    public List<Tarea> findAllTareas() {
+        return repository.findAll();
     }
 
-    public Tarea update(Tarea entity) {
-        return repository.save(entity);
+    public List<Tarea> searchTarea(String searchTerm) {
+        return repository.search(searchTerm);
+    }
+    public List<Tarea> searchTareaByFecha(LocalDate searchTerm) {
+        return repository.searchFecha(searchTerm);
     }
 
-    public void deleteById(Integer id) {
-        repository.deleteById(id);
+    public long countTarea() {
+        return repository.count();
     }
-    
-    public void delete(Tarea tarea) {
+
+    public void deleteTarea(Tarea tarea) {
         repository.delete(tarea);
     }
 
-    public Page<Tarea> list(Pageable pageable) {
-        return repository.findAll(pageable);
-    }
-
-    public int count() {
-        return (int) repository.count();
+    public void saveTarea(Tarea tarea) {
+        if (tarea == null) {
+            System.err.println("This field is null. Are you sure you have connected your form to the application?");
+            return;
+        }
+        repository.save(tarea);
     }
 
 }

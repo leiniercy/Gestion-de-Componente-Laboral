@@ -35,27 +35,27 @@ public class EstudianteService {
         this.estudianteRepository = estudianteRepository;
     }
 
-    public Optional<Estudiante> get(Integer id) {
-        return estudianteRepository.findById(id);
+     public List<Estudiante> findAllEstudiante() {
+        return estudianteRepository.findAll();
+    }
+       
+    public List<Estudiante> searchEstudiante(String searchTerm) {
+        return estudianteRepository.searchEstudiante(searchTerm);
     }
 
-    public Estudiante update(Estudiante entity) {
-        return estudianteRepository.save(entity);
+    public long countEstudiante() {
+        return estudianteRepository.count();
     }
 
-    public void deleteById(Integer id) {
-        estudianteRepository.deleteById(id);
-    }
-    
-    public  void delete (Estudiante estudiante){
+    public void deleteEstudiante(Estudiante estudiante) {
         estudianteRepository.delete(estudiante);
     }
 
-    public Page<Estudiante> list(Pageable pageable) {
-        return estudianteRepository.findAll(pageable);
-    }
-
-    public long count() {
-        return  estudianteRepository.count();
+    public void saveEstudiante(Estudiante estudiante) {
+        if (estudiante == null) {
+            System.err.println("This field is null. Are you sure you have connected your form to the application?");
+            return;
+        }
+        estudianteRepository.save(estudiante);
     }
 }

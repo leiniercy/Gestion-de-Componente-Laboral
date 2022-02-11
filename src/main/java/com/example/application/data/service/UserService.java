@@ -7,6 +7,7 @@ package com.example.application.data.service;
 
 import com.example.application.data.entity.User;
 import com.example.application.data.repository.UserRepository;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,10 @@ public class UserService {
         this.repository = repository;
     }
 
+     public List<User> findAllUser() {
+        return repository.findAll();
+    }
+    
     public Optional<User> get(Long id) {
         return repository.findById(id);
     }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.example.application.data;
+package com.example.application.data.service;
 
 import com.example.application.data.entity.*;
 import com.example.application.data.repository.*;

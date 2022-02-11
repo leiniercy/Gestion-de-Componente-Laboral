@@ -28,6 +28,9 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
 import com.vaadin.flow.component.menubar.MenuBar;
+import com.vaadin.flow.component.tabs.Tab;
+import com.vaadin.flow.component.tabs.TabVariant;
+import com.vaadin.flow.component.tabs.Tabs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,16 +115,12 @@ public class MainLayout extends AppLayout {
 
         } else {
             
-            Icon icon = new Icon(VaadinIcon.LOCK);
-            icon.getStyle().set("width", "var(--lumo-icon-size-s)");
-            icon.getStyle().set("height", "var(--lumo-icon-size-s)");
-            icon.getStyle().set("marginRight", "var(--lumo-space-s)");
-
             Anchor loginLink = new Anchor(/*"login", "Sign in"*/);
             loginLink.setHref("login");
-            loginLink.add(new Span("Acceder"), icon);
+            loginLink.add(new Span("Acceder"));
             layout.add(loginLink);
             layout.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.BASELINE);
+            layout.addClassNames("bg-base", "border-b", "border-contrast-10", "box-border");
         }
 
         HorizontalLayout header = new HorizontalLayout(toggle, viewTitle, barraDeMenu(), layout);
@@ -209,13 +208,6 @@ public class MainLayout extends AppLayout {
         return link;
     }
 
-//    private Footer createFooter() {
-//        Footer layout = new Footer();
-//        layout.addClassNames("flex", "items-center", "my-s", "px-m", "py-xs");
-//
-//        return layout;
-//    }
-
     @Override
     protected void afterNavigation() {
         super.afterNavigation();
@@ -229,12 +221,34 @@ public class MainLayout extends AppLayout {
 
     private Component barraDeMenu() {
 
-        MenuBar menuBar = new MenuBar();
-        menuBar.addItem(new Span(VaadinIcon.HOME.create()));
-        menuBar.addItem(new Span(VaadinIcon.COG.create()));
-        menuBar.addItem(new Span(VaadinIcon.BELL.create()));
-
-        return menuBar;
+        
+        RouterLink home = new RouterLink();
+        Icon iconHome = VaadinIcon.HOME.create();
+        home.add(iconHome);
+        home.setRoute(InicioView.class);
+        home.setTabIndex(-1);
+        Tab HOME = new Tab(home);
+        
+        RouterLink ajustes = new RouterLink();
+        Icon iconAjustes = VaadinIcon.COG.create();
+        ajustes.add(iconAjustes);
+        //home.setRoute(InicioView.class);
+        ajustes.setTabIndex(-1);
+        Tab SETTINGS = new Tab(ajustes);
+	
+        RouterLink notificacion = new RouterLink();
+        Icon iconNotificaciones = VaadinIcon.BELL.create();
+        notificacion.add(iconNotificaciones);
+        //home.setRoute(InicioView.class);
+        notificacion.setTabIndex(-1);
+        Tab NOTIFICATIONS = new Tab(notificacion);
+        
+        for (Tab tab : new Tab[] { HOME, SETTINGS, NOTIFICATIONS }) {
+	tab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
+}
+        
+        Tabs tabs = new Tabs(HOME, SETTINGS, NOTIFICATIONS);
+        return tabs;
     }
-
+        
 }

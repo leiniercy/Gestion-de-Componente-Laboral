@@ -6,6 +6,7 @@
 package com.example.application.data.service;
 
 import com.example.application.data.entity.Profesor;
+import com.example.application.data.entity.User;
 import com.example.application.data.repository.ProfesorRepository;
 import java.util.Collection;
 import java.util.List;
@@ -30,28 +31,30 @@ public class ProfesorService {
         this.repository = repository;
     }
 
-    public Optional<Profesor> get(Integer id) {
-        return repository.findById(id);
+    
+    public List<Profesor> findAllProfesor() {
+        return repository.findAll();
+    }
+    
+    public List<Profesor> searchProfesor(String searchTerm) {
+        return repository.searchProfesor(searchTerm);
     }
 
-    public Profesor update(Profesor entity) {
-        return repository.save(entity);
+     public long countProfesor() {
+        return repository.count();
     }
 
-    public void deletebyId(Integer id) {
-        repository.deleteById(id);
+    public void deleteProfesor(Profesor profesor) {
+        repository.delete(profesor);
     }
 
-    public void delete(Profesor p) {
-        repository.delete(p);
+    public void saveProfesor(Profesor profesor) {
+        if (profesor == null) {
+            System.err.println("This field is null. Are you sure you have connected your form to the application?");
+            return;
+        }
+        repository.save(profesor);
     }
 
-    public Page<Profesor> list(Pageable pageable) {
-        return repository.findAll(pageable);
-    }
-
-    public int count() {
-        return (int) repository.count();
-    }
 }
 
