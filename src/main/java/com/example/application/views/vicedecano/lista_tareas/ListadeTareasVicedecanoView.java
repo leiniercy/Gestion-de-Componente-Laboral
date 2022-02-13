@@ -253,19 +253,14 @@ public class ListadeTareasVicedecanoView extends Div {
 
     private Component CrearReporte() {
 
-        PrintPreviewReport report
-                = new PrintPreviewReport<>(Tarea.class, "nombre", "descripcion", "fecha_inicio", "fecha_fin", "e");
-        report.setItems(tareaService.findAllTareas());
-        report.getReportBuilder().setTitle("Tareas");
-        StreamResource pdf = report.getStreamResource("tareas.pdf", tareaService::findAllTareas, PrintPreviewReport.Format.PDF);
-
+       
         Icon icon = new Icon(VaadinIcon.DOWNLOAD);
         icon.getStyle().set("width", "var(--lumo-icon-size-s)");
         icon.getStyle().set("height", "var(--lumo-icon-size-s)");
         icon.getStyle().set("marginRight", "var(--lumo-space-s)");
 
         Anchor rp = new Anchor();
-        rp.setHref(pdf);
+        rp.setHref("reporte-tareas-view");
         rp.add(icon, new Span("Reporte"));
 
 

@@ -19,6 +19,7 @@ import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
+import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -28,6 +29,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
 import com.vaadin.flow.component.menubar.MenuBar;
+import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.TabVariant;
 import com.vaadin.flow.component.tabs.Tabs;
@@ -114,7 +116,7 @@ public class MainLayout extends AppLayout {
             layout.add(avatar, name);
 
         } else {
-            
+
             Anchor loginLink = new Anchor(/*"login", "Sign in"*/);
             loginLink.setHref("login");
             loginLink.add(new Span("Acceder"));
@@ -181,6 +183,7 @@ public class MainLayout extends AppLayout {
             //Estudiante
             new MenuItemInfo("Lista Tareas", "la la-tasks", ListadeTareasEstudianteView.class), //
         };
+
         List<RouterLink> links = new ArrayList<>();
         for (MenuItemInfo menuItemInfo : menuItems) {
             if (accessChecker.hasAccess(menuItemInfo.getView())) {
@@ -221,34 +224,31 @@ public class MainLayout extends AppLayout {
 
     private Component barraDeMenu() {
 
+        MenuBar menuBar = new MenuBar();
+        menuBar.addThemeVariants(MenuBarVariant.LUMO_TERTIARY_INLINE);
+
+        MenuItem home = createIconItem(menuBar, VaadinIcon.HOME, "HOME", "inicio");
+        MenuItem ajustes = createIconItem(menuBar, VaadinIcon.COG, "SETTINGS", "");
+        MenuItem notification = createIconItem(menuBar, VaadinIcon.BELL, "NOTIFICATION", "");
         
-        RouterLink home = new RouterLink();
-        Icon iconHome = VaadinIcon.HOME.create();
-        home.add(iconHome);
-        home.setRoute(InicioView.class);
-        home.setTabIndex(-1);
-        Tab HOME = new Tab(home);
+       
         
-        RouterLink ajustes = new RouterLink();
-        Icon iconAjustes = VaadinIcon.COG.create();
-        ajustes.add(iconAjustes);
-        //home.setRoute(InicioView.class);
-        ajustes.setTabIndex(-1);
-        Tab SETTINGS = new Tab(ajustes);
-	
-        RouterLink notificacion = new RouterLink();
-        Icon iconNotificaciones = VaadinIcon.BELL.create();
-        notificacion.add(iconNotificaciones);
-        //home.setRoute(InicioView.class);
-        notificacion.setTabIndex(-1);
-        Tab NOTIFICATIONS = new Tab(notificacion);
-        
-        for (Tab tab : new Tab[] { HOME, SETTINGS, NOTIFICATIONS }) {
-	tab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
-}
-        
-        Tabs tabs = new Tabs(HOME, SETTINGS, NOTIFICATIONS);
-        return tabs;
+        for (MenuItem item : new MenuItem[] { home, ajustes, notification }) {
+//            if (accessChecker.hasAccess(item.get)) {
+//                links.add(createLink(menuItemInfo));
+//            }
+        }
+      
+        return menuBar;
     }
-        
+
+    private MenuItem createIconItem(MenuBar menu, VaadinIcon iconName, String ariaLabel, String pag) {
+        Icon icon = new Icon(iconName);
+        Anchor link = new Anchor(pag, icon);
+        MenuItem item = menu.addItem(link);
+        item.getElement().setAttribute("aria-label", ariaLabel);
+       
+        return item;
+    }
+
 }
