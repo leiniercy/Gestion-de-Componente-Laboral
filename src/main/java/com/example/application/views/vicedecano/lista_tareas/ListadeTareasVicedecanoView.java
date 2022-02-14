@@ -4,6 +4,7 @@ import com.example.application.data.service.*;
 import com.example.application.data.entity.Estudiante;
 import com.example.application.data.entity.Tarea;
 import com.example.application.views.MainLayout;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -27,14 +28,39 @@ import com.vaadin.flow.data.renderer.LocalDateRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.StreamResource;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.reports.PrintPreviewReport;
 
 import javax.annotation.security.RolesAllowed;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+import com.itextpdf.kernel.color.Color;
+import com.itextpdf.kernel.color.DeviceRgb;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.border.Border;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.property.TextAlignment;
+import com.itextpdf.layout.property.VerticalAlignment;
+
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamResource;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.util.List;
+import javax.persistence.Embedded;
 
 @PageTitle("Tareas")
 @Route(value = "list-tareas", layout = MainLayout.class)
@@ -50,7 +76,6 @@ public class ListadeTareasVicedecanoView extends Div {
     private Grid.Column<Tarea> fecha_finColumn;
     private Grid.Column<Tarea> estudianteColumn;
 
-
     private TextField filterNombre = new TextField();
     private TextField filterDescripcion = new TextField();
     private DatePicker fechaInicioFilter = new DatePicker();
@@ -64,7 +89,7 @@ public class ListadeTareasVicedecanoView extends Div {
     private EvaluacionService evaluacionService;
     private GrupoService grupoService;
     private TareaService tareaService;
-
+    
     public ListadeTareasVicedecanoView(
             @Autowired UserService userService,
             @Autowired AreaService areaService,
@@ -73,7 +98,9 @@ public class ListadeTareasVicedecanoView extends Div {
             @Autowired EvaluacionService evaluacionService,
             @Autowired GrupoService grupoService,
             @Autowired TareaService tareaService
+          
     ) {
+
         this.userService = userService;
         this.areaService = areaService;
         this.estudianteService = estudianteService;
@@ -81,6 +108,7 @@ public class ListadeTareasVicedecanoView extends Div {
         this.evaluacionService = evaluacionService;
         this.evaluacionService = evaluacionService;
         this.tareaService = tareaService;
+
         addClassName("listaTareas-view");
         setSizeFull();
         createGrid();
@@ -122,15 +150,15 @@ public class ListadeTareasVicedecanoView extends Div {
     }
 
     private void createFechaInicioColumn() {
-        fecha_inicioColumn =
-                grid.addColumn(new LocalDateRenderer<>(tarea -> tarea.getFecha_inicio(), DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+        fecha_inicioColumn
+                = grid.addColumn(new LocalDateRenderer<>(tarea -> tarea.getFecha_inicio(), DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                         .setComparator(tarea -> tarea.getFecha_inicio())
                         .setHeader("Fecha de inicio").setAutoWidth(true).setFlexGrow(0);
     }
 
     private void createFechaFinColumn() {
-        fecha_finColumn =
-                grid.addColumn(new LocalDateRenderer<>(tarea -> tarea.getFecha_fin(), DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+        fecha_finColumn
+                = grid.addColumn(new LocalDateRenderer<>(tarea -> tarea.getFecha_fin(), DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                         .setComparator(tarea -> tarea.getFecha_fin())
                         .setHeader("Fecha de fin").setAutoWidth(true).setFlexGrow(0);
     }
@@ -147,10 +175,8 @@ public class ListadeTareasVicedecanoView extends Div {
         })).setComparator(tarea -> tarea.getE().getStringNombreApellidos()).setHeader("Estudiante").setAutoWidth(true);
     }
 
-
     private void addFiltersToGrid() {
         HeaderRow filterRow = grid.appendHeaderRow();
-
 
         filterNombre.setPlaceholder("Filtrar");
         filterNombre.setClearButtonVisible(true);
@@ -162,7 +188,6 @@ public class ListadeTareasVicedecanoView extends Div {
         );
         filterRow.getCell(nombreColumn).setComponent(filterNombre);
 
-
         filterDescripcion.setPlaceholder("Filtrar");
         filterDescripcion.setClearButtonVisible(true);
         filterDescripcion.setWidth("100%");
@@ -173,28 +198,29 @@ public class ListadeTareasVicedecanoView extends Div {
         );
         filterRow.getCell(descripcionColumn).setComponent(filterDescripcion);
 
-
         fechaInicioFilter.setPlaceholder("Filter");
         fechaInicioFilter.setClearButtonVisible(true);
         fechaInicioFilter.setWidth("100%");
         fechaInicioFilter.addValueChangeListener(event -> {
-            if (fechaInicioFilter.getValue() == null)
+            if (fechaInicioFilter.getValue() == null) {
                 gridListDataView = grid.setItems(tareaService.findAllTareas());
-            else gridListDataView.addFilter(tarea -> areFechaInicioEqual(tarea, fechaInicioFilter));
+            } else {
+                gridListDataView.addFilter(tarea -> areFechaInicioEqual(tarea, fechaInicioFilter));
+            }
         });
         filterRow.getCell(fecha_inicioColumn).setComponent(fechaInicioFilter);
-
 
         fechaFinFilter.setPlaceholder("Filter");
         fechaFinFilter.setClearButtonVisible(true);
         fechaFinFilter.setWidth("100%");
         fechaFinFilter.addValueChangeListener(event -> {
-            if (fechaFinFilter.getValue() == null)
+            if (fechaFinFilter.getValue() == null) {
                 gridListDataView = grid.setItems(tareaService.findAllTareas());
-            else gridListDataView.addFilter(tarea -> areFechaFinEqual(tarea, fechaFinFilter));
+            } else {
+                gridListDataView.addFilter(tarea -> areFechaFinEqual(tarea, fechaFinFilter));
+            }
         });
         filterRow.getCell(fecha_finColumn).setComponent(fechaFinFilter);
-
 
         estudiantefilter.setItems(estudianteService.findAllEstudiante());
         estudiantefilter.setItemLabelGenerator(Estudiante::getStringNombreApellidos);
@@ -202,9 +228,11 @@ public class ListadeTareasVicedecanoView extends Div {
         estudiantefilter.setClearButtonVisible(true);
         estudiantefilter.setWidth("100%");
         estudiantefilter.addValueChangeListener(event -> {
-            if (estudiantefilter.getValue() == null)
+            if (estudiantefilter.getValue() == null) {
                 gridListDataView = grid.setItems(tareaService.findAllTareas());
-            else gridListDataView.addFilter(tarea -> areEstudiantesEqual(tarea, estudiantefilter));
+            } else {
+                gridListDataView.addFilter(tarea -> areEstudiantesEqual(tarea, estudiantefilter));
+            }
         });
         filterRow.getCell(estudianteColumn).setComponent(estudiantefilter);
 
@@ -246,23 +274,166 @@ public class ListadeTareasVicedecanoView extends Div {
         toolbar.setWidth("99%");
         toolbar.setFlexGrow(1, total);
 
-
         return toolbar;
     }
 
-
     private Component CrearReporte() {
 
-       
+        //String fileName = System.currentTimeMillis() + ".pdf";
+        StreamResource source = new StreamResource("ReporteTareas.pdf", () -> {
+
+            String path = "src/main/resources/META-INF/resources/archivos/ReporteTareas.pdf";
+
+            try {
+                PdfWriter pdfWriter = new PdfWriter(path);
+                PdfDocument pdfDocument = new PdfDocument(pdfWriter);
+                Document document = new Document(pdfDocument);
+
+                //Titulo
+                float col = 280f;
+                float columnWidth[] = {col, col};
+
+                Table titleTable = new Table(columnWidth);
+
+                titleTable.setBackgroundColor(new DeviceRgb(63, 169, 219)).setFontColor(Color.WHITE);
+
+                titleTable.addCell(new Cell().add("Facultad 4")
+                        .setTextAlignment(TextAlignment.CENTER)
+                        .setVerticalAlignment(VerticalAlignment.MIDDLE)
+                        .setMarginTop(30f)
+                        .setMarginBottom(30f)
+                        .setFontSize(30f)
+                        .setBorder(Border.NO_BORDER)
+                );
+                titleTable.addCell(new Cell().add("Reporte \n Componente Laboral \nUniveridad de Ciencias Informáticas")
+                        .setTextAlignment(TextAlignment.RIGHT)
+                        .setMarginTop(30f)
+                        .setMarginBottom(30f)
+                        .setMarginRight(10f)
+                        .setBorder(Border.NO_BORDER)
+                );
+
+                //Informacion Personal
+                float itemPersonalInfoColWidth[] = {80, 300, 100, 80};
+                Table perosnalInfo = new Table(itemPersonalInfoColWidth);
+
+                perosnalInfo.addCell(new Cell(0, 4)
+                        .add("Información")
+                        .setBold()
+                        .setBorder(Border.NO_BORDER)
+                );
+
+                perosnalInfo.addCell(new Cell().add("Nombre:").setBorder(Border.NO_BORDER));
+                perosnalInfo.addCell(new Cell().add(".....").setBorder(Border.NO_BORDER));
+                perosnalInfo.addCell(new Cell().add("Categoría:").setBorder(Border.NO_BORDER));
+                perosnalInfo.addCell(new Cell().add(".....").setBorder(Border.NO_BORDER));
+
+                perosnalInfo.addCell(new Cell().add("Departamento:").setBorder(Border.NO_BORDER));
+                perosnalInfo.addCell(new Cell().add(".....").setBorder(Border.NO_BORDER));
+                perosnalInfo.addCell(new Cell().add("Fecha:").setBorder(Border.NO_BORDER));
+                perosnalInfo.addCell(new Cell().add(".....").setBorder(Border.NO_BORDER));
+
+                //Tabla con el Reporte
+                float itemInfoColWidth[] = {140, 140, 140, 140, 140};
+
+                Table itemInfoTable = new Table(itemInfoColWidth);
+
+                itemInfoTable.addCell(new Cell().add("Nombre")
+                        .setBackgroundColor(new DeviceRgb(63, 169, 219))
+                        .setFontColor(Color.WHITE)
+                );
+                itemInfoTable.addCell(new Cell().add("Descripción")
+                        .setBackgroundColor(new DeviceRgb(63, 169, 219))
+                        .setFontColor(Color.WHITE)
+                );
+                itemInfoTable.addCell(new Cell().add("Inicio")
+                        .setBackgroundColor(new DeviceRgb(63, 169, 219))
+                        .setFontColor(Color.WHITE)
+                        .setTextAlignment(TextAlignment.RIGHT)
+                );
+                itemInfoTable.addCell(new Cell().add("Fin")
+                        .setBackgroundColor(new DeviceRgb(63, 169, 219))
+                        .setFontColor(Color.WHITE)
+                        .setTextAlignment(TextAlignment.RIGHT)
+                );
+                itemInfoTable.addCell(new Cell().add("Estudiante")
+                        .setBackgroundColor(new DeviceRgb(63, 169, 219))
+                        .setFontColor(Color.WHITE)
+                        .setTextAlignment(TextAlignment.RIGHT)
+                );
+
+                List<Tarea> tareaList = tareaService.findAllTareas();
+
+                for (int i = 0; i < tareaList.size(); i++) {
+                    String name = tareaList.get(i).getNombre();
+                    String description = tareaList.get(i).getDescripcion();
+                    String initDate = tareaList.get(i).getFecha_inicio().toString();
+                    String endDate = tareaList.get(i).getFecha_fin().toString();
+                    String student = tareaList.get(i).getE().getStringNombreApellidos();
+
+                    itemInfoTable.addCell(new Cell().add(name));
+                    itemInfoTable.addCell(new Cell().add(description));
+                    itemInfoTable.addCell(new Cell().add(initDate).setTextAlignment(TextAlignment.RIGHT));
+                    itemInfoTable.addCell(new Cell().add(endDate).setTextAlignment(TextAlignment.RIGHT));
+                    itemInfoTable.addCell(new Cell().add(student).setTextAlignment(TextAlignment.RIGHT));
+
+                }
+
+                itemInfoTable.addCell(new Cell().add("")
+                        .setBorder(Border.NO_BORDER)
+                        .setBackgroundColor(new DeviceRgb(63, 169, 219))
+                        .setFontColor(Color.WHITE)
+                );
+                itemInfoTable.addCell(new Cell().add("")
+                        .setBorder(Border.NO_BORDER)
+                        .setBackgroundColor(new DeviceRgb(63, 169, 219))
+                        .setFontColor(Color.WHITE)
+                );
+                itemInfoTable.addCell(new Cell().add("")
+                        .setBorder(Border.NO_BORDER)
+                        .setBackgroundColor(new DeviceRgb(63, 169, 219))
+                        .setFontColor(Color.WHITE)
+                );
+                itemInfoTable.addCell(new Cell().add("")
+                        .setBorder(Border.NO_BORDER)
+                        .setBackgroundColor(new DeviceRgb(63, 169, 219))
+                        .setFontColor(Color.WHITE)
+                );
+                itemInfoTable.addCell(new Cell().add(String.format("Total: %d", tareaList.size()))
+                        .setBorder(Border.NO_BORDER)
+                        .setBackgroundColor(new DeviceRgb(63, 169, 219))
+                        .setFontColor(Color.WHITE)
+                        .setTextAlignment(TextAlignment.CENTER)
+                );
+
+                document.add(titleTable);
+                document.add(new Paragraph("\n"));
+                document.add(perosnalInfo);
+                document.add(new Paragraph("\n"));
+                document.add(itemInfoTable);
+                document.add(new Paragraph("\n (Firma: ...)")
+                        .setTextAlignment(TextAlignment.RIGHT)
+                );
+
+                document.close();
+
+                File initialFile = new File(path);
+                InputStream targetStream = new FileInputStream(initialFile);
+                return targetStream;
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                return null;
+            }
+        });
+
         Icon icon = new Icon(VaadinIcon.DOWNLOAD);
         icon.getStyle().set("width", "var(--lumo-icon-size-s)");
         icon.getStyle().set("height", "var(--lumo-icon-size-s)");
         icon.getStyle().set("marginRight", "var(--lumo-space-s)");
 
         Anchor rp = new Anchor();
-        rp.setHref("reporte-tareas-view");
+        rp.setHref(source);
         rp.add(icon, new Span("Reporte"));
-
 
         return rp;
     }
