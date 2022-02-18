@@ -27,6 +27,7 @@ public interface TareaRepository extends JpaRepository<Tarea, Integer> {
             + "or lower(t.descripcion) like lower(concat('%', :searchTerm, '%')) "
             + "or lower(e.nombre) like lower(concat('%', :searchTerm, '%')) "
             + "or lower(e.apellidos) like lower(concat('%', :searchTerm, '%')) "
+            + " or t.fecha_fin = :searchTerm "
     )
     List<Tarea> search(@Param("searchTerm") String searchTerm);
 
@@ -36,6 +37,7 @@ public interface TareaRepository extends JpaRepository<Tarea, Integer> {
             + " or t.fecha_fin = :searchTerm "
     )
     List<Tarea> searchFecha(@Param("searchTerm") LocalDate searchTerm);
+    
 
 
 }

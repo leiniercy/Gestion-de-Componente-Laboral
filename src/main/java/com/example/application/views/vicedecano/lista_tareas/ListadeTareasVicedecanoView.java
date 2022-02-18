@@ -47,6 +47,7 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.property.TextAlignment;
 import com.itextpdf.layout.property.VerticalAlignment;
+import com.vaadin.flow.component.button.Button;
 
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.PageTitle;
@@ -59,7 +60,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.Embedded;
 
 @PageTitle("Tareas")
@@ -81,6 +84,7 @@ public class ListadeTareasVicedecanoView extends Div {
     private DatePicker fechaInicioFilter = new DatePicker();
     private DatePicker fechaFinFilter = new DatePicker();
     private ComboBox<Estudiante> estudiantefilter = new ComboBox<>();
+    private TextField filtrar;
 
     private UserService userService;
     private AreaService areaService;
@@ -89,7 +93,7 @@ public class ListadeTareasVicedecanoView extends Div {
     private EvaluacionService evaluacionService;
     private GrupoService grupoService;
     private TareaService tareaService;
-    
+
     public ListadeTareasVicedecanoView(
             @Autowired UserService userService,
             @Autowired AreaService areaService,
@@ -98,7 +102,6 @@ public class ListadeTareasVicedecanoView extends Div {
             @Autowired EvaluacionService evaluacionService,
             @Autowired GrupoService grupoService,
             @Autowired TareaService tareaService
-          
     ) {
 
         this.userService = userService;
@@ -362,7 +365,7 @@ public class ListadeTareasVicedecanoView extends Div {
                         .setTextAlignment(TextAlignment.RIGHT)
                 );
 
-                List<Tarea> tareaList = tareaService.findAllTareas();
+                List<Tarea> tareaList = listTareas();
 
                 for (int i = 0; i < tareaList.size(); i++) {
                     String name = tareaList.get(i).getNombre();
@@ -434,8 +437,43 @@ public class ListadeTareasVicedecanoView extends Div {
         Anchor rp = new Anchor();
         rp.setHref(source);
         rp.add(icon, new Span("Reporte"));
-
+        
         return rp;
+    }
+    
+    //Lista de tareas del Reporte
+    private List<Tarea> listTareas() {
+       
+      List<Tarea> list = tareaService.findAllTareas();
+
+      if(filterNombre.getValue() != null)  
+        list = list.stream()
+                .filter(tarea -> StringUtils.containsIgnoreCase(tarea.getNombre(), filterNombre.getValue()))
+                .collect(Collectors.toList());
+        
+      if(filterDescripcion.getValue() != null)  
+        list = list.stream()
+                 .filter(tarea -> StringUtils.containsIgnoreCase(tarea.getDescripcion(), filterDescripcion.getValue()))
+                .collect(Collectors.toList());
+        
+       
+      if(fechaInicioFilter.getValue() != null)
+            list = list.stream()
+                    .filter(tarea -> tarea.getFecha_inicio().isEqual(fechaInicioFilter.getValue() ))
+                    .collect(Collectors.toList());
+       
+      if(fechaFinFilter.getValue() != null)
+            list = list.stream()
+                    .filter(tarea -> tarea.getFecha_fin().isEqual(fechaFinFilter.getValue() ))
+                    .collect(Collectors.toList());
+                    
+      if(estudiantefilter.getValue() != null)
+            list = list.stream()
+                    .filter(tarea -> tarea.getE().getSolapin().equals( estudiantefilter.getValue().getSolapin() ))
+                    .collect(Collectors.toList());
+                    
+
+        return list;
     }
 
 };
