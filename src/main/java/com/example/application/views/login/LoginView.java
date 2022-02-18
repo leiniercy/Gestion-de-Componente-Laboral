@@ -5,15 +5,10 @@
  */
 package com.example.application.views.login;
 
-import com.vaadin.flow.component.Composite;
-import com.vaadin.flow.component.login.LoginForm;
+import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.login.LoginOverlay;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEnterListener;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import java.util.Collections;
 
 /**
  *
@@ -21,12 +16,35 @@ import java.util.Collections;
  */
 @Route("login")
 @PageTitle("Login")
-public class LoginView extends Composite<LoginOverlay> /*implements BeforeEnterListener*/ {
+public class LoginView extends LoginOverlay {
 
     public LoginView() {
-        getContent().setOpened(true);
-        getContent().setTitle("GCL");
-        getContent().setDescription("Gestión Componente Laboral");
-        getContent().setAction("login");
+        
+        setAction("login");
+
+        LoginI18n i18n = LoginI18n.createDefault();
+        
+        i18n.setHeader(new LoginI18n.Header());
+        i18n.getHeader().setTitle("GCL");
+        i18n.getHeader().setDescription("Gestión Componente Laboral");
+        
+        i18n.setAdditionalInformation(null);
+        
+        i18n.getForm().setTitle("");
+        i18n.getForm().setUsername("Usuario:");
+        i18n.getForm().setPassword("Contraseña:");
+        i18n.getForm().setSubmit("Iniciar sesión");
+        
+        
+        
+        LoginI18n.ErrorMessage errorMessage = i18n.getErrorMessage();
+        errorMessage.setTitle("Error de auntenticación");
+        errorMessage.setMessage("Usuario o contraseña incorrectos");
+        i18n.setErrorMessage(errorMessage);
+        setI18n(i18n);
+
+        setForgotPasswordButtonVisible(false);
+        setOpened(true);
+        
     }
 }

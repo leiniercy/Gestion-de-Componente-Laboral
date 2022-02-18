@@ -45,10 +45,10 @@ public class User {
     @NotBlank
     @Column(length = 100, nullable = false, unique = true)
     private String name;
-    @NotBlank
+    @NotBlank(message = "el campo no debe estar vacío")
     @Column(length = 100, nullable = false, unique = true)
     private String username;
-    @NotBlank
+    @NotBlank(message = "el campo no debe estar vacío")
     @Column(length = 100, nullable = false)
     private String password;
     @Lob
