@@ -6,9 +6,21 @@ import com.example.application.data.entity.Evaluacion;
 import com.example.application.data.entity.Tarea;
 import com.example.application.views.MainLayout;
 import com.example.application.views.vicedecano.estudiante.EstudiantesView;
+import com.itextpdf.kernel.color.Color;
+import com.itextpdf.kernel.color.DeviceRgb;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.border.Border;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.property.TextAlignment;
+import com.itextpdf.layout.property.VerticalAlignment;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.contextmenu.HasMenuItems;
 import com.vaadin.flow.component.contextmenu.MenuItem;
@@ -40,6 +52,11 @@ import javax.annotation.security.RolesAllowed;
 
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.StreamResource;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.reports.PrintPreviewReport;
@@ -65,6 +82,12 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
     private EvaluacionService evaluacionService;
     private GrupoService grupoService;
     private TareaService tareaService;
+
+    TextField filterNota = new TextField();
+    TextField filterDescripcion = new TextField();
+    ComboBox<Estudiante> filterEstudiante = new ComboBox<>();
+    ComboBox<Tarea> filterTarea = new ComboBox<>();
+    ComboBox<String> statusFilter = new ComboBox<>();
 
     public ListadeEvaluacionesVicedecanoView(
             @Autowired UserService userService,
@@ -157,7 +180,6 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
     private void addFiltersToGrid() {
         HeaderRow filterRow = grid.appendHeaderRow();
 
-        TextField filterNota = new TextField();
         filterNota.setPlaceholder("Filtrar");
         filterNota.setClearButtonVisible(true);
         filterNota.setWidth("100%");
@@ -168,7 +190,6 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
         );
         filterRow.getCell(notaColumn).setComponent(filterNota);
 
-        TextField filterDescripcion = new TextField();
         filterDescripcion.setPlaceholder("Filtrar");
         filterDescripcion.setClearButtonVisible(true);
         filterDescripcion.setWidth("100%");
@@ -179,7 +200,6 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
         );
         filterRow.getCell(descripcionColumn).setComponent(filterDescripcion);
 
-        ComboBox<Estudiante> filterEstudiante = new ComboBox<>();
         filterEstudiante.setItems(estudianteService.findAllEstudiante());
         filterEstudiante.setItemLabelGenerator(Estudiante::getStringNombreApellidos);
         filterEstudiante.setPlaceholder("Filtrar");
@@ -194,7 +214,6 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
         });
         filterRow.getCell(estudianteColumn).setComponent(filterEstudiante);
 
-        ComboBox<Tarea> filterTarea = new ComboBox<>();
         filterTarea.setItems(tareaService.findAllTareas());
         filterTarea.setItemLabelGenerator(Tarea::getNombre);
         filterTarea.setPlaceholder("Filter");
@@ -209,7 +228,7 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
         });
         filterRow.getCell(tareaColumn).setComponent(filterTarea);
 
-        ComboBox<String> statusFilter = new ComboBox<>();
+        
         statusFilter.setItems(Arrays.asList("Pendiente", "Completada", "No Completada"));
         statusFilter.setPlaceholder("Filter");
         statusFilter.setClearButtonVisible(true);
@@ -251,25 +270,16 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
         addClassName("menu-items");
         Html total = new Html("<span>Total: <b>" + tareaService.countTarea() + "</b> tareas</span>");
 
-        /*  Button reporteButton = new Button("Reporte", VaadinIcon.DOWNLOAD_ALT.create());
-        reporteButton.addClickListener(event -> {
 
-        });*/
-        HorizontalLayout toolbar = new HorizontalLayout(total, CrearReporte());
-        toolbar.setAlignItems(FlexComponent.Alignment.CENTER);
+        HorizontalLayout toolbar = new HorizontalLayout(total, ButtonReporte());
+        toolbar.setAlignItems(FlexComponent.Alignment.BASELINE);
         toolbar.setWidth("99%");
         toolbar.setFlexGrow(1, total);
 
         return toolbar;
     }
 
-    private Component CrearReporte() {
-
-        PrintPreviewReport report
-                = new PrintPreviewReport<>(Evaluacion.class, "nota", "descripcion", "estudiante", "tarea", "status");
-        report.setItems(evaluacionService.findAllEvaluacion());
-        report.getReportBuilder().setTitle("Evaluaciones");
-        StreamResource pdf = report.getStreamResource("evaluaciones.pdf", evaluacionService::findAllEvaluacion, PrintPreviewReport.Format.PDF);
+    private Component ButtonReporte() {
 
         Icon icon = new Icon(VaadinIcon.DOWNLOAD);
         icon.getStyle().set("width", "var(--lumo-icon-size-s)");
@@ -277,10 +287,197 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
         icon.getStyle().set("marginRight", "var(--lumo-space-s)");
 
         Anchor rp = new Anchor();
-        rp.setHref(pdf);
+        rp.setHref(ReportePDF());
         rp.add(icon, new Span("Reporte"));
 
-        return rp;
+        MenuBar menuBar = new MenuBar();
+        menuBar.addItem(rp);
+
+        return menuBar;
+    }
+
+    private StreamResource ReportePDF() {
+
+        StreamResource source = new StreamResource("ReporteEvaluaciones.pdf", () -> {
+
+            String path = "src/main/resources/META-INF/resources/archivos/ReporteEvaluaciones.pdf";
+
+            try {
+                PdfWriter pdfWriter = new PdfWriter(path);
+                PdfDocument pdfDocument = new PdfDocument(pdfWriter);
+                Document document = new Document(pdfDocument);
+
+                //Titulo
+                float col = 280f;
+                float columnWidth[] = {col, col};
+
+                Table titleTable = new Table(columnWidth);
+
+                titleTable.setBackgroundColor(new DeviceRgb(63, 169, 219)).setFontColor(Color.WHITE);
+
+                titleTable.addCell(new Cell().add("Facultad 4")
+                        .setTextAlignment(TextAlignment.CENTER)
+                        .setVerticalAlignment(VerticalAlignment.MIDDLE)
+                        .setMarginTop(30f)
+                        .setMarginBottom(30f)
+                        .setFontSize(30f)
+                        .setBorder(Border.NO_BORDER)
+                );
+                titleTable.addCell(new Cell().add("Reporte \n Componente Laboral \nUniveridad de Ciencias Informáticas")
+                        .setTextAlignment(TextAlignment.RIGHT)
+                        .setMarginTop(30f)
+                        .setMarginBottom(30f)
+                        .setMarginRight(10f)
+                        .setBorder(Border.NO_BORDER)
+                );
+
+                //Informacion Personal
+                float itemPersonalInfoColWidth[] = {80, 300, 100, 80};
+                Table perosnalInfo = new Table(itemPersonalInfoColWidth);
+
+                perosnalInfo.addCell(new Cell(0, 4)
+                        .add("Información")
+                        .setBold()
+                        .setBorder(Border.NO_BORDER)
+                );
+
+                perosnalInfo.addCell(new Cell().add("Nombre:").setBorder(Border.NO_BORDER));
+                perosnalInfo.addCell(new Cell().add(".....").setBorder(Border.NO_BORDER));
+                perosnalInfo.addCell(new Cell().add("Categoría:").setBorder(Border.NO_BORDER));
+                perosnalInfo.addCell(new Cell().add(".....").setBorder(Border.NO_BORDER));
+
+                perosnalInfo.addCell(new Cell().add("Departamento:").setBorder(Border.NO_BORDER));
+                perosnalInfo.addCell(new Cell().add(".....").setBorder(Border.NO_BORDER));
+                perosnalInfo.addCell(new Cell().add("Fecha:").setBorder(Border.NO_BORDER));
+                perosnalInfo.addCell(new Cell().add(".....").setBorder(Border.NO_BORDER));
+
+                //Tabla con el Reporte
+                float itemInfoColWidth[] = {140, 140, 140, 140, 140};
+
+                Table itemInfoTable = new Table(itemInfoColWidth);
+
+                itemInfoTable.addCell(new Cell().add("Nota")
+                        .setBackgroundColor(new DeviceRgb(63, 169, 219))
+                        .setFontColor(Color.WHITE)
+                );
+                itemInfoTable.addCell(new Cell().add("Descripción")
+                        .setBackgroundColor(new DeviceRgb(63, 169, 219))
+                        .setFontColor(Color.WHITE)
+                );
+                itemInfoTable.addCell(new Cell().add("Estudiante")
+                        .setBackgroundColor(new DeviceRgb(63, 169, 219))
+                        .setFontColor(Color.WHITE)
+                        .setTextAlignment(TextAlignment.RIGHT)
+                );
+                itemInfoTable.addCell(new Cell().add("Tarea")
+                        .setBackgroundColor(new DeviceRgb(63, 169, 219))
+                        .setFontColor(Color.WHITE)
+                        .setTextAlignment(TextAlignment.RIGHT)
+                );
+                itemInfoTable.addCell(new Cell().add("Estatus")
+                        .setBackgroundColor(new DeviceRgb(63, 169, 219))
+                        .setFontColor(Color.WHITE)
+                        .setTextAlignment(TextAlignment.RIGHT)
+                );
+
+                List<Evaluacion> evaluacionesList = lisatEvaluaciones();
+
+                for (int i = 0; i < evaluacionesList.size(); i++) {
+                    String name = evaluacionesList.get(i).getNota();
+                    String description = evaluacionesList.get(i).getDescripcion();
+                    String student = evaluacionesList.get(i).getEstudiante().getStringNombreApellidos();
+                    String works = evaluacionesList.get(i).getTarea().getNombre();
+                    String status = evaluacionesList.get(i).getStatus();
+
+                    itemInfoTable.addCell(new Cell().add(name));
+                    itemInfoTable.addCell(new Cell().add(description));
+                    itemInfoTable.addCell(new Cell().add(student).setTextAlignment(TextAlignment.RIGHT));
+                    itemInfoTable.addCell(new Cell().add(works).setTextAlignment(TextAlignment.RIGHT));
+                    itemInfoTable.addCell(new Cell().add(status).setTextAlignment(TextAlignment.RIGHT));
+
+                }
+
+                itemInfoTable.addCell(new Cell().add("")
+                        .setBorder(Border.NO_BORDER)
+                        .setBackgroundColor(new DeviceRgb(63, 169, 219))
+                        .setFontColor(Color.WHITE)
+                );
+                itemInfoTable.addCell(new Cell().add("")
+                        .setBorder(Border.NO_BORDER)
+                        .setBackgroundColor(new DeviceRgb(63, 169, 219))
+                        .setFontColor(Color.WHITE)
+                );
+                itemInfoTable.addCell(new Cell().add("")
+                        .setBorder(Border.NO_BORDER)
+                        .setBackgroundColor(new DeviceRgb(63, 169, 219))
+                        .setFontColor(Color.WHITE)
+                );
+                itemInfoTable.addCell(new Cell().add("")
+                        .setBorder(Border.NO_BORDER)
+                        .setBackgroundColor(new DeviceRgb(63, 169, 219))
+                        .setFontColor(Color.WHITE)
+                );
+                itemInfoTable.addCell(new Cell().add(String.format("Total: %d", evaluacionesList.size()))
+                        .setBorder(Border.NO_BORDER)
+                        .setBackgroundColor(new DeviceRgb(63, 169, 219))
+                        .setFontColor(Color.WHITE)
+                        .setTextAlignment(TextAlignment.CENTER)
+                );
+
+                document.add(titleTable);
+                document.add(new Paragraph("\n"));
+                document.add(perosnalInfo);
+                document.add(new Paragraph("\n"));
+                document.add(itemInfoTable);
+                document.add(new Paragraph("\n (Firma: ...)")
+                        .setTextAlignment(TextAlignment.RIGHT)
+                );
+
+                document.close();
+
+                File initialFile = new File(path);
+                InputStream targetStream = new FileInputStream(initialFile);
+                return targetStream;
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                return null;
+            }
+        });
+        return source;
+    }
+
+    //Lista de evaluaciones del Reporte
+    private List<Evaluacion> lisatEvaluaciones() {
+
+        List<Evaluacion> list = evaluacionService.findAllEvaluacion();
+
+         if( filterNota.getValue() != null)
+             list = list.stream()
+                     .filter(evaluacion -> StringUtils.containsIgnoreCase(evaluacion.getNota(), filterNota.getValue()))
+                     .collect(Collectors.toList());
+             
+         if( filterDescripcion.getValue() != null)
+             list = list.stream()
+                     .filter(evaluacion -> StringUtils.containsIgnoreCase(evaluacion.getDescripcion(), filterDescripcion.getValue()))
+                     .collect(Collectors.toList());
+         
+         if( filterEstudiante.getValue() != null)
+             list = list.stream()
+                     .filter(evaluacion -> evaluacion.getEstudiante().getSolapin().equals(filterEstudiante.getValue().getSolapin()))
+                     .collect(Collectors.toList());
+         
+         if( filterTarea.getValue() != null)
+             list = list.stream()
+                     .filter(evaluacion -> evaluacion.getTarea().getNombre().equals(filterTarea.getValue().getNombre()))
+                     .collect(Collectors.toList());
+         
+         if( statusFilter.getValue() != null)
+             list = list.stream()
+                     .filter(evaluacion -> evaluacion.getStatus().equals(statusFilter.getValue()))
+                     .collect(Collectors.toList());
+         
+         
+         return list;
     }
 
 };

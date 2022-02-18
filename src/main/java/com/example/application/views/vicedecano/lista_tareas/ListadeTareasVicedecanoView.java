@@ -48,6 +48,7 @@ import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.property.TextAlignment;
 import com.itextpdf.layout.property.VerticalAlignment;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.menubar.MenuBar;
 
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.PageTitle;
@@ -272,7 +273,7 @@ public class ListadeTareasVicedecanoView extends Div {
         addClassName("menu-items");
         Html total = new Html("<span>Total: <b>" + tareaService.countTarea() + "</b> tareas</span>");
 
-        HorizontalLayout toolbar = new HorizontalLayout(total, CrearReporte());
+        HorizontalLayout toolbar = new HorizontalLayout(total, ButtonReporte());
         toolbar.setAlignItems(FlexComponent.Alignment.CENTER);
         toolbar.setWidth("99%");
         toolbar.setFlexGrow(1, total);
@@ -280,7 +281,24 @@ public class ListadeTareasVicedecanoView extends Div {
         return toolbar;
     }
 
-    private Component CrearReporte() {
+    private Component ButtonReporte() {
+
+        Icon icon = new Icon(VaadinIcon.DOWNLOAD);
+        icon.getStyle().set("width", "var(--lumo-icon-size-s)");
+        icon.getStyle().set("height", "var(--lumo-icon-size-s)");
+        icon.getStyle().set("marginRight", "var(--lumo-space-s)");
+
+        Anchor rp = new Anchor();
+        rp.setHref(ReportePDF());
+        rp.add(icon, new Span("Reporte"));
+
+        MenuBar menuBar = new MenuBar();
+        menuBar.addItem(rp);
+
+        return menuBar;
+    }
+
+    private StreamResource ReportePDF() {
 
         //String fileName = System.currentTimeMillis() + ".pdf";
         StreamResource source = new StreamResource("ReporteTareas.pdf", () -> {
@@ -429,49 +447,43 @@ public class ListadeTareasVicedecanoView extends Div {
             }
         });
 
-        Icon icon = new Icon(VaadinIcon.DOWNLOAD);
-        icon.getStyle().set("width", "var(--lumo-icon-size-s)");
-        icon.getStyle().set("height", "var(--lumo-icon-size-s)");
-        icon.getStyle().set("marginRight", "var(--lumo-space-s)");
-
-        Anchor rp = new Anchor();
-        rp.setHref(source);
-        rp.add(icon, new Span("Reporte"));
-        
-        return rp;
+        return source;
     }
-    
+
     //Lista de tareas del Reporte
     private List<Tarea> listTareas() {
-       
-      List<Tarea> list = tareaService.findAllTareas();
 
-      if(filterNombre.getValue() != null)  
-        list = list.stream()
-                .filter(tarea -> StringUtils.containsIgnoreCase(tarea.getNombre(), filterNombre.getValue()))
-                .collect(Collectors.toList());
-        
-      if(filterDescripcion.getValue() != null)  
-        list = list.stream()
-                 .filter(tarea -> StringUtils.containsIgnoreCase(tarea.getDescripcion(), filterDescripcion.getValue()))
-                .collect(Collectors.toList());
-        
-       
-      if(fechaInicioFilter.getValue() != null)
+        List<Tarea> list = tareaService.findAllTareas();
+
+        if (filterNombre.getValue() != null) {
             list = list.stream()
-                    .filter(tarea -> tarea.getFecha_inicio().isEqual(fechaInicioFilter.getValue() ))
+                    .filter(tarea -> StringUtils.containsIgnoreCase(tarea.getNombre(), filterNombre.getValue()))
                     .collect(Collectors.toList());
-       
-      if(fechaFinFilter.getValue() != null)
+        }
+
+        if (filterDescripcion.getValue() != null) {
             list = list.stream()
-                    .filter(tarea -> tarea.getFecha_fin().isEqual(fechaFinFilter.getValue() ))
+                    .filter(tarea -> StringUtils.containsIgnoreCase(tarea.getDescripcion(), filterDescripcion.getValue()))
                     .collect(Collectors.toList());
-                    
-      if(estudiantefilter.getValue() != null)
+        }
+
+        if (fechaInicioFilter.getValue() != null) {
             list = list.stream()
-                    .filter(tarea -> tarea.getE().getSolapin().equals( estudiantefilter.getValue().getSolapin() ))
+                    .filter(tarea -> tarea.getFecha_inicio().isEqual(fechaInicioFilter.getValue()))
                     .collect(Collectors.toList());
-                    
+        }
+
+        if (fechaFinFilter.getValue() != null) {
+            list = list.stream()
+                    .filter(tarea -> tarea.getFecha_fin().isEqual(fechaFinFilter.getValue()))
+                    .collect(Collectors.toList());
+        }
+
+        if (estudiantefilter.getValue() != null) {
+            list = list.stream()
+                    .filter(tarea -> tarea.getE().getSolapin().equals(estudiantefilter.getValue().getSolapin()))
+                    .collect(Collectors.toList());
+        }
 
         return list;
     }
