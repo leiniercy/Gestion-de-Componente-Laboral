@@ -61,7 +61,7 @@ public class ProfesorForm extends FormLayout {
         nombre.setRequired(true);
         nombre.setMinLength(2);
         nombre.setMaxLength(100);
-        nombre.setPattern("^[a-zA-Z][a-zA-Z\\s]+$");
+        nombre.setPattern("^[a-zA-ZÀ-ÿ\\u00f1\\u00d1]+(\\s*[a-zA-ZÀ-ÿ\\u00f1\\u00d1]*)*[a-zA-ZÀ-ÿ\\u00f1\\u00d1]+$");
         nombre.setErrorMessage("Solo letras, mínimo 2 caracteres y máximo 100");
         nombre.addValueChangeListener(event -> {
             event.getSource().setHelperText(event.getValue().length() + "/" +100);
@@ -73,7 +73,7 @@ public class ProfesorForm extends FormLayout {
         apellidos.setRequired(true);
         apellidos.setMinLength(3);
         apellidos.setMaxLength(100);
-        apellidos.setPattern("^[a-zA-Z][a-zA-Z\\s]*$");
+        apellidos.setPattern("^[a-zA-ZÀ-ÿ\\u00f1\\u00d1]+(\\s*[a-zA-ZÀ-ÿ\\u00f1\\u00d1]*)*[a-zA-ZÀ-ÿ\\u00f1\\u00d1]+$");
         apellidos.setErrorMessage("Solo letras, mínimo 3 caracteres y máximo 100");
         apellidos.addValueChangeListener(event -> {
             event.getSource().setHelperText(event.getValue().length() + "/" +100);

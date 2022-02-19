@@ -43,7 +43,6 @@ public class Application extends SpringBootServletInitializer implements AppShel
     @Autowired
     private UserRepository userRepository;
 
-
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -54,12 +53,24 @@ public class Application extends SpringBootServletInitializer implements AppShel
             logger.info("Using existing database");
             return;
         }
+        
         logger.info("Generating demo data");
-        logger.info("... generating 4 User entities...");
-        createUser1("Leinier", "admin", "admin");
-        createUser2("Estudiante", "user", "user");
+        logger.info("... generating Users entities...");
+
+        createUser1("leiniercy", "admin", "Lol");
+
+        createUser2("User", "user", "user");
+        createUser2("Alexander", "alexanderrs", "alexanderrs");
+        createUser2("Amelia", "ameliafb", "ameliafb");
+        createUser2("Arlín", "arlinvc", "arlinvc");
+        createUser2("Christian", "christiansj", "christiansj");
+        createUser2("Félix A.", "felixacg", "felixacg");
+
         createUser3("JefeArea", "jefeArea", "jefeArea");
+        createUser3("Yordankis", "yluguen", "yluguen");
+
         createUser4("Vicedecano", "vicedecano", "vicedecano");
+        createUser4("Yadira", "yramirezr", "yramirezr");
     }
 
     private User createUser1(String name, String username, String password) {
@@ -67,7 +78,7 @@ public class Application extends SpringBootServletInitializer implements AppShel
         user.setName(name);
         user.setUsername(username);
         user.setPassword(passwordEncoder.encode(password));
-        user.setRoles(Stream.of(Rol.ESTUDIANTE,Rol.JEFE_AREA,Rol.VICEDECANO, Rol.ADMIN).collect(Collectors.toSet()));
+        user.setRoles(Stream.of(Rol.ESTUDIANTE, Rol.JEFE_AREA, Rol.VICEDECANO, Rol.ADMIN).collect(Collectors.toSet()));
         userRepository.saveAndFlush(user);
         return user;
     }
@@ -81,7 +92,7 @@ public class Application extends SpringBootServletInitializer implements AppShel
         userRepository.saveAndFlush(user);
         return user;
     }
-    
+
     private User createUser3(String name, String username, String password) {
         User user = new User();
         user.setName(name);
@@ -91,6 +102,7 @@ public class Application extends SpringBootServletInitializer implements AppShel
         userRepository.saveAndFlush(user);
         return user;
     }
+
     private User createUser4(String name, String username, String password) {
         User user = new User();
         user.setName(name);
@@ -100,7 +112,5 @@ public class Application extends SpringBootServletInitializer implements AppShel
         userRepository.saveAndFlush(user);
         return user;
     }
-    
-
 
 }

@@ -51,7 +51,7 @@ public class AreaForm extends FormLayout {
         nombre.setRequired(true);
         nombre.setMinLength(2);
         nombre.setMaxLength(50);
-        nombre.setPattern("^[a-zA-Z][a-zA-Z\\s]+$");
+        nombre.setPattern("^[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]+(\\s*[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]*)*[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]+$");
         nombre.setErrorMessage("Solo letras, mínimo 2 caracteres y máximo 50");
         nombre.addValueChangeListener(event -> {
             event.getSource().setHelperText(event.getValue().length() + "/" + 50);

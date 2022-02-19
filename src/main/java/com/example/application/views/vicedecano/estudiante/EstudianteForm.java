@@ -68,7 +68,7 @@ public class EstudianteForm extends FormLayout {
         nombre.setRequired(true);
         nombre.setMinLength(2);
         nombre.setMaxLength(100);
-        nombre.setPattern("^[a-zA-Z][a-zA-Z\\s]+$");
+        nombre.setPattern("^[a-zA-ZÀ-ÿ\\u00f1\\u00d1]+(\\s*[a-zA-ZÀ-ÿ\\u00f1\\u00d1]*)*[a-zA-ZÀ-ÿ\\u00f1\\u00d1]+$");
         nombre.setErrorMessage("Solo letras, mínimo 2 caracteres y máximo 100");
         nombre.addValueChangeListener(event -> {
             event.getSource().setHelperText(event.getValue().length() + "/" + 100);
@@ -80,14 +80,14 @@ public class EstudianteForm extends FormLayout {
         apellidos.setRequired(true);
         apellidos.setMinLength(3);
         apellidos.setMaxLength(100);
-        apellidos.setPattern("^[a-zA-Z][a-zA-Z\\s]*$");
+        apellidos.setPattern("^[a-zA-ZÀ-ÿ\\u00f1\\u00d1]+(\\s*[a-zA-ZÀ-ÿ\\u00f1\\u00d1]*)*[a-zA-ZÀ-ÿ\\u00f1\\u00d1]+$");
         apellidos.setErrorMessage("Solo letras, mínimo 3 caracteres y máximo 100");
         apellidos.addValueChangeListener(event -> {
             event.getSource().setHelperText(event.getValue().length() + "/" + 100);
         });
         //usuario
         user.setItems(users);
-        user.setItemLabelGenerator(User::getName);
+        user.setItemLabelGenerator(User::getUsername);
         //email
         email.setPlaceholder("usuario@estudiantes.uci.cu");
         email.setLabel("Correo");

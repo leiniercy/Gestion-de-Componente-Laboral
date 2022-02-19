@@ -42,14 +42,14 @@ public class Profesor extends AbstractEntity {
 
     @NotEmpty
     @NotBlank(message = "El campo no debe estar vacío")
-    @Pattern(regexp = "^[a-zA-Z][a-zA-Z\\s]*$" ,message = "Solo letras") //0 combinaciones de letras 0 o mas veces incluyendo espacios
+    @Pattern(regexp = "^[a-zA-ZÀ-ÿ\\u00f1\\u00d1]+(\\s*[a-zA-ZÀ-ÿ\\u00f1\\u00d1]*)*[a-zA-ZÀ-ÿ\\u00f1\\u00d1]+$" ,message = "Solo letras") //0 combinaciones de letras 0 o mas veces incluyendo espacios
     @Size(message = "Mínimo 2 caracteres y máximo 100",min=2,max = 100)
     @Column(name = "nombre", nullable = false)
     private String nombre;
 
     @NotEmpty
     @NotBlank(message = "El campo no debe estar vacío")
-    @Pattern(regexp = "^[a-zA-Z][a-zA-Z\\s]*$" ,message = "Solo letras") //0 combinaciones de letras 0 o mas veces incluyendo espacios
+    @Pattern(regexp = "^[a-zA-ZÀ-ÿ\\u00f1\\u00d1]+(\\s*[a-zA-ZÀ-ÿ\\u00f1\\u00d1]*)*[a-zA-ZÀ-ÿ\\u00f1\\u00d1]+$" ,message = "Solo letras") //0 combinaciones de letras 0 o mas veces incluyendo espacios
     @Size(message = "Mínimo 3 caracteres y máximo 100",min=3,max = 100)
     @Column(name = "apellidos" ,nullable = false)
     private String apellidos;

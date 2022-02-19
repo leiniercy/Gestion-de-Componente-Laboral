@@ -40,7 +40,7 @@ public class Evaluacion extends AbstractEntity {
 //    @NotBlank(message = "campo vacío")
     @Column(name = "descripcion", nullable = false)
     @Size(message = "La descripción no es correcta",max = 255,min=3)
-    @Pattern(regexp = "^[a-zA-Z][a-zA-Z0-9\\s]*$", message = "Solo letras y numeros")
+    @Pattern(regexp = "^[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]+(\\s*[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]*)*[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]+$", message = "Solo letras y numeros")
     private String descripcion;
 
     @NotNull(message = "debes elegir un campo")
