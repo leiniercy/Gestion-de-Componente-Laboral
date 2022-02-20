@@ -34,6 +34,6 @@ public interface EstudianteRepository extends JpaRepository<Estudiante, Integer>
             + " or lower(g.numero) like lower(concat('%', :searchTerm, '%')) "
     )
     List<Estudiante> searchEstudiante(@Param("searchTerm") String searchTerm);
-
+    
     
 }

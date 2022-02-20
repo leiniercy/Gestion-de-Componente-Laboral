@@ -99,7 +99,7 @@ public class AreaView extends VerticalLayout {
 
         Section section1 = new Section(grid);
         Scroller scroller = new Scroller(new Div(section1));
-        scroller.setScrollDirection(Scroller.ScrollDirection.VERTICAL);
+        scroller.setScrollDirection(Scroller.ScrollDirection.BOTH);
         scroller.getStyle()
                 .set("border-bottom", "1px solid var(--lumo-contrast-20pct)")
                 .set("padding", "var(--lumo-space-m)");

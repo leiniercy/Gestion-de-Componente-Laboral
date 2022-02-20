@@ -6,16 +6,13 @@
 package com.example.application.views.jefe_area.evaluacion;
 
 import com.example.application.data.service.*;
-import com.example.application.data.entity.Area;
 import com.example.application.data.entity.Evaluacion;
 import com.example.application.data.entity.Estudiante;
 import com.example.application.data.entity.Tarea;
 import com.example.application.views.MainLayout;
-import com.example.application.views.estudiante.Client;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.Uses;
@@ -32,7 +29,6 @@ import com.vaadin.flow.component.orderedlayout.*;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
-import com.vaadin.flow.function.SerializableBiConsumer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 

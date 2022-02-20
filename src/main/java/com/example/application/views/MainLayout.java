@@ -125,7 +125,7 @@ public class MainLayout extends AppLayout {
             layout.addClassNames("bg-base", "border-b", "border-contrast-10", "box-border");
         }
 
-        HorizontalLayout header = new HorizontalLayout(toggle, viewTitle, barraDeMenu(), layout);
+        HorizontalLayout header = new HorizontalLayout(toggle, viewTitle, layout);
         header.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
         header.setWidth("100%");
         header.expand(viewTitle);
@@ -222,6 +222,8 @@ public class MainLayout extends AppLayout {
         return title == null ? "" : title.value();
     }
 
+    
+    //tengo q modificar antes de agregarlo ojooo
     private Component barraDeMenu() {
 
         MenuBar menuBar = new MenuBar();
