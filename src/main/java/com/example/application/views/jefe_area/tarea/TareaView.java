@@ -224,7 +224,7 @@ public class TareaView extends VerticalLayout {
     private HorizontalLayout getToolbar() {
 
         addClassName("menu-items");
-        Html total = new Html("<span>Total: <b>" + tareaService.countTarea() + "</b> tareas</span>");
+        Html total = new Html("<span>Total: <b>" + listaTareas.size() + "</b> tareas</span>");
 
         Button addButton = new Button("Añadir Tarea", VaadinIcon.USER.create());
         addButton.addClickListener(click -> addTarea());
