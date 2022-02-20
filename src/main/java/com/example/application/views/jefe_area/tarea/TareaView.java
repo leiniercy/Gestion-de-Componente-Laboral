@@ -6,7 +6,9 @@
 package com.example.application.views.jefe_area.tarea;
 
 import com.example.application.data.entity.Estudiante;
+import com.example.application.data.entity.Profesor;
 import com.example.application.data.entity.Tarea;
+import com.example.application.data.entity.User;
 import com.example.application.data.service.AreaService;
 import com.example.application.data.service.EstudianteService;
 import com.example.application.data.service.EvaluacionService;
@@ -14,6 +16,7 @@ import com.example.application.data.service.GrupoService;
 import com.example.application.data.service.ProfesorService;
 import com.example.application.data.service.TareaService;
 import com.example.application.data.service.UserService;
+import com.example.application.security.AuthenticatedUser;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Key;
@@ -43,6 +46,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.annotation.security.RolesAllowed;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author Leinier
@@ -64,6 +70,14 @@ public class TareaView extends VerticalLayout {
     private EvaluacionService evaluacionService;
     private GrupoService grupoService;
     private TareaService tareaService;
+
+    private AuthenticatedUser authenticatedUser;
+
+    private List<Tarea> listaTareas;
+
+    private Profesor profesor_registrado;
+
+    private List<Profesor> profesores;
 
     private GridListDataView<Tarea> gridListDataView;
 
@@ -94,7 +108,9 @@ public class TareaView extends VerticalLayout {
         return layout;
     }).setFlexGrow(0);
 
-    public TareaView(@Autowired UserService userService,
+    public TareaView(
+            @Autowired AuthenticatedUser authenticatedUser,
+            @Autowired UserService userService,
             @Autowired AreaService areaService,
             @Autowired EstudianteService estudianteService,
             @Autowired ProfesorService profesorService,
@@ -103,6 +119,7 @@ public class TareaView extends VerticalLayout {
             @Autowired TareaService tareaService
     ) {
 
+        this.authenticatedUser = authenticatedUser;
         this.userService = userService;
         this.areaService = areaService;
         this.estudianteService = estudianteService;
@@ -112,37 +129,63 @@ public class TareaView extends VerticalLayout {
         this.tareaService = tareaService;
         addClassNames("tarea-view", "flex", "flex-col", "h-full");
         setSizeFull();
-        configureGrid();
 
-        form = new TareaForm(estudianteService.findAllEstudiante());
-        form.setWidth("25em");
-        form.addListener(TareaForm.SaveEvent.class, this::saveTarea);
-        form.addListener(TareaForm.CloseEvent.class, e -> closeEditor());
+        Optional<User> maybeUser = authenticatedUser.get();
+        if (maybeUser.isPresent()) {
 
-        Section section1 = new Section(grid);
-        Scroller scroller = new Scroller(new Div(section1));
-        scroller.setScrollDirection(Scroller.ScrollDirection.VERTICAL);
-        scroller.getStyle()
-                .set("border-bottom", "1px solid var(--lumo-contrast-20pct)")
-                .set("padding", "var(--lumo-space-m)");
+            profesores = profesorService.findAllProfesor();
+            listaTareas = tareaService.findAllTareas();
 
-        FlexLayout content = new FlexLayout(scroller, form);
-        content.setFlexGrow(2, scroller);
-        content.setFlexGrow(1, form);
-        content.setFlexShrink(0, form);
-        content.addClassNames("content", "gap-m");
-        content.setSizeFull();
+            User user = maybeUser.get();
+            Optional<Profesor> profesor = profesores.stream().filter(pro -> pro.getUser().getUsername().equals(user.getUsername())).findFirst();
+            profesor_registrado = profesor.get();
 
-        HorizontalLayout ly = new HorizontalLayout(new Span(VaadinIcon.ACADEMY_CAP.create()), new H6("Universidad de Ciencias Informáticas"));
-        ly.setAlignItems(Alignment.BASELINE);
-        Footer footer = new Footer(ly);
-        footer.getStyle().set("padding", "var(--lumo-space-wide-m)");
+            listaTareas
+                    = listaTareas.stream().filter(tarea -> tarea.getE().getArea().getNombre().equals(profesor_registrado.getA().getNombre()))
+                            .collect(Collectors.toList());
 
-        add(getToolbar(), content, footer);
-        updateList();
-        closeEditor();
-        grid.asSingleSelect().addValueChangeListener(event
-                -> editTarea(event.getValue()));
+            if (listaTareas.size() != 0) {
+
+                configureGrid();
+
+                form = new TareaForm(estudianteService.findAllEstudiante());
+                form.setWidth("25em");
+                form.addListener(TareaForm.SaveEvent.class, this::saveTarea);
+                form.addListener(TareaForm.CloseEvent.class, e -> closeEditor());
+
+                Section section1 = new Section(grid);
+                Scroller scroller = new Scroller(new Div(section1));
+                scroller.setScrollDirection(Scroller.ScrollDirection.VERTICAL);
+                scroller.getStyle()
+                        .set("border-bottom", "1px solid var(--lumo-contrast-20pct)")
+                        .set("padding", "var(--lumo-space-m)");
+
+                FlexLayout content = new FlexLayout(scroller, form);
+                content.setFlexGrow(2, scroller);
+                content.setFlexGrow(1, form);
+                content.setFlexShrink(0, form);
+                content.addClassNames("content", "gap-m");
+                content.setSizeFull();
+
+                HorizontalLayout ly = new HorizontalLayout(new Span(VaadinIcon.ACADEMY_CAP.create()), new H6("Universidad de Ciencias Informáticas"));
+                ly.setAlignItems(Alignment.BASELINE);
+                Footer footer = new Footer(ly);
+                footer.getStyle().set("padding", "var(--lumo-space-wide-m)");
+
+                add(getToolbar(), content, footer);
+                updateList();
+                closeEditor();
+                grid.asSingleSelect().addValueChangeListener(event
+                        -> editTarea(event.getValue()));
+
+            } else {
+                add(new H1("No hay tareas disponibles"));
+            }
+
+        } else {
+            add(new H1("Hola Mundo"));
+        }
+
     }
 
     private void configureGrid() {
@@ -154,7 +197,7 @@ public class TareaView extends VerticalLayout {
         headerRow.getCell(fecha_finColumn).setComponent(FiltrarFechaFin());
         headerRow.getCell(estudianteColumn).setComponent(FiltrarEstudiante());
 
-        gridListDataView = grid.setItems(tareaService.findAllTareas());
+        gridListDataView = grid.setItems(listaTareas);
         grid.addClassNames("tarea-grid");
         grid.setAllRowsVisible(true);
         grid.setSizeFull();
@@ -171,7 +214,6 @@ public class TareaView extends VerticalLayout {
         Html total = new Html("<span>Total: <b>" + tareaService.countTarea() + "</b> tareas</span>");
 
         Button addButton = new Button("Añadir Tarea", VaadinIcon.USER.create());
-        //  addButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         addButton.addClickListener(click -> addTarea());
 
         HorizontalLayout toolbar = new HorizontalLayout(total, addButton);
@@ -194,7 +236,7 @@ public class TareaView extends VerticalLayout {
 
         ConfirmDialog dialog = new ConfirmDialog();
         dialog.setHeader(String.format("Eliminar %s?", tarea.getNombre()));
-        dialog.setText("Está seguro/a de que quiere eliminar esta tarea?");
+        dialog.setText("¿Está seguro/a de que quiere eliminar esta tarea?");
 
         dialog.setCancelText("Cancelar");
         dialog.setCancelable(true);
@@ -219,7 +261,14 @@ public class TareaView extends VerticalLayout {
 
     private void refreshGrid() {
         grid.setVisible(true);
-        grid.setItems(tareaService.findAllTareas());
+
+        listaTareas = tareaService.findAllTareas();
+
+        listaTareas = listaTareas.stream()
+                .filter(tarea -> tarea.getE().getArea().getNombre().equals(profesor_registrado.getA().getNombre()))
+                .collect(Collectors.toList());
+
+        grid.setItems(listaTareas);
     }
 
     public void editTarea(Tarea tarea) {
@@ -244,7 +293,14 @@ public class TareaView extends VerticalLayout {
     }
 
     private void updateList() {
-        grid.setItems(tareaService.findAllTareas());
+
+        listaTareas = tareaService.findAllTareas();
+
+        listaTareas = listaTareas.stream()
+                .filter(tarea -> tarea.getE().getArea().getNombre().equals(profesor_registrado.getA().getNombre()))
+                .collect(Collectors.toList());
+
+        grid.setItems(listaTareas);
     }
 
     // Filtros

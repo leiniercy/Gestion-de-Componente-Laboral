@@ -54,7 +54,6 @@ import java.util.stream.Collectors;
 @RolesAllowed("jefeArea")
 public class EvaluacionesView extends VerticalLayout {
 
-//    private Grid<Evaluacion> grid = new Grid<>(Evaluacion.class, false);
     private GridPro<Evaluacion> grid = new GridPro<Evaluacion>();
 
     EvaluacionForm form;
@@ -150,6 +149,7 @@ public class EvaluacionesView extends VerticalLayout {
                             .collect(Collectors.toList());
 
             if (listaEvaluaciones.size() != 0) {
+
                 configureGrid();
 
                 form = new EvaluacionForm(estudianteService.findAllEstudiante(), tareaService.findAllTareas());
@@ -188,7 +188,7 @@ public class EvaluacionesView extends VerticalLayout {
             }
 
         } else {
-            add(new H1("Hola Mundo"));
+
         }
 
     }
@@ -216,7 +216,7 @@ public class EvaluacionesView extends VerticalLayout {
     private HorizontalLayout getToolbar() {
 
         addClassName("menu-items");
-        Html total = new Html("<span>Total: <b>" + evaluacionService.countEvaluacion() + "</b> evaluaciones</span>");
+        Html total = new Html("<span>Total: <b>" + listaEvaluaciones.size() + "</b> evaluaciones</span>");
 
         Button addButton = new Button("Añadir Evaluación ", VaadinIcon.USER.create());
         addButton.addClickListener(click -> addEvaluacion());
@@ -241,7 +241,7 @@ public class EvaluacionesView extends VerticalLayout {
 
         ConfirmDialog dialog = new ConfirmDialog();
         dialog.setHeader(String.format("Eliminar %s?", evaluacion.getNota()));
-        dialog.setText("Está seguro/a de que quiere eliminar esta evaluación?");
+        dialog.setText("¿Está seguro/a de que quiere eliminar esta evaluación?");
 
         dialog.setCancelText("Cancelar");
         dialog.setCancelable(true);
@@ -266,8 +266,17 @@ public class EvaluacionesView extends VerticalLayout {
     }
 
     private void refreshGrid() {
+        
         grid.setVisible(true);
-        grid.setItems(evaluacionService.findAllEvaluacion());
+
+        listaEvaluaciones = evaluacionService.findAllEvaluacion();
+
+        listaEvaluaciones
+                = listaEvaluaciones.stream()
+                        .filter(eva -> eva.getEstudiante().getArea().getNombre().equals(profesor_registrado.getA().getNombre()))
+                        .collect(Collectors.toList());
+
+        grid.setItems(listaEvaluaciones);
     }
 
     public void editEvaluacion(Evaluacion evaluacion) {
@@ -292,16 +301,16 @@ public class EvaluacionesView extends VerticalLayout {
     }
 
     private void updateList() {
-        
+
         listaEvaluaciones = evaluacionService.findAllEvaluacion();
-        
+
         listaEvaluaciones
                 = listaEvaluaciones.stream()
                         .filter(eva -> eva.getEstudiante().getArea().getNombre().equals(profesor_registrado.getA().getNombre()))
                         .collect(Collectors.toList());
-    
+
         grid.setItems(listaEvaluaciones);
-    
+
     }
 
     //Filtros
