@@ -31,20 +31,19 @@ public class ProfesorService {
         this.repository = repository;
     }
 
-    
     public List<Profesor> findAllProfesor() {
         return repository.findAll();
     }
-    
+
     public List<Profesor> searchProfesor(String searchTerm) {
         return repository.searchProfesor(searchTerm);
     }
-    
-       public Profesor findById(Integer id){
-       return repository.findById(id).get();
+
+    public Profesor findById(Integer id) {
+        return repository.findById(id).get();
     }
-    
-     public long countProfesor() {
+  
+    public long countProfesor() {
         return repository.count();
     }
 
@@ -61,4 +60,3 @@ public class ProfesorService {
     }
 
 }
-

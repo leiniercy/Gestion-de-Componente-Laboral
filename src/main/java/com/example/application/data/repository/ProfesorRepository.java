@@ -7,6 +7,7 @@ package com.example.application.data.repository;
 
 import com.example.application.data.entity.Profesor;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
@@ -17,11 +18,9 @@ import org.springframework.stereotype.Repository;
  * @author Leinier
  */
 @Repository
-public interface ProfesorRepository extends JpaRepository<Profesor,Integer> {
-    
-    
+public interface ProfesorRepository extends JpaRepository<Profesor, Integer> {
+
     //filtar Profesor
-    
     @Query("select p from Profesor p "
             + "join Area a on p.id  = a.id "
             + "where lower(p.nombre) like lower(concat('%', :searchTerm, '%')) "
@@ -31,6 +30,6 @@ public interface ProfesorRepository extends JpaRepository<Profesor,Integer> {
             + " or lower(a.nombre) like lower(concat('%', :searchTerm, '%'))"
     )
     List<Profesor> searchProfesor(@Param("searchTerm") String searchTerm);
-   
-}
 
+    
+}

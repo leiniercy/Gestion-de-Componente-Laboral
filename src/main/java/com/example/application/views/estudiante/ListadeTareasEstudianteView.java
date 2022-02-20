@@ -58,6 +58,8 @@ public class ListadeTareasEstudianteView extends Div {
 
     private List<Evaluacion> listaEvaluaciones;
 
+    private User user;
+
     TextField filterNota = new TextField();
     TextField filterDescripcion = new TextField();
     ComboBox<Tarea> filterTarea = new ComboBox<>();
@@ -82,19 +84,17 @@ public class ListadeTareasEstudianteView extends Div {
         if (maybeUser.isPresent()) {
 
             listaEvaluaciones = evaluacionService.findAllEvaluacion();
-            User user = maybeUser.get();
-            String userName = user.getUsername();
+            user = maybeUser.get();
 
             listaEvaluaciones
                     = listaEvaluaciones.stream()
-                            .filter(eva -> eva.getEstudiante().getUser().getUsername().equals(userName))
+                            .filter(eva -> eva.getEstudiante().getUser().getUsername().equals(user.getUsername()))
                             .collect(Collectors.toList());
 
             if (listaEvaluaciones.size() != 0) {
 
                 createGrid();
 
-               
                 HorizontalLayout ly = new HorizontalLayout(new Span(VaadinIcon.ACADEMY_CAP.create()), new H6("Universidad de Ciencias Informáticas"));
                 ly.setAlignItems(FlexComponent.Alignment.BASELINE);
                 Footer footer = new Footer(ly);
@@ -230,6 +230,14 @@ public class ListadeTareasEstudianteView extends Div {
     }
 
     private void updateList() {
+
+        listaEvaluaciones = evaluacionService.findAllEvaluacion();
+
+        listaEvaluaciones
+                = listaEvaluaciones.stream()
+                        .filter(eva -> eva.getEstudiante().getUser().getUsername().equals(user.getUsername()))
+                        .collect(Collectors.toList());
+
         grid.setItems(listaEvaluaciones);
     }
 

@@ -8,7 +8,10 @@ package com.example.application.views.jefe_area.evaluacion;
 import com.example.application.data.service.*;
 import com.example.application.data.entity.Evaluacion;
 import com.example.application.data.entity.Estudiante;
+import com.example.application.data.entity.Profesor;
 import com.example.application.data.entity.Tarea;
+import com.example.application.data.entity.User;
+import com.example.application.security.AuthenticatedUser;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Key;
@@ -38,6 +41,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author Leinier
@@ -60,8 +66,16 @@ public class EvaluacionesView extends VerticalLayout {
     private EvaluacionService evaluacionService;
     private GrupoService grupoService;
     private TareaService tareaService;
-    
+
+    private AuthenticatedUser authenticatedUser;
+
     private Evaluacion evaluacion;
+
+    private List<Evaluacion> listaEvaluaciones;
+
+    private Profesor profesor_registrado;
+
+    private List<Profesor> profesores;
 
     private GridListDataView<Evaluacion> gridListDataView;
 
@@ -96,9 +110,8 @@ public class EvaluacionesView extends VerticalLayout {
         return layout;
     }).setFlexGrow(0);
 
-
-
     public EvaluacionesView(
+            @Autowired AuthenticatedUser authenticatedUser,
             @Autowired UserService userService,
             @Autowired AreaService areaService,
             @Autowired EstudianteService estudianteService,
@@ -108,6 +121,7 @@ public class EvaluacionesView extends VerticalLayout {
             @Autowired TareaService tareaService
     ) {
 
+        this.authenticatedUser = authenticatedUser;
         this.userService = userService;
         this.areaService = areaService;
         this.estudianteService = estudianteService;
@@ -117,37 +131,65 @@ public class EvaluacionesView extends VerticalLayout {
         this.tareaService = tareaService;
         addClassNames("evaluacion-view", "flex", "flex-col", "h-full");
         setSizeFull();
-        configureGrid();
 
-        form = new EvaluacionForm(estudianteService.findAllEstudiante(), tareaService.findAllTareas());
-        form.setWidth("25em");
-        form.addListener(EvaluacionForm.SaveEvent.class, this::saveEvaluacion);
-        form.addListener(EvaluacionForm.CloseEvent.class, e -> closeEditor());
+        Optional<User> maybeUser = authenticatedUser.get();
+        if (maybeUser.isPresent()) {
 
-        Section section1 = new Section(grid);
-        Scroller scroller = new Scroller(new Div(section1));
-        scroller.setScrollDirection(Scroller.ScrollDirection.VERTICAL);
-        scroller.getStyle()
-                .set("border-bottom", "1px solid var(--lumo-contrast-20pct)")
-                .set("padding", "var(--lumo-space-m)");
+            profesores = profesorService.findAllProfesor();
+            listaEvaluaciones = evaluacionService.findAllEvaluacion();
 
-        FlexLayout content = new FlexLayout(scroller, form);
-        content.setFlexGrow(2, scroller);
-        content.setFlexGrow(1, form);
-        content.setFlexShrink(0, form);
-        content.addClassNames("content", "gap-m");
-        content.setSizeFull();
+            User user = maybeUser.get();
 
-        HorizontalLayout ly = new HorizontalLayout(new Span(VaadinIcon.ACADEMY_CAP.create()), new H6("Universidad de Ciencias Informáticas"));
-        ly.setAlignItems(Alignment.BASELINE);
-        Footer footer = new Footer(ly);
-        footer.getStyle().set("padding", "var(--lumo-space-wide-m)");
+            Optional<Profesor> profesor = profesores.stream().filter(pro -> pro.getUser().getUsername().equals(user.getUsername())).findFirst();
 
-        add(getToolbar(), content, footer);
-        updateList();
-        closeEditor();
-        grid.asSingleSelect().addValueChangeListener(event
-                -> editEvaluacion(event.getValue()));
+            profesor_registrado = profesor.get();
+
+            listaEvaluaciones
+                    = listaEvaluaciones.stream()
+                            .filter(eva -> eva.getEstudiante().getArea().getNombre().equals(profesor_registrado.getA().getNombre()))
+                            .collect(Collectors.toList());
+
+            if (listaEvaluaciones.size() != 0) {
+                configureGrid();
+
+                form = new EvaluacionForm(estudianteService.findAllEstudiante(), tareaService.findAllTareas());
+                form.setWidth("25em");
+                form.addListener(EvaluacionForm.SaveEvent.class, this::saveEvaluacion);
+                form.addListener(EvaluacionForm.CloseEvent.class, e -> closeEditor());
+
+                Section section1 = new Section(grid);
+                Scroller scroller = new Scroller(new Div(section1));
+                scroller.setScrollDirection(Scroller.ScrollDirection.VERTICAL);
+                scroller.getStyle()
+                        .set("border-bottom", "1px solid var(--lumo-contrast-20pct)")
+                        .set("padding", "var(--lumo-space-m)");
+
+                FlexLayout content = new FlexLayout(scroller, form);
+                content.setFlexGrow(2, scroller);
+                content.setFlexGrow(1, form);
+                content.setFlexShrink(0, form);
+                content.addClassNames("content", "gap-m");
+                content.setSizeFull();
+
+                HorizontalLayout ly = new HorizontalLayout(new Span(VaadinIcon.ACADEMY_CAP.create()), new H6("Universidad de Ciencias Informáticas"));
+                ly.setAlignItems(Alignment.BASELINE);
+                Footer footer = new Footer(ly);
+                footer.getStyle().set("padding", "var(--lumo-space-wide-m)");
+
+                add(getToolbar(), content, footer);
+                updateList();
+                closeEditor();
+                grid.asSingleSelect().addValueChangeListener(event
+                        -> editEvaluacion(event.getValue()));
+            } else {
+
+                add(new H1("No hay evaluaciones disponibles"));
+
+            }
+
+        } else {
+            add(new H1("Hola Mundo"));
+        }
 
     }
 
@@ -160,7 +202,7 @@ public class EvaluacionesView extends VerticalLayout {
         headerRow.getCell(tareaColumn).setComponent(FiltarTarea());
         headerRow.getCell(statusColumn).setComponent(FiltarStatus());
 
-        gridListDataView = grid.setItems(evaluacionService.findAllEvaluacion());
+        gridListDataView = grid.setItems(listaEvaluaciones);
         grid.addClassNames("evaluacion-grid");
         grid.setAllRowsVisible(true);
         grid.setSizeFull();
@@ -177,7 +219,6 @@ public class EvaluacionesView extends VerticalLayout {
         Html total = new Html("<span>Total: <b>" + evaluacionService.countEvaluacion() + "</b> evaluaciones</span>");
 
         Button addButton = new Button("Añadir Evaluación ", VaadinIcon.USER.create());
-        //  addButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         addButton.addClickListener(click -> addEvaluacion());
 
         HorizontalLayout toolbar = new HorizontalLayout(total, addButton);
@@ -251,7 +292,16 @@ public class EvaluacionesView extends VerticalLayout {
     }
 
     private void updateList() {
-        grid.setItems(evaluacionService.findAllEvaluacion());
+        
+        listaEvaluaciones = evaluacionService.findAllEvaluacion();
+        
+        listaEvaluaciones
+                = listaEvaluaciones.stream()
+                        .filter(eva -> eva.getEstudiante().getArea().getNombre().equals(profesor_registrado.getA().getNombre()))
+                        .collect(Collectors.toList());
+    
+        grid.setItems(listaEvaluaciones);
+    
     }
 
     //Filtros
