@@ -72,6 +72,10 @@ public class EvaluacionesView extends VerticalLayout {
 
     private List<Evaluacion> listaEvaluaciones;
 
+    private List<Estudiante> listaEstudiantes;
+
+    private List<Tarea> listaTareas;
+
     private Profesor profesor_registrado;
 
     private List<Profesor> profesores;
@@ -135,24 +139,18 @@ public class EvaluacionesView extends VerticalLayout {
         if (maybeUser.isPresent()) {
 
             profesores = profesorService.findAllProfesor();
-            listaEvaluaciones = evaluacionService.findAllEvaluacion();
 
             User user = maybeUser.get();
-
             Optional<Profesor> profesor = profesores.stream().filter(pro -> pro.getUser().getUsername().equals(user.getUsername())).findFirst();
-
             profesor_registrado = profesor.get();
 
-            listaEvaluaciones
-                    = listaEvaluaciones.stream()
-                            .filter(eva -> eva.getEstudiante().getArea().getNombre().equals(profesor_registrado.getA().getNombre()))
-                            .collect(Collectors.toList());
+            LlenarListas();
 
             if (listaEvaluaciones.size() != 0) {
 
                 configureGrid();
 
-                form = new EvaluacionForm(estudianteService.findAllEstudiante(), tareaService.findAllTareas());
+                form = new EvaluacionForm(listaEstudiantes, listaTareas);
                 form.setWidth("25em");
                 form.addListener(EvaluacionForm.SaveEvent.class, this::saveEvaluacion);
                 form.addListener(EvaluacionForm.CloseEvent.class, e -> closeEditor());
@@ -190,6 +188,28 @@ public class EvaluacionesView extends VerticalLayout {
         } else {
 
         }
+
+    }
+
+    private void LlenarListas() {
+
+        listaEvaluaciones = evaluacionService.findAllEvaluacion();
+
+        listaEvaluaciones = listaEvaluaciones.stream()
+                .filter(eva -> eva.getEstudiante().getArea().getNombre().equals(profesor_registrado.getA().getNombre()))
+                .collect(Collectors.toList());
+
+        listaEstudiantes = estudianteService.findAllEstudiante();
+
+        listaEstudiantes = listaEstudiantes.stream()
+                .filter(est -> est.getArea().getNombre().equals(profesor_registrado.getA().getNombre()))
+                .collect(Collectors.toList());
+
+        listaTareas = tareaService.findAllTareas();
+
+        listaTareas = listaTareas.stream()
+                .filter(tarea -> tarea.getE().getArea().getNombre().equals(profesor_registrado.getA().getNombre()))
+                .collect(Collectors.toList());
 
     }
 
@@ -267,16 +287,11 @@ public class EvaluacionesView extends VerticalLayout {
 
     private void refreshGrid() {
         
+        LlenarListas();
+        
         grid.setVisible(true);
-
-        listaEvaluaciones = evaluacionService.findAllEvaluacion();
-
-        listaEvaluaciones
-                = listaEvaluaciones.stream()
-                        .filter(eva -> eva.getEstudiante().getArea().getNombre().equals(profesor_registrado.getA().getNombre()))
-                        .collect(Collectors.toList());
-
         grid.setItems(listaEvaluaciones);
+    
     }
 
     public void editEvaluacion(Evaluacion evaluacion) {
@@ -302,12 +317,7 @@ public class EvaluacionesView extends VerticalLayout {
 
     private void updateList() {
 
-        listaEvaluaciones = evaluacionService.findAllEvaluacion();
-
-        listaEvaluaciones
-                = listaEvaluaciones.stream()
-                        .filter(eva -> eva.getEstudiante().getArea().getNombre().equals(profesor_registrado.getA().getNombre()))
-                        .collect(Collectors.toList());
+        LlenarListas();
 
         grid.setItems(listaEvaluaciones);
 

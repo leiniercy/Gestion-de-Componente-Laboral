@@ -21,7 +21,6 @@ import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -44,7 +43,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.security.RolesAllowed;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -78,6 +76,8 @@ public class TareaView extends VerticalLayout {
     private Profesor profesor_registrado;
 
     private List<Profesor> profesores;
+
+    private List<Estudiante> listaEstudiantes;
 
     private GridListDataView<Tarea> gridListDataView;
 
@@ -134,21 +134,18 @@ public class TareaView extends VerticalLayout {
         if (maybeUser.isPresent()) {
 
             profesores = profesorService.findAllProfesor();
-            listaTareas = tareaService.findAllTareas();
 
             User user = maybeUser.get();
             Optional<Profesor> profesor = profesores.stream().filter(pro -> pro.getUser().getUsername().equals(user.getUsername())).findFirst();
             profesor_registrado = profesor.get();
-
-            listaTareas
-                    = listaTareas.stream().filter(tarea -> tarea.getE().getArea().getNombre().equals(profesor_registrado.getA().getNombre()))
-                            .collect(Collectors.toList());
+            
+            llenarLista();
 
             if (listaTareas.size() != 0) {
 
                 configureGrid();
 
-                form = new TareaForm(estudianteService.findAllEstudiante());
+                form = new TareaForm(listaEstudiantes);
                 form.setWidth("25em");
                 form.addListener(TareaForm.SaveEvent.class, this::saveTarea);
                 form.addListener(TareaForm.CloseEvent.class, e -> closeEditor());
@@ -186,6 +183,22 @@ public class TareaView extends VerticalLayout {
             add(new H1("Hola Mundo"));
         }
 
+    }
+
+    private void llenarLista() {
+
+        listaTareas = tareaService.findAllTareas();
+
+        listaTareas = listaTareas.stream()
+                .filter(tarea -> tarea.getE().getArea().getNombre().equals(profesor_registrado.getA().getNombre()))
+                .collect(Collectors.toList());
+
+        listaEstudiantes = estudianteService.findAllEstudiante();
+        
+        listaEstudiantes = listaEstudiantes.stream()
+                        .filter(est -> est.getArea().getNombre().equals(profesor_registrado.getA().getNombre()))
+                        .collect(Collectors.toList());
+               
     }
 
     private void configureGrid() {
@@ -260,14 +273,8 @@ public class TareaView extends VerticalLayout {
     }
 
     private void refreshGrid() {
+        llenarLista();     
         grid.setVisible(true);
-
-        listaTareas = tareaService.findAllTareas();
-
-        listaTareas = listaTareas.stream()
-                .filter(tarea -> tarea.getE().getArea().getNombre().equals(profesor_registrado.getA().getNombre()))
-                .collect(Collectors.toList());
-
         grid.setItems(listaTareas);
     }
 
@@ -293,13 +300,7 @@ public class TareaView extends VerticalLayout {
     }
 
     private void updateList() {
-
-        listaTareas = tareaService.findAllTareas();
-
-        listaTareas = listaTareas.stream()
-                .filter(tarea -> tarea.getE().getArea().getNombre().equals(profesor_registrado.getA().getNombre()))
-                .collect(Collectors.toList());
-
+        llenarLista();
         grid.setItems(listaTareas);
     }
 
