@@ -12,6 +12,7 @@ import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Footer;
+import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H4;
@@ -49,18 +50,23 @@ public class InicioView extends VerticalLayout {
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
         getStyle().set("text-align", "center");
 
-        Image img = new Image("images/Fac4.png", "placeholder plant");
+       
+
+        add(ImagenWithDescription(), PostDeContactos(), Links(), footer());
+
+    }
+
+    private Component ImagenWithDescription() {
+
+        Image img = new Image("images/F4.png", "placeholder plant");
         img.setWidthFull();
         img.setHeightFull();
-
-        HorizontalLayout ly = new HorizontalLayout(new Span(VaadinIcon.ACADEMY_CAP.create()), new H3("Universidad de Ciencias Informáticas"));
-        ly.setAlignItems(Alignment.BASELINE);
-
-        Footer footer = new Footer(ly);
-        footer.getStyle().set("padding", "var(--lumo-space-wide-m)");
-
-        add(img, PostDeContactos(), Links(), footer);
-
+        VerticalLayout contenedorImage = new VerticalLayout(img);
+        
+        VerticalLayout contenedorDescription = new VerticalLayout( new H1("Descripción"));
+        
+        HorizontalLayout layout = new HorizontalLayout(contenedorImage,contenedorDescription);
+        return layout;
     }
 
     private Component Links() {
@@ -140,6 +146,17 @@ public class InicioView extends VerticalLayout {
         layout.setAlignItems(Alignment.CENTER);
 
         return layout;
+    }
+    
+    private Footer footer(){
+        
+        HorizontalLayout ly = new HorizontalLayout(new Span(VaadinIcon.ACADEMY_CAP.create()), new H3("Universidad de Ciencias Informáticas"));
+        ly.setAlignItems(Alignment.BASELINE);
+
+        Footer myFooter = new Footer(ly);
+        myFooter.getStyle().set("padding", "var(--lumo-space-wide-m)");
+        
+        return myFooter;
     }
 
 }
