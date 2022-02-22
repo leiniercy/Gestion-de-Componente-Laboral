@@ -19,6 +19,7 @@ import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.H5;
 import com.vaadin.flow.component.html.H6;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -50,22 +51,60 @@ public class InicioView extends VerticalLayout {
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
         getStyle().set("text-align", "center");
 
-       
+        VerticalLayout verticalLayout = new VerticalLayout(ImagenFacultad(), ImagenWithDescription(), PostDeContactos(), Links(), footer());
+        verticalLayout.setWidthFull();
+        verticalLayout.setHeightFull();
 
-        add(ImagenWithDescription(), PostDeContactos(), Links(), footer());
+        add(verticalLayout);
 
+    }
+
+    private Component ImagenFacultad() {
+
+        Image img = new Image("images/F4.png", "Facultad 4");
+        img.setWidthFull();
+        img.setHeightFull();
+
+        HorizontalLayout layout = new HorizontalLayout(img);
+        layout.setDefaultVerticalComponentAlignment(Alignment.CENTER);
+        layout.setHeightFull();
+        layout.setWidthFull();
+        return layout;
     }
 
     private Component ImagenWithDescription() {
 
-        Image img = new Image("images/F4.png", "placeholder plant");
-        img.setWidthFull();
+        HorizontalLayout title = new HorizontalLayout(
+                new H1("SISTEMA DE GESTIÓN DE COMPONENTE LABORAL")
+        );
+        title.addClassNames("flex", "flex-col", "h-full");
+        title.setDefaultVerticalComponentAlignment(Alignment.CENTER);
+        title.setWidthFull();
+
+        Image img = new Image("images/evaluacion.png", "evaluación");
+        img.setWidth("40%");
         img.setHeightFull();
-        VerticalLayout contenedorImage = new VerticalLayout(img);
-        
-        VerticalLayout contenedorDescription = new VerticalLayout( new H1("Descripción"));
-        
-        HorizontalLayout layout = new HorizontalLayout(contenedorImage,contenedorDescription);
+
+        H3 h3 = new H3("Plataforma eduacional destinada al control del componente laboral"
+                + " de los estudiantes repitentes de la facultad 4."
+                + " El componente laboral constituye un elemento esencial en la formación inicial"
+                + " de los profesionales, se expresa en forma de práctica profesional integral, implica "
+                + "no solo observar y ejecutar alternativas de solución, sino reconstruir y reformular "
+                + "conocimientos para poder transformar la realidad existente en su contexto de actuación, "
+                + "retribuyendo a través de este a las necesidades la facultad y la univerisdad."
+        );
+        h3.setWidth("60%");
+        h3.setHeightFull();
+
+        HorizontalLayout contenedorDescription = new HorizontalLayout(img, h3);
+        contenedorDescription.setWidthFull();
+        contenedorDescription.setHeightFull();
+
+        VerticalLayout layout = new VerticalLayout(title, contenedorDescription);
+        layout.addClassNames("flex", "flex-col", "h-full");
+        layout.setMaxWidth("100%");
+        layout.setWidthFull();
+
         return layout;
     }
 
@@ -142,20 +181,30 @@ public class InicioView extends VerticalLayout {
                 "Nombre: Félix Andrés Corría Gutiérrez",
                 "Móvil: +53 55360989"
         );
-        HorizontalLayout layout = new HorizontalLayout(post1, post2, post3);
-        layout.setAlignItems(Alignment.CENTER);
-
-        return layout;
-    }
-    
-    private Footer footer(){
         
+        HorizontalLayout title = new HorizontalLayout(new H3("INFORMACIÓN DE LOS DESAROLLADORES"));
+        title.addClassNames("flex", "flex-col", "h-full");
+        title.setAlignItems(Alignment.START);
+        
+        HorizontalLayout layout = new HorizontalLayout(post1, post2, post3);
+        layout.setWidthFull();
+
+        VerticalLayout verticalLayout = new VerticalLayout(title, layout);
+        verticalLayout.addClassNames("flex", "flex-col", "h-full");
+        verticalLayout.setWidthFull();
+        verticalLayout.setHeightFull();
+
+        return verticalLayout;
+    }
+
+    private Footer footer() {
+
         HorizontalLayout ly = new HorizontalLayout(new Span(VaadinIcon.ACADEMY_CAP.create()), new H3("Universidad de Ciencias Informáticas"));
         ly.setAlignItems(Alignment.BASELINE);
 
         Footer myFooter = new Footer(ly);
         myFooter.getStyle().set("padding", "var(--lumo-space-wide-m)");
-        
+
         return myFooter;
     }
 
