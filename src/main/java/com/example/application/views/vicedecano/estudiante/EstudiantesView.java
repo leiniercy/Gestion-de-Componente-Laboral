@@ -78,6 +78,9 @@ public class EstudiantesView extends VerticalLayout {
         layout.add(editButton, removeButton);
         return layout;
     }).setFlexGrow(0);
+    
+    private HorizontalLayout toolbar;
+    private Html total;
 
     public EstudiantesView(
             @Autowired UserService userService,
@@ -160,7 +163,7 @@ public class EstudiantesView extends VerticalLayout {
     private HorizontalLayout getToolbar() {
 
         addClassName("menu-items");
-        Html total = new Html("<span>Total: <b>" + estudianteService.countEstudiante() + "</b> estudiantes</span>");
+        total = new Html("<span>Total: <b>" + estudianteService.countEstudiante() + "</b> estudiantes</span>");
 
         Button menuButton = new Button("Mostar/Ocultar Columnas");
         //menuButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
@@ -180,7 +183,7 @@ public class EstudiantesView extends VerticalLayout {
         //addButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         addButton.addClickListener(click -> addEstudiante());
 
-        HorizontalLayout toolbar = new HorizontalLayout(total, menuButton, addButton);
+        toolbar = new HorizontalLayout(total, menuButton, addButton);
         toolbar.setAlignItems(FlexComponent.Alignment.BASELINE);
         toolbar.setWidth("100%");
         toolbar.expand(total);
@@ -207,7 +210,14 @@ public class EstudiantesView extends VerticalLayout {
     }
 
     private void saveEstudiante(EstudianteForm.SaveEvent event) {
+
         estudianteService.saveEstudiante(event.getEstudiante());
+
+        toolbar.remove(total);
+        total = new Html("<span>Total: <b>" + estudianteService.countEstudiante() + "</b> estudiantes</span>");
+        toolbar.addComponentAtIndex(0, total);
+        toolbar.expand(total);
+
         updateList();
         closeEditor();
     }
@@ -227,7 +237,14 @@ public class EstudiantesView extends VerticalLayout {
         dialog.setConfirmText("Eliminar");
         dialog.setConfirmButtonTheme("error primary");
         dialog.addConfirmListener(event -> {
+
             estudianteService.deleteEstudiante(estudiante);
+
+            toolbar.remove(total);
+            total = new Html("<span>Total: <b>" + estudianteService.countEstudiante() + "</b> estudiantes</span>");
+            toolbar.addComponentAtIndex(0, total);
+            toolbar.expand(total);
+
             Notification.show("Estudiante eliminado");
             this.refreshGrid();
         });

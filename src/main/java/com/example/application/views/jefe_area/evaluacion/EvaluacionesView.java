@@ -113,6 +113,9 @@ public class EvaluacionesView extends VerticalLayout {
         return layout;
     }).setFlexGrow(0);
 
+    private Html total;
+    private HorizontalLayout toolbar;
+
     public EvaluacionesView(
             @Autowired AuthenticatedUser authenticatedUser,
             @Autowired UserService userService,
@@ -236,12 +239,12 @@ public class EvaluacionesView extends VerticalLayout {
     private HorizontalLayout getToolbar() {
 
         addClassName("menu-items");
-        Html total = new Html("<span>Total: <b>" + listaEvaluaciones.size() + "</b> evaluaciones</span>");
+        total = new Html("<span>Total: <b>" + listaEvaluaciones.size() + "</b> evaluaciones</span>");
 
         Button addButton = new Button("Añadir Evaluación ", VaadinIcon.USER.create());
         addButton.addClickListener(click -> addEvaluacion());
 
-        HorizontalLayout toolbar = new HorizontalLayout(total, addButton);
+        toolbar = new HorizontalLayout(total, addButton);
         toolbar.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
         toolbar.setWidth("100%");
         toolbar.expand(total);
@@ -252,7 +255,14 @@ public class EvaluacionesView extends VerticalLayout {
     }
 
     private void saveEvaluacion(EvaluacionForm.SaveEvent event) {
+
         evaluacionService.saveEvaluacion(event.getEvaluacion());
+
+        toolbar.remove(total);
+        total = new Html("<span>Total: <b>" + listaEvaluaciones.size() + "</b> evaluaciones</span>");
+        toolbar.addComponentAtIndex(0, total);
+        toolbar.expand(total);
+
         updateList();
         closeEditor();
     }
@@ -272,7 +282,14 @@ public class EvaluacionesView extends VerticalLayout {
         dialog.setConfirmText("Eliminar");
         dialog.setConfirmButtonTheme("error primary");
         dialog.addConfirmListener(event -> {
+            
             evaluacionService.deleteEvaluacion(evaluacion);
+            
+            toolbar.remove(total);
+            total = new Html("<span>Total: <b>" + listaEvaluaciones.size() + "</b> evaluaciones</span>");
+            toolbar.addComponentAtIndex(0, total);
+            toolbar.expand(total);
+
             Notification.show("Evaluación eliminada");
             this.refreshGrid();
         });
@@ -286,12 +303,12 @@ public class EvaluacionesView extends VerticalLayout {
     }
 
     private void refreshGrid() {
-        
+
         LlenarListas();
-        
+
         grid.setVisible(true);
         grid.setItems(listaEvaluaciones);
-    
+
     }
 
     public void editEvaluacion(Evaluacion evaluacion) {

@@ -71,6 +71,9 @@ public class AreaView extends VerticalLayout {
         return layout;
     }).setFlexGrow(0);
 
+    private Html total;
+    private HorizontalLayout toolbar;
+
     public AreaView(
             @Autowired UserService userService,
             @Autowired AreaService areaService,
@@ -146,13 +149,13 @@ public class AreaView extends VerticalLayout {
     private Component getToolbar() {
 
         addClassName("menu-items");
-        Html total = new Html("<span>Total: <b>" + areaService.countArea() + "</b> areas</span>");
+        total = new Html("<span>Total: <b>" + areaService.countArea() + "</b> areas</span>");
 
         Button addButton = new Button("Añadir Área", VaadinIcon.USER.create());
 //        addButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         addButton.addClickListener(click -> addArea());
 
-        HorizontalLayout toolbar = new HorizontalLayout(total, addButton);
+        toolbar = new HorizontalLayout(total, addButton);
         toolbar.setAlignItems(FlexComponent.Alignment.BASELINE);
         toolbar.setWidth("100%");
         toolbar.expand(total);
@@ -163,7 +166,14 @@ public class AreaView extends VerticalLayout {
     }
 
     private void saveArea(AreaForm.SaveEvent event) {
+        
         areaService.saveArea(event.getArea());
+        
+        toolbar.remove(total);
+        total = new Html("<span>Total: <b>" + areaService.countArea() + "</b> areas</span>");
+        toolbar.addComponentAtIndex(0, total);
+        toolbar.expand(total);
+        
         updateList();
         closeEditor();
     }
@@ -183,7 +193,14 @@ public class AreaView extends VerticalLayout {
         dialog.setConfirmText("Eliminar");
         dialog.setConfirmButtonTheme("error primary");
         dialog.addConfirmListener(event -> {
+
             areaService.deleteArea(area);
+
+            toolbar.remove(total);
+            total = new Html("<span>Total: <b>" + areaService.countArea() + "</b> areas</span>");
+            toolbar.addComponentAtIndex(0, total);
+            toolbar.expand(total);
+
             Notification.show("Área eliminada");
             this.refreshGrid();
         });

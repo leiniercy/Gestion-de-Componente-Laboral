@@ -78,6 +78,9 @@ public class ProfesorView extends VerticalLayout {
         layout.add(editButton, removeButton);
         return layout;
     }).setFlexGrow(0);
+    
+    private HorizontalLayout toolbar;
+    private Html total;
 
     public ProfesorView(
             @Autowired UserService userService,
@@ -156,7 +159,7 @@ public class ProfesorView extends VerticalLayout {
     private HorizontalLayout getToolbar() {
 
         addClassName("menu-items");
-        Html total = new Html("<span>Total: <b>" + profesorService.countProfesor() + "</b> profesores</span>");
+        total = new Html("<span>Total: <b>" + profesorService.countProfesor() + "</b> profesores</span>");
 
         Button menuButton = new Button("Mostar/Ocultar Columnas");
         //menuButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
@@ -173,7 +176,7 @@ public class ProfesorView extends VerticalLayout {
         //   addButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         addButton.addClickListener(click -> addProfesor());
 
-        HorizontalLayout toolbar = new HorizontalLayout(total, menuButton, addButton);
+        toolbar = new HorizontalLayout(total, menuButton, addButton);
         toolbar.setAlignItems(FlexComponent.Alignment.BASELINE);
         toolbar.setWidth("100%");
         toolbar.expand(total);
@@ -200,9 +203,17 @@ public class ProfesorView extends VerticalLayout {
     }
 
     private void saveProfesor(ProfesorForm.SaveEvent event) {
+
         profesorService.saveProfesor(event.getProfesor());
+
+        toolbar.remove(total);
+        total = new Html("<span>Total: <b>" + profesorService.countProfesor() + "</b> profesores</span>");
+        toolbar.addComponentAtIndex(0, total);
+        toolbar.expand(total);
+
         updateList();
         closeEditor();
+
     }
 
     private void deleteProfesor(Profesor profesor) {
@@ -220,9 +231,17 @@ public class ProfesorView extends VerticalLayout {
         dialog.setConfirmText("Eliminar");
         dialog.setConfirmButtonTheme("error primary");
         dialog.addConfirmListener(event -> {
+            
             profesorService.deleteProfesor(profesor);
+            
+            toolbar.remove(total);
+            total = new Html("<span>Total: <b>" + profesorService.countProfesor() + "</b> profesores</span>");
+            toolbar.addComponentAtIndex(0, total);
+            toolbar.expand(total);
+            
             Notification.show("Profesor eliminado");
             this.refreshGrid();
+        
         });
 
         if (profesor == null) {

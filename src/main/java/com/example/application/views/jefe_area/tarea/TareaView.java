@@ -107,6 +107,9 @@ public class TareaView extends VerticalLayout {
         layout.add(editButton, removeButton);
         return layout;
     }).setFlexGrow(0);
+    
+    private Html total;
+    private HorizontalLayout toolbar;
 
     public TareaView(
             @Autowired AuthenticatedUser authenticatedUser,
@@ -138,7 +141,7 @@ public class TareaView extends VerticalLayout {
             User user = maybeUser.get();
             Optional<Profesor> profesor = profesores.stream().filter(pro -> pro.getUser().getUsername().equals(user.getUsername())).findFirst();
             profesor_registrado = profesor.get();
-            
+
             llenarLista();
 
             if (listaTareas.size() != 0) {
@@ -194,11 +197,11 @@ public class TareaView extends VerticalLayout {
                 .collect(Collectors.toList());
 
         listaEstudiantes = estudianteService.findAllEstudiante();
-        
+
         listaEstudiantes = listaEstudiantes.stream()
-                        .filter(est -> est.getArea().getNombre().equals(profesor_registrado.getA().getNombre()))
-                        .collect(Collectors.toList());
-               
+                .filter(est -> est.getArea().getNombre().equals(profesor_registrado.getA().getNombre()))
+                .collect(Collectors.toList());
+
     }
 
     private void configureGrid() {
@@ -224,12 +227,12 @@ public class TareaView extends VerticalLayout {
     private HorizontalLayout getToolbar() {
 
         addClassName("menu-items");
-        Html total = new Html("<span>Total: <b>" + listaTareas.size() + "</b> tareas</span>");
+        total = new Html("<span>Total: <b>" + listaTareas.size() + "</b> tareas</span>");
 
         Button addButton = new Button("Añadir Tarea", VaadinIcon.USER.create());
         addButton.addClickListener(click -> addTarea());
 
-        HorizontalLayout toolbar = new HorizontalLayout(total, addButton);
+        toolbar = new HorizontalLayout(total, addButton);
         toolbar.setAlignItems(FlexComponent.Alignment.BASELINE);
         toolbar.setWidth("100%");
         toolbar.expand(total);
@@ -240,7 +243,14 @@ public class TareaView extends VerticalLayout {
     }
 
     private void saveTarea(TareaForm.SaveEvent event) {
+
         tareaService.saveTarea(event.getTarea());
+
+        toolbar.remove(total);
+        total = new Html("<span>Total: <b>" + listaTareas.size() + "</b> tareas</span>");
+        toolbar.addComponentAtIndex(0, total);
+        toolbar.expand(total);
+
         updateList();
         closeEditor();
     }
@@ -260,7 +270,12 @@ public class TareaView extends VerticalLayout {
         dialog.setConfirmText("Eliminar");
         dialog.setConfirmButtonTheme("error primary");
         dialog.addConfirmListener(event -> {
+
             tareaService.deleteTarea(tarea);
+            toolbar.remove(total);
+            total = new Html("<span>Total: <b>" + listaTareas.size() + "</b> tareas</span>");
+            toolbar.addComponentAtIndex(0, total);
+            toolbar.expand(total);
             Notification.show("Tarea eliminada");
             this.refreshGrid();
         });
@@ -273,7 +288,7 @@ public class TareaView extends VerticalLayout {
     }
 
     private void refreshGrid() {
-        llenarLista();     
+        llenarLista();
         grid.setVisible(true);
         grid.setItems(listaTareas);
     }
