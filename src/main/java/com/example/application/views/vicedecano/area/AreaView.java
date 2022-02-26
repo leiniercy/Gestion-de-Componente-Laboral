@@ -9,6 +9,7 @@ import com.example.application.data.service.*;
 import com.example.application.data.entity.Area;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
@@ -19,13 +20,18 @@ import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.grid.editor.Editor;
 import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.*;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -166,16 +172,59 @@ public class AreaView extends VerticalLayout {
     }
 
     private void saveArea(AreaForm.SaveEvent event) {
-        
-        areaService.saveArea(event.getArea());
-        
-        toolbar.remove(total);
-        total = new Html("<span>Total: <b>" + areaService.countArea() + "</b> areas</span>");
-        toolbar.addComponentAtIndex(0, total);
-        toolbar.expand(total);
-        
-        updateList();
-        closeEditor();
+
+        List<Area> listArea = areaService.findAllArea();
+
+        listArea = listArea.parallelStream()
+                .filter(area -> event.getArea().getNombre().equals(area.getNombre())
+                && event.getArea().getDescripcion().equals(area.getDescripcion())
+                )
+                .collect(Collectors.toList());
+
+        ConfirmDialog dialog = new ConfirmDialog();
+        Icon icon = new Icon(VaadinIcon.WARNING);
+        icon.setColor("red");
+        HorizontalLayout ly = new HorizontalLayout(icon, new H1("Error:"));
+        ly.setDefaultVerticalComponentAlignment(Alignment.BASELINE);
+        dialog.setHeader(ly);
+        dialog.setText(new H3("El área ya existe"));
+        dialog.setConfirmText("Aceptar");
+        dialog.setConfirmButtonTheme("error primary");
+        dialog.addConfirmListener(new ComponentEventListener<ConfirmDialog.ConfirmEvent>() {
+            @Override
+            public void onComponentEvent(ConfirmDialog.ConfirmEvent event) {
+                AreaView.this.refreshGrid();
+            }
+        });
+
+        if (event.getArea().getNombre() == null || event.getArea().getDescripcion() == null) {
+            Notification.show("Datos incorrectos, solo letras y numeros");
+        } else {
+            if (listArea.size() != 0) {
+                dialog.open();
+                throw new RuntimeException("El área ya existe");
+            } else {
+
+                areaService.saveArea(event.getArea());
+                toolbar.remove(total);
+                total = new Html("<span>Total: <b>" + areaService.countArea() + "</b> areas</span>");
+                toolbar.addComponentAtIndex(0, total);
+                toolbar.expand(total);
+                updateList();
+                closeEditor();
+            }
+        }
+
+    }
+
+    public void editArea(Area area) {
+        if (area == null) {
+            closeEditor();
+        } else {
+            form.setArea(area);
+            form.setVisible(true);
+            addClassName("editing");
+        }
     }
 
     private void deleteArea(Area area) {
@@ -215,16 +264,6 @@ public class AreaView extends VerticalLayout {
     private void refreshGrid() {
         grid.setVisible(true);
         grid.setItems(areaService.findAllArea());
-    }
-
-    public void editArea(Area area) {
-        if (area == null) {
-            closeEditor();
-        } else {
-            form.setArea(area);
-            form.setVisible(true);
-            addClassName("editing");
-        }
     }
 
     void addArea() {

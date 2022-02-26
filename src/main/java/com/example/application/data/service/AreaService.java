@@ -7,6 +7,7 @@ package com.example.application.data.service;
 
 import com.example.application.data.entity.Area;
 import com.example.application.data.repository.AreaRepository;
+import com.vaadin.flow.component.notification.Notification;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -23,25 +24,24 @@ import org.vaadin.crudui.crud.CrudListener;
  */
 @Service
 public class AreaService {
-   
+
     private AreaRepository repository;
 
-   public AreaService(@Autowired AreaRepository repository) {
+    public AreaService(@Autowired AreaRepository repository) {
         this.repository = repository;
     }
 
-   public List<Area> findAllArea() {
+    public List<Area> findAllArea() {
         return repository.findAll();
     }
 
     public List<Area> searchArea(String stringFilter) {
         return repository.search(stringFilter);
     }
-    
-    public Area findById(Integer id){
-       return repository.findById(id).get();
+
+    public Area findById(Integer id) {
+        return repository.findById(id).get();
     }
-    
 
     public long countArea() {
         return repository.count();
@@ -55,6 +55,11 @@ public class AreaService {
         if (area == null) {
             System.err.println("This field is null. Are you sure you have connected your form to the application?");
             return;
+        }
+        if (area.getId() == null) {
+            Notification.show("Área añadida");
+        } else {
+            Notification.show("Área modificada");
         }
         repository.save(area);
     }

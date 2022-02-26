@@ -43,14 +43,14 @@ public class Area extends AbstractEntity {
 
     @NotEmpty
     @NotBlank(message = "El campo no debe estar vacío")
-    @Pattern(regexp = "^[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]+(\\s*[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]*)*[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]+$" , message = "Solo letras y numeros") 
+    @Pattern(regexp = "^[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]+(\\s*[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]*)*[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]+$" , message = "Datos incorrectos, solo letras y numeros") 
     @Size(message = "Mínimo 2 caracteres y máximo 50",min=2,max = 50)
-    @Column(name = "nombre",nullable = false)
+    @Column(name = "nombre",nullable = false, unique = true)
     private String nombre;
 
     @NotEmpty
     @NotBlank(message = "El campo no debe estar vacío")
-    @Pattern(regexp =  "^[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]+(\\s*[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]*)*[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]+$", message = "Solo letras y numeros)")
+    @Pattern(regexp =  "^[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]+(\\s*[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]*)*[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]+$", message = "Datos incorrectos, solo letras y numeros")
     @Size(message = "Mínimo 3 caracteres, máximo 255",min = 3,max =255)
     @Column(name = "descripcion")
     private String descripcion;

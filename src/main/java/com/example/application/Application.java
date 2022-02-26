@@ -53,24 +53,36 @@ public class Application extends SpringBootServletInitializer implements AppShel
             logger.info("Using existing database");
             return;
         }
-        
+
         logger.info("Generating demo data");
-        logger.info("... generating Users entities...");
+        logger.info("... generating 21 Users entities...");
 
-        createUser1("leiniercy", "admin", "Lol");
+        //Estudiantes
+        createUser2("Alexander", "alexanderrs", "Alexanderrs.1234"); //1
+        createUser2("Addlin", "addlindlcvm", "Addlindlcvm.1234"); //2
+        createUser2("Abel Ernesto", "abelega", "Abelega.1234"); //3
+        createUser2("Amelia", "ameliafb", "Ameliafb.1234"); //4 
+        createUser2("Adrianys", "adrianyspl", "Adrianyspl.1234"); //5
+        createUser2("José Luis", "jldenis", "Jldenis.1234"); //6
+        createUser2("Angel Luis", "alfumero", "Alfumero.1234"); //7
+        createUser2("Alejandro", "alejsosa", "Alejsosa.1234"); //8
+        createUser2("Arian", "arianlb", "Arianlb.1234"); //9
+        createUser2("Adnarim De La Caridad", "adnarimdlctp", "Adnarimdlctp.1234");//10
+        createUser2("Alejandro", "alejandrorv", "Alejandrorv.1234");//11
+        createUser2("Adrian", "adriansr", "Adriansr.1234");//12
+        createUser2("Adrian", "adriancs", "Adriancs.1234");//13 
+        createUser2("Alejandro", "alejandromb", "Alejandromb.1234"); //14
+        createUser2("Andrea", "andreasrm", "Andreasrm.1234"); //15
+        createUser2("Alejandro", "alejandrodmt", "Alejandrodmt.1234"); //16
 
-        createUser2("User", "user", "user");
-        createUser2("Alexander", "alexanderrs", "alexanderrs");
-        createUser2("Amelia", "ameliafb", "ameliafb");
-        createUser2("Arlín", "arlinvc", "arlinvc");
-        createUser2("Christian", "christiansj", "christiansj");
-        createUser2("Félix A.", "felixacg", "felixacg");
-
-        createUser3("JefeArea", "jefeArea", "jefeArea");
-        createUser3("Yordankis", "yluguen", "yluguen");
-
-        createUser4("Vicedecano", "vicedecano", "vicedecano");
-        createUser4("Yadira", "yramirezr", "yramirezr");
+          //Jefe de Área
+        createUser3("Osés Rico", "aoses", "Aoses.1234");//17
+        createUser3("Arronte Fernández", "aaaf", "Aaaf.1234");//18
+        createUser3("Borjas Mir", "aborjas", "Aborjas.1234");//19
+        createUser3("Yordankis", "yluguen", "Yluguen.1234");//20
+        
+        //Vicedecano
+        createUser4("Yadira", "yramirezr", "Yramirezr.1234");//21
     }
 
     private User createUser1(String name, String username, String password) {

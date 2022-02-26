@@ -113,7 +113,6 @@ public class AreaForm extends FormLayout {
         try {
             binder.writeBean(area);
             fireEvent(new SaveEvent(this, area));
-            Notification.show("Área añadida");
         } catch (ValidationException e) {
             e.printStackTrace();
         }

@@ -16,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -42,15 +43,21 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @NotBlank
-    @Column(length = 100, nullable = false, unique = true)
+    @Pattern(regexp = "^[a-zA-ZÀ-ÿ\\u00f1\\u00d1]+(\\s*[a-zA-ZÀ-ÿ\\u00f1\\u00d1]*)*[a-zA-ZÀ-ÿ\\u00f1\\u00d1]+$", message = "Solo letras") //0 combinaciones de letras 0 o mas veces incluyendo espacios
+    @Column(nullable = false)
     private String name;
-    @NotBlank(message = "el campo no debe estar vacío")
-    @Column(length = 100, nullable = false, unique = true)
+
+    @NotBlank(message = "El usuario o contraseña son incorrectos")
+//    @Pattern(regexp = "^[a-z]+(\\w*[[:punct:]]*[a-z0-9\\u00f1]*)*$" ,message = "Usuario incorrecto")
+    @Column(nullable = false, unique = true)
     private String username;
-    @NotBlank(message = "el campo no debe estar vacío")
-    @Column(length = 100, nullable = false)
+
+    @NotBlank(message = "El usuario o contraseña son incorrectos")
+    @Column(nullable = false)
     private String password;
+
     @Lob
     private String ProfilePictureUrl;
     @ElementCollection(fetch = FetchType.EAGER)
