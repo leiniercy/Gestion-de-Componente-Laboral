@@ -48,7 +48,9 @@ import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.property.TextAlignment;
 import com.itextpdf.layout.property.VerticalAlignment;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H6;
 import com.vaadin.flow.component.menubar.MenuBar;
 
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -117,7 +119,13 @@ public class ListadeTareasVicedecanoView extends Div {
         addClassName("listaTareas-view");
         setSizeFull();
         createGrid();
-        add(getToolbar(), grid);
+
+        HorizontalLayout ly = new HorizontalLayout(new Span(VaadinIcon.ACADEMY_CAP.create()), new H6("Universidad de Ciencias Informáticas"));
+        ly.setAlignItems(Alignment.BASELINE);
+        Footer footer = new Footer(ly);
+        footer.getStyle().set("padding", "var(--lumo-space-wide-m)");
+        
+        add(getToolbar(), grid,footer);
     }
 
     private void createGrid() {
@@ -184,7 +192,7 @@ public class ListadeTareasVicedecanoView extends Div {
             hl.add(span);
             return hl;
         })).setComparator(tarea -> tarea.getE().getStringNombreApellidos())
-           .setHeader("Estudiante").setAutoWidth(true).setSortable(true);
+                .setHeader("Estudiante").setAutoWidth(true).setSortable(true);
     }
 
     private void addFiltersToGrid() {
@@ -298,19 +306,19 @@ public class ListadeTareasVicedecanoView extends Div {
         icon.getStyle().set("height", "var(--lumo-icon-size-s)");
         icon.getStyle().set("marginRight", "var(--lumo-space-s)");
 
-        Span span =  new Span("Reporte");
+        Span span = new Span("Reporte");
         span.getStyle().set("width", "var(--lumo-size-l)");
         span.getStyle().set("heigth", "var(--lumo-size-l)");
         span.getStyle().set("font-size", "var(--lumo-font-size-m)");
         span.getStyle().set("font-weight", "500");
         span.getStyle().set("font-family", "var(--lumo-font-family)");
         span.getStyle().set("color", "var(--_lumo-button-color, var(--lumo-primary-text-color))");
-        
+
         Anchor rp = new Anchor();
         rp.setHref(ReportePDF());
         rp.add(icon, span);
         rp.getStyle().set("border-radius", "var(--lumo-border-radius-l");
-        
+
         MenuBar menuBar = new MenuBar();
         menuBar.addItem(rp);
 

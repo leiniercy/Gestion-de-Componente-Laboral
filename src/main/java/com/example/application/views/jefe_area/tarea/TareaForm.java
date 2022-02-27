@@ -121,7 +121,6 @@ public class TareaForm extends FormLayout {
         try {
             binder.writeBean(tarea);
             fireEvent(new SaveEvent(this, tarea));
-            Notification.show("Tarea añadida");
         } catch (ValidationException e) {
             e.printStackTrace();
         }

@@ -122,7 +122,6 @@ public class EvaluacionForm extends FormLayout {
         try {
             binder.writeBean(evaluacion);
             fireEvent(new SaveEvent(this, evaluacion));
-            Notification.show("Evaluación añadida");
         } catch (ValidationException e) {
             e.printStackTrace();
         }

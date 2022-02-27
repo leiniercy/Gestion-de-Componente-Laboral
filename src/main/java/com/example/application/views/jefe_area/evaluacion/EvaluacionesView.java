@@ -13,6 +13,7 @@ import com.example.application.data.entity.Tarea;
 import com.example.application.data.entity.User;
 import com.example.application.security.AuthenticatedUser;
 import com.example.application.views.MainLayout;
+import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
@@ -82,24 +83,24 @@ public class EvaluacionesView extends VerticalLayout {
 
     private GridListDataView<Evaluacion> gridListDataView;
 
-    private Grid.Column<Evaluacion> notaColumn = grid.addColumn(Evaluacion::getNota).setHeader("Nota").setAutoWidth(true).setFlexGrow(0);
-    private Grid.Column<Evaluacion> descripcionColumn = grid.addColumn(Evaluacion::getDescripcion).setHeader("Descripción").setAutoWidth(true).setFlexGrow(0);
+    private Grid.Column<Evaluacion> notaColumn = grid.addColumn(Evaluacion::getNota).setHeader("Nota").setAutoWidth(true).setFlexGrow(0).setSortable(true);
+    private Grid.Column<Evaluacion> descripcionColumn = grid.addColumn(Evaluacion::getDescripcion).setHeader("Descripción").setAutoWidth(true).setFlexGrow(0).setSortable(true);
     private Grid.Column<Evaluacion> estudianteColumn
             = grid.addColumn(evaluacion -> evaluacion.getEstudiante().getStringNombreApellidos())
                     .setComparator(evaluacion -> evaluacion.getEstudiante().getStringNombreApellidos())
-                    .setHeader("Estudiante").setAutoWidth(true).setFlexGrow(0);
+                    .setHeader("Estudiante").setAutoWidth(true).setFlexGrow(0).setSortable(true);
     private Grid.Column<Evaluacion> tareaColumn
             = grid.addColumn(evaluacion -> evaluacion.getTarea().getNombre())
                     .setComparator(evaluacion -> evaluacion.getTarea().getNombre())
-                    .setHeader("Tarea").setAutoWidth(true).setFlexGrow(0);
+                    .setHeader("Tarea").setAutoWidth(true).setFlexGrow(0).setSortable(true);
     private Grid.Column<Evaluacion> statusColumn
             = grid.addEditColumn(Evaluacion::getStatus, new ComponentRenderer<>(evaluacion -> {
                 Span span = new Span();
                 span.setText(evaluacion.getStatus());
-                span.getElement().setAttribute("theme", "badge " + evaluacion.getStatus().toLowerCase());
+                span.getElement().setAttribute("theme", "badge" + evaluacion.getStatus().toLowerCase());
                 return span;
             })).select((item, newValue) -> item.setStatus(newValue), Arrays.asList("Pendiente", "Completado", "No Completado"))
-                    .setComparator(evaluacion -> evaluacion.getStatus()).setHeader("Estatus");
+                    .setComparator(evaluacion -> evaluacion.getStatus()).setHeader("Estatus").setSortable(true);
 
     private Grid.Column<Evaluacion> editColumn = grid.addComponentColumn(evaluacion -> {
         HorizontalLayout layout = new HorizontalLayout();
@@ -231,7 +232,6 @@ public class EvaluacionesView extends VerticalLayout {
         grid.setSizeFull();
         grid.setHeightFull();
         grid.addThemeVariants(GridVariant.LUMO_COLUMN_BORDERS);
-        grid.addThemeVariants(GridVariant.LUMO_COMPACT);
         grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
         grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
     }
@@ -256,15 +256,49 @@ public class EvaluacionesView extends VerticalLayout {
 
     private void saveEvaluacion(EvaluacionForm.SaveEvent event) {
 
-        evaluacionService.saveEvaluacion(event.getEvaluacion());
+        List<Evaluacion> listEvaluaciones = evaluacionService.findAllEvaluacion();
 
-        toolbar.remove(total);
-        total = new Html("<span>Total: <b>" + listaEvaluaciones.size() + "</b> evaluaciones</span>");
-        toolbar.addComponentAtIndex(0, total);
-        toolbar.expand(total);
+        listEvaluaciones = listEvaluaciones.parallelStream()
+                .filter(eva -> eva.getNota().equals(event.getEvaluacion().getNota())
+                && eva.getDescripcion().equals(event.getEvaluacion().getDescripcion())
+                && eva.getTarea().equals(event.getEvaluacion().getTarea())
+                && eva.getEstudiante().equals(event.getEvaluacion().getEstudiante())
+                && eva.getStatus().equals(event.getEvaluacion().getStatus())
+                )
+                .collect(Collectors.toList());
 
-        updateList();
-        closeEditor();
+        ConfirmDialog dialog = new ConfirmDialog();
+        Icon icon = new Icon(VaadinIcon.WARNING);
+        icon.setColor("red");
+        icon.getStyle().set("width", "var(--lumo-icon-size-l)");
+        icon.getStyle().set("height", "var(--lumo-icon-size-xl)");
+
+        HorizontalLayout ly = new HorizontalLayout(icon, new H1("Error:"));
+        ly.setDefaultVerticalComponentAlignment(Alignment.BASELINE);
+        dialog.setHeader(ly);
+        dialog.setText(new H3("La evaluación ya existe"));
+        dialog.setConfirmText("Aceptar");
+        dialog.setConfirmButtonTheme("error primary");
+        dialog.addConfirmListener(new ComponentEventListener<ConfirmDialog.ConfirmEvent>() {
+            @Override
+            public void onComponentEvent(ConfirmDialog.ConfirmEvent event) {
+                EvaluacionesView.this.refreshGrid();
+            }
+        });
+
+        if (listEvaluaciones.size() != 0) {
+            dialog.open();
+            throw new RuntimeException("La evaluación ya existe");
+        } else {
+            evaluacionService.saveEvaluacion(event.getEvaluacion());
+            toolbar.remove(total);
+            total = new Html("<span>Total: <b>" + listaEvaluaciones.size() + "</b> evaluaciones</span>");
+            toolbar.addComponentAtIndex(0, total);
+            toolbar.expand(total);
+            updateList();
+            closeEditor();
+        }
+
     }
 
     private void deleteEvaluacion(Evaluacion evaluacion) {
@@ -282,9 +316,9 @@ public class EvaluacionesView extends VerticalLayout {
         dialog.setConfirmText("Eliminar");
         dialog.setConfirmButtonTheme("error primary");
         dialog.addConfirmListener(event -> {
-            
+
             evaluacionService.deleteEvaluacion(evaluacion);
-            
+
             toolbar.remove(total);
             total = new Html("<span>Total: <b>" + listaEvaluaciones.size() + "</b> evaluaciones</span>");
             toolbar.addComponentAtIndex(0, total);

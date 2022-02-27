@@ -52,7 +52,7 @@ public class Estudiante extends AbstractEntity {
     private String apellidos;
 
 
-    @NotNull(message = "campo vacío")
+    @NotNull(message = "El campo no debe estar vacío")
     @OneToOne()
     private User user;
 

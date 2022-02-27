@@ -32,6 +32,8 @@ import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.gridpro.GridPro;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Footer;
+import com.vaadin.flow.component.html.H6;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -108,7 +110,13 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
         addClassName("evaluacionesList-view");
         setSizeFull();
         createGrid();
-        add(getToolbar(), grid);
+
+        HorizontalLayout ly = new HorizontalLayout(new Span(VaadinIcon.ACADEMY_CAP.create()), new H6("Universidad de Ciencias Informáticas"));
+        ly.setAlignItems(Alignment.BASELINE);
+        Footer footer = new Footer(ly);
+        footer.getStyle().set("padding", "var(--lumo-space-wide-m)");
+
+        add(getToolbar(), grid, footer);
     }
 
     private void createGrid() {

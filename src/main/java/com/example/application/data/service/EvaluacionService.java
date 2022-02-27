@@ -7,6 +7,7 @@ package com.example.application.data.service;
 
 import com.example.application.data.entity.Evaluacion;
 import com.example.application.data.repository.EvaluacionRepository;
+import com.vaadin.flow.component.notification.Notification;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -30,25 +31,24 @@ public class EvaluacionService {
         this.repository = repository;
     }
 
-     public List<Evaluacion> findAllEvaluacion() {
+    public List<Evaluacion> findAllEvaluacion() {
         return repository.findAll();
     }
 
     public List<Evaluacion> searchEvaluacion(String searchTerm) {
         return repository.search(searchTerm);
     }
-    
-    public Evaluacion findById(Integer id){
-       return repository.findById(id).get();
+
+    public Evaluacion findById(Integer id) {
+        return repository.findById(id).get();
     }
-    
 
     public long countEvaluacion() {
         return repository.count();
     }
 
     public void deleteEvaluacion(Evaluacion evaluacion) {
-       repository.delete(evaluacion);
+        repository.delete(evaluacion);
     }
 
     public void saveEvaluacion(Evaluacion evaluacion) {
@@ -56,7 +56,12 @@ public class EvaluacionService {
             System.err.println("This field is null. Are you sure you have connected your form to the application?");
             return;
         }
-       repository.save(evaluacion);
+        if (evaluacion.getId() == null) {
+            Notification.show("Evaluación añadida");
+        } else {
+            Notification.show("Evaluación modificada");
+        }
+        repository.save(evaluacion);
     }
 
 }
