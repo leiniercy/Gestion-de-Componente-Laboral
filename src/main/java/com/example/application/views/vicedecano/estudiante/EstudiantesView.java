@@ -20,16 +20,20 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
 
@@ -58,15 +62,15 @@ public class EstudiantesView extends VerticalLayout {
 
     private GridListDataView<Estudiante> gridListDataView;
 
-    private Grid.Column<Estudiante> nombreColumn = grid.addColumn(Estudiante::getNombre).setHeader("Nombre").setAutoWidth(true).setFlexGrow(0);
-    private Grid.Column<Estudiante> apellidosColumn = grid.addColumn(Estudiante::getApellidos).setHeader("Apellidos").setAutoWidth(true).setFlexGrow(0);
-    private Grid.Column<Estudiante> userColumn = grid.addColumn(estudiante -> estudiante.getUser().getName()).setHeader("Usuario").setAutoWidth(true).setFlexGrow(0);
-    private Grid.Column<Estudiante> emailColumn = grid.addColumn(Estudiante::getEmail).setHeader("Correo").setAutoWidth(true).setFlexGrow(0);
-    private Grid.Column<Estudiante> solapinColumn = grid.addColumn(Estudiante::getSolapin).setHeader("Solapín").setAutoWidth(true).setFlexGrow(0);
-    private Grid.Column<Estudiante> anno_repitenciaColumn = grid.addColumn(Estudiante::getAnno_repitencia).setHeader("Año de repitencia").setAutoWidth(true).setFlexGrow(0);
-    private Grid.Column<Estudiante> cantidad_asignaturasColumn = grid.addColumn(Estudiante::getCantidad_asignaturas).setHeader("Cantidad de asignaturas").setAutoWidth(true).setFlexGrow(0);
-    private Grid.Column<Estudiante> areaColumn = grid.addColumn(estudiante -> estudiante.getArea().getNombre()).setHeader("Área").setAutoWidth(true).setFlexGrow(0);
-    private Grid.Column<Estudiante> grupoColumn = grid.addColumn(estudiante -> estudiante.getGrupo().getNumero()).setHeader("Grupo").setAutoWidth(true).setFlexGrow(0);
+    private Grid.Column<Estudiante> nombreColumn = grid.addColumn(Estudiante::getNombre).setHeader("Nombre").setAutoWidth(true).setFlexGrow(0).setSortable(true);
+    private Grid.Column<Estudiante> apellidosColumn = grid.addColumn(Estudiante::getApellidos).setHeader("Apellidos").setAutoWidth(true).setFlexGrow(0).setSortable(true);
+    private Grid.Column<Estudiante> userColumn = grid.addColumn(estudiante -> estudiante.getUser().getName()).setHeader("Usuario").setAutoWidth(true).setFlexGrow(0).setSortable(true);
+    private Grid.Column<Estudiante> emailColumn = grid.addColumn(Estudiante::getEmail).setHeader("Correo").setAutoWidth(true).setFlexGrow(0).setSortable(true);
+    private Grid.Column<Estudiante> solapinColumn = grid.addColumn(Estudiante::getSolapin).setHeader("Solapín").setAutoWidth(true).setFlexGrow(0).setSortable(true);
+    private Grid.Column<Estudiante> anno_repitenciaColumn = grid.addColumn(Estudiante::getAnno_repitencia).setHeader("Año de repitencia").setAutoWidth(true).setFlexGrow(0).setSortable(true);
+    private Grid.Column<Estudiante> cantidad_asignaturasColumn = grid.addColumn(Estudiante::getCantidad_asignaturas).setHeader("Cantidad de asignaturas").setAutoWidth(true).setFlexGrow(0).setSortable(true);
+    private Grid.Column<Estudiante> areaColumn = grid.addColumn(estudiante -> estudiante.getArea().getNombre()).setHeader("Área").setAutoWidth(true).setFlexGrow(0).setSortable(true);
+    private Grid.Column<Estudiante> grupoColumn = grid.addColumn(estudiante -> estudiante.getGrupo().getNumero()).setHeader("Grupo").setAutoWidth(true).setFlexGrow(0).setSortable(true);
     private Grid.Column<Estudiante> editColumn = grid.addComponentColumn(estudiante -> {
         HorizontalLayout layout = new HorizontalLayout();
         Button editButton = new Button(VaadinIcon.EDIT.create());
@@ -78,7 +82,7 @@ public class EstudiantesView extends VerticalLayout {
         layout.add(editButton, removeButton);
         return layout;
     }).setFlexGrow(0);
-    
+
     private HorizontalLayout toolbar;
     private Html total;
 
@@ -153,8 +157,9 @@ public class EstudiantesView extends VerticalLayout {
         grid.setAllRowsVisible(true);
         grid.setSizeFull();
         grid.setHeightFull();
+        grid.setWidthFull();
         grid.addThemeVariants(GridVariant.LUMO_COLUMN_BORDERS);
-        grid.addThemeVariants(GridVariant.LUMO_COMPACT);
+       // grid.addThemeVariants(GridVariant.LUMO_COMPACT);
         grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
         grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
         //grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COLUMN_BORDERS);
@@ -211,15 +216,52 @@ public class EstudiantesView extends VerticalLayout {
 
     private void saveEstudiante(EstudianteForm.SaveEvent event) {
 
-        estudianteService.saveEstudiante(event.getEstudiante());
+        List<Estudiante> listEstudiantes = estudianteService.findAllEstudiante();
 
-        toolbar.remove(total);
-        total = new Html("<span>Total: <b>" + estudianteService.countEstudiante() + "</b> estudiantes</span>");
-        toolbar.addComponentAtIndex(0, total);
-        toolbar.expand(total);
+        listEstudiantes = listEstudiantes.parallelStream()
+                .filter(est -> est.getNombre().equals(event.getEstudiante().getNombre())
+                        && est.getApellidos().equals(event.getEstudiante().getApellidos())
+                        && est.getUser().equals(event.getEstudiante().getUser())
+                        && est.getEmail().equals(event.getEstudiante().getEmail())
+                        && est.getSolapin().equals(event.getEstudiante().getSolapin())
+                        && est.getAnno_repitencia().equals(event.getEstudiante().getAnno_repitencia())
+                        && est.getCantidad_asignaturas().equals(event.getEstudiante().getCantidad_asignaturas())
+                        && est.getArea().equals(event.getEstudiante().getArea())
+                        && est.getGrupo().equals(event.getEstudiante().getGrupo())
+                )
+                .collect(Collectors.toList());
 
-        updateList();
-        closeEditor();
+        ConfirmDialog dialog = new ConfirmDialog();
+        Icon icon = new Icon(VaadinIcon.WARNING);
+        icon.setColor("red");
+        icon.getStyle().set("width", "var(--lumo-icon-size-l)");
+        icon.getStyle().set("height", "var(--lumo-icon-size-xl)");
+
+        HorizontalLayout ly = new HorizontalLayout(icon, new H1("Error:"));
+        ly.setDefaultVerticalComponentAlignment(Alignment.BASELINE);
+        dialog.setHeader(ly);
+        dialog.setText(new H3("El estudiante ya existe"));
+        dialog.setConfirmText("Aceptar");
+        dialog.setConfirmButtonTheme("error primary");
+        dialog.addConfirmListener(new ComponentEventListener<ConfirmDialog.ConfirmEvent>() {
+            @Override
+            public void onComponentEvent(ConfirmDialog.ConfirmEvent event) {
+                EstudiantesView.this.refreshGrid();
+            }
+        });
+
+        if (listEstudiantes.size() != 0) {
+            dialog.open();
+            throw new RuntimeException("El estudiante ya existe");
+        } else {
+            estudianteService.saveEstudiante(event.getEstudiante());
+            toolbar.remove(total);
+            total = new Html("<span>Total: <b>" + estudianteService.countEstudiante() + "</b> estudiantes</span>");
+            toolbar.addComponentAtIndex(0, total);
+            toolbar.expand(total);
+            updateList();
+            closeEditor();
+        }
     }
 
     private void deleteEstudiante(Estudiante estudiante) {

@@ -10,6 +10,7 @@ import com.example.application.data.entity.*;
 import com.example.application.views.MainLayout;
 import com.example.application.views.vicedecano.estudiante.EstudiantesView;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
@@ -32,6 +33,8 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
 
@@ -61,12 +64,12 @@ public class ProfesorView extends VerticalLayout {
 
     private GridListDataView<Profesor> gridListDataView;
 
-    private Grid.Column<Profesor> nombreColumn = grid.addColumn(Profesor::getNombre).setHeader("Nombre").setAutoWidth(true).setFlexGrow(0);
-    private Grid.Column<Profesor> apellidosColumn = grid.addColumn(Profesor::getApellidos).setHeader("Apellidos").setAutoWidth(true).setFlexGrow(0);
-    private Grid.Column<Profesor> userColumn = grid.addColumn(profesor -> profesor.getUser().getName()).setHeader("Usuario").setAutoWidth(true).setFlexGrow(0);
-    private Grid.Column<Profesor> emailColumn = grid.addColumn(Profesor::getEmail).setHeader("Correo").setAutoWidth(true).setFlexGrow(0);
-    private Grid.Column<Profesor> solapinColumn = grid.addColumn(Profesor::getSolapin).setHeader("Solapín").setAutoWidth(true).setFlexGrow(0);
-    private Grid.Column<Profesor> areaColumn = grid.addColumn(profesor -> profesor.getA().getNombre()).setHeader("Área").setAutoWidth(true).setFlexGrow(0);
+    private Grid.Column<Profesor> nombreColumn = grid.addColumn(Profesor::getNombre).setHeader("Nombre").setAutoWidth(true).setFlexGrow(0).setSortable(true);
+    private Grid.Column<Profesor> apellidosColumn = grid.addColumn(Profesor::getApellidos).setHeader("Apellidos").setAutoWidth(true).setFlexGrow(0).setSortable(true);
+    private Grid.Column<Profesor> userColumn = grid.addColumn(profesor -> profesor.getUser().getName()).setHeader("Usuario").setAutoWidth(true).setFlexGrow(0).setSortable(true);
+    private Grid.Column<Profesor> emailColumn = grid.addColumn(Profesor::getEmail).setHeader("Correo").setAutoWidth(true).setFlexGrow(0).setSortable(true);
+    private Grid.Column<Profesor> solapinColumn = grid.addColumn(Profesor::getSolapin).setHeader("Solapín").setAutoWidth(true).setFlexGrow(0).setSortable(true);
+    private Grid.Column<Profesor> areaColumn = grid.addColumn(profesor -> profesor.getA().getNombre()).setHeader("Área").setAutoWidth(true).setFlexGrow(0).setSortable(true);
     private Grid.Column<Profesor> editColumn = grid.addComponentColumn(profesor -> {
         HorizontalLayout layout = new HorizontalLayout();
         Button editButton = new Button(VaadinIcon.EDIT.create());
@@ -78,7 +81,7 @@ public class ProfesorView extends VerticalLayout {
         layout.add(editButton, removeButton);
         return layout;
     }).setFlexGrow(0);
-    
+
     private HorizontalLayout toolbar;
     private Html total;
 
@@ -150,8 +153,8 @@ public class ProfesorView extends VerticalLayout {
         grid.setAllRowsVisible(true);
         grid.setSizeFull();
         grid.setHeightFull();
+        grid.setWidthFull();
         grid.addThemeVariants(GridVariant.LUMO_COLUMN_BORDERS);
-        grid.addThemeVariants(GridVariant.LUMO_COMPACT);
         grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
         grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
     }
@@ -204,16 +207,49 @@ public class ProfesorView extends VerticalLayout {
 
     private void saveProfesor(ProfesorForm.SaveEvent event) {
 
-        profesorService.saveProfesor(event.getProfesor());
+        List<Profesor> listProfesores = profesorService.findAllProfesor();
 
-        toolbar.remove(total);
-        total = new Html("<span>Total: <b>" + profesorService.countProfesor() + "</b> profesores</span>");
-        toolbar.addComponentAtIndex(0, total);
-        toolbar.expand(total);
+        listProfesores = listProfesores.parallelStream()
+                .filter(profe -> profe.getNombre().equals(event.getProfesor().getNombre())
+                && profe.getApellidos().equals(event.getProfesor().getApellidos())
+                && profe.getUser().equals(event.getProfesor().getUser())
+                && profe.getEmail().equals(event.getProfesor().getEmail())
+                && profe.getSolapin().equals(event.getProfesor().getSolapin())
+                && profe.getA().equals(event.getProfesor().getA())
+                )
+                .collect(Collectors.toList());
 
-        updateList();
-        closeEditor();
+        ConfirmDialog dialog = new ConfirmDialog();
+        Icon icon = new Icon(VaadinIcon.WARNING);
+        icon.setColor("red");
+        icon.getStyle().set("width", "var(--lumo-icon-size-l)");
+        icon.getStyle().set("height", "var(--lumo-icon-size-xl)");
 
+        HorizontalLayout ly = new HorizontalLayout(icon, new H1("Error:"));
+        ly.setDefaultVerticalComponentAlignment(Alignment.BASELINE);
+        dialog.setHeader(ly);
+        dialog.setText(new H3("El profesor ya existe"));
+        dialog.setConfirmText("Aceptar");
+        dialog.setConfirmButtonTheme("error primary");
+        dialog.addConfirmListener(new ComponentEventListener<ConfirmDialog.ConfirmEvent>() {
+            @Override
+            public void onComponentEvent(ConfirmDialog.ConfirmEvent event) {
+                ProfesorView.this.refreshGrid();
+            }
+        });
+
+        if (listProfesores.size() != 0) {
+            dialog.open();
+            throw new RuntimeException("El profesor ya existe");
+        } else {
+            profesorService.saveProfesor(event.getProfesor());
+            toolbar.remove(total);
+            total = new Html("<span>Total: <b>" + profesorService.countProfesor() + "</b> profesores</span>");
+            toolbar.addComponentAtIndex(0, total);
+            toolbar.expand(total);
+            updateList();
+            closeEditor();
+        }
     }
 
     private void deleteProfesor(Profesor profesor) {
@@ -231,17 +267,17 @@ public class ProfesorView extends VerticalLayout {
         dialog.setConfirmText("Eliminar");
         dialog.setConfirmButtonTheme("error primary");
         dialog.addConfirmListener(event -> {
-            
+
             profesorService.deleteProfesor(profesor);
-            
+
             toolbar.remove(total);
             total = new Html("<span>Total: <b>" + profesorService.countProfesor() + "</b> profesores</span>");
             toolbar.addComponentAtIndex(0, total);
             toolbar.expand(total);
-            
+
             Notification.show("Profesor eliminado");
             this.refreshGrid();
-        
+
         });
 
         if (profesor == null) {

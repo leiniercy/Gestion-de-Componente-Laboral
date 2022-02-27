@@ -9,6 +9,7 @@ import com.example.application.data.entity.Area;
 import com.example.application.data.entity.Estudiante;
 import com.example.application.data.repository.AreaRepository;
 import com.example.application.data.repository.EstudianteRepository;
+import com.vaadin.flow.component.notification.Notification;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -59,6 +60,11 @@ public class EstudianteService {
         if (estudiante == null) {
             System.err.println("This field is null. Are you sure you have connected your form to the application?");
             return;
+        } 
+        if (estudiante.getId() == null) {
+            Notification.show("Estudiante añadido");
+        } else {
+            Notification.show("Estudiante modificado");
         }
         estudianteRepository.save(estudiante);
     }

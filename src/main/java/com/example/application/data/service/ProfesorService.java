@@ -8,6 +8,7 @@ package com.example.application.data.service;
 import com.example.application.data.entity.Profesor;
 import com.example.application.data.entity.User;
 import com.example.application.data.repository.ProfesorRepository;
+import com.vaadin.flow.component.notification.Notification;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -55,6 +56,11 @@ public class ProfesorService {
         if (profesor == null) {
             System.err.println("This field is null. Are you sure you have connected your form to the application?");
             return;
+        }
+        if (profesor.getId() == null) {
+            Notification.show("Profesor añadido");
+        } else {
+            Notification.show("Profesor modificado");
         }
         repository.save(profesor);
     }

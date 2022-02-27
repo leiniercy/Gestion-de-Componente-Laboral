@@ -48,6 +48,7 @@ import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.property.TextAlignment;
 import com.itextpdf.layout.property.VerticalAlignment;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.menubar.MenuBar;
 
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -127,8 +128,14 @@ public class ListadeTareasVicedecanoView extends Div {
 
     private void createGridComponent() {
         grid = new GridPro<>();
-        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COLUMN_BORDERS);
-        grid.setHeight("100%");
+        grid.setAllRowsVisible(true);
+        grid.setSizeFull();
+        grid.setHeightFull();
+        grid.setWidthFull();
+        grid.addThemeVariants(GridVariant.LUMO_COLUMN_BORDERS);
+        grid.addThemeVariants(GridVariant.LUMO_COMPACT);
+        grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
+        grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
 
         List<Tarea> tareas = tareaService.findAllTareas();
         gridListDataView = grid.setItems(tareas);
@@ -145,26 +152,26 @@ public class ListadeTareasVicedecanoView extends Div {
 
     private void createNombreColumn() {
         nombreColumn = grid.addColumn(Tarea::getNombre)
-                .setHeader("Nombre").setAutoWidth(true);
+                .setHeader("Nombre").setAutoWidth(true).setSortable(true);
     }
 
     private void createDescripcionColumn() {
         descripcionColumn = grid.addColumn(Tarea::getDescripcion)
-                .setHeader("Descripción").setAutoWidth(true);
+                .setHeader("Descripción").setAutoWidth(true).setSortable(true);
     }
 
     private void createFechaInicioColumn() {
         fecha_inicioColumn
                 = grid.addColumn(new LocalDateRenderer<>(tarea -> tarea.getFecha_inicio(), DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                         .setComparator(tarea -> tarea.getFecha_inicio())
-                        .setHeader("Fecha de inicio").setAutoWidth(true).setFlexGrow(0);
+                        .setHeader("Fecha de inicio").setAutoWidth(true).setFlexGrow(0).setSortable(true);
     }
 
     private void createFechaFinColumn() {
         fecha_finColumn
                 = grid.addColumn(new LocalDateRenderer<>(tarea -> tarea.getFecha_fin(), DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                         .setComparator(tarea -> tarea.getFecha_fin())
-                        .setHeader("Fecha de fin").setAutoWidth(true).setFlexGrow(0);
+                        .setHeader("Fecha de fin").setAutoWidth(true).setFlexGrow(0).setSortable(true);
     }
 
     private void createEstudianteColumn() {
@@ -176,7 +183,8 @@ public class ListadeTareasVicedecanoView extends Div {
             span.setText(tarea.getE().getStringNombreApellidos());
             hl.add(span);
             return hl;
-        })).setComparator(tarea -> tarea.getE().getStringNombreApellidos()).setHeader("Estudiante").setAutoWidth(true);
+        })).setComparator(tarea -> tarea.getE().getStringNombreApellidos())
+           .setHeader("Estudiante").setAutoWidth(true).setSortable(true);
     }
 
     private void addFiltersToGrid() {
@@ -274,9 +282,11 @@ public class ListadeTareasVicedecanoView extends Div {
         Html total = new Html("<span>Total: <b>" + tareaService.countTarea() + "</b> tareas</span>");
 
         HorizontalLayout toolbar = new HorizontalLayout(total, ButtonReporte());
-        toolbar.setAlignItems(FlexComponent.Alignment.CENTER);
-        toolbar.setWidth("99%");
-        toolbar.setFlexGrow(1, total);
+        toolbar.setAlignItems(FlexComponent.Alignment.BASELINE);
+        toolbar.setWidth("100%");
+        toolbar.expand(total);
+        toolbar.getStyle()
+                .set("padding", "var(--lumo-space-wide-xl)");
 
         return toolbar;
     }
@@ -288,10 +298,19 @@ public class ListadeTareasVicedecanoView extends Div {
         icon.getStyle().set("height", "var(--lumo-icon-size-s)");
         icon.getStyle().set("marginRight", "var(--lumo-space-s)");
 
+        Span span =  new Span("Reporte");
+        span.getStyle().set("width", "var(--lumo-size-l)");
+        span.getStyle().set("heigth", "var(--lumo-size-l)");
+        span.getStyle().set("font-size", "var(--lumo-font-size-m)");
+        span.getStyle().set("font-weight", "500");
+        span.getStyle().set("font-family", "var(--lumo-font-family)");
+        span.getStyle().set("color", "var(--_lumo-button-color, var(--lumo-primary-text-color))");
+        
         Anchor rp = new Anchor();
         rp.setHref(ReportePDF());
-        rp.add(icon, new Span("Reporte"));
-
+        rp.add(icon, span);
+        rp.getStyle().set("border-radius", "var(--lumo-border-radius-l");
+        
         MenuBar menuBar = new MenuBar();
         menuBar.addItem(rp);
 

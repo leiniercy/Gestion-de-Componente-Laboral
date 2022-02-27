@@ -165,7 +165,6 @@ public class EstudianteForm extends FormLayout {
         try {
             binder.writeBean(estudiante);
             fireEvent(new SaveEvent(this, estudiante));
-            Notification.show("Estudiante añadido");
         } catch (ValidationException e) {
             e.printStackTrace();
         }

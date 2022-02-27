@@ -44,7 +44,6 @@ public class ProfesorForm extends FormLayout {
     private Button save = new Button("Añadir", VaadinIcon.PLUS.create());
     private Button close = new Button("Cancelar", VaadinIcon.REFRESH.create());
 
-
     private BeanValidationBinder<Profesor> binder = new BeanValidationBinder<>(Profesor.class);
 
     public ProfesorForm(List<User> users, List<Area> areas) {
@@ -64,7 +63,7 @@ public class ProfesorForm extends FormLayout {
         nombre.setPattern("^[a-zA-ZÀ-ÿ\\u00f1\\u00d1]+(\\s*[a-zA-ZÀ-ÿ\\u00f1\\u00d1]*)*[a-zA-ZÀ-ÿ\\u00f1\\u00d1]+$");
         nombre.setErrorMessage("Solo letras, mínimo 2 caracteres y máximo 100");
         nombre.addValueChangeListener(event -> {
-            event.getSource().setHelperText(event.getValue().length() + "/" +100);
+            event.getSource().setHelperText(event.getValue().length() + "/" + 100);
         });
         //apellidos
         apellidos.setLabel("Apellidos");
@@ -76,7 +75,7 @@ public class ProfesorForm extends FormLayout {
         apellidos.setPattern("^[a-zA-ZÀ-ÿ\\u00f1\\u00d1]+(\\s*[a-zA-ZÀ-ÿ\\u00f1\\u00d1]*)*[a-zA-ZÀ-ÿ\\u00f1\\u00d1]+$");
         apellidos.setErrorMessage("Solo letras, mínimo 3 caracteres y máximo 100");
         apellidos.addValueChangeListener(event -> {
-            event.getSource().setHelperText(event.getValue().length() + "/" +100);
+            event.getSource().setHelperText(event.getValue().length() + "/" + 100);
         });
         //usuario
         user.setItems(users);
@@ -98,7 +97,7 @@ public class ProfesorForm extends FormLayout {
         solapin.setPattern("^[A-Z][0-9]+$");
         solapin.setErrorMessage("Una letra , mínimo 7 caracteres y máximo 7");
         solapin.addValueChangeListener(event -> {
-            event.getSource().setHelperText(event.getValue().length() + "/" +7);
+            event.getSource().setHelperText(event.getValue().length() + "/" + 7);
         });
         //area
         a.setItems(areas);
@@ -138,7 +137,6 @@ public class ProfesorForm extends FormLayout {
         try {
             binder.writeBean(profesor);
             fireEvent(new SaveEvent(this, profesor));
-            Notification.show("Profesor añadido");
         } catch (ValidationException e) {
             e.printStackTrace();
         }

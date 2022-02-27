@@ -63,8 +63,13 @@ public class AreaView extends VerticalLayout {
 
     private Grid.Column<Area> nombreColumn = grid.addColumn(Area::getNombre)
             .setHeader("Nombre")
-            .setAutoWidth(true).setFlexGrow(1);
-    private Grid.Column<Area> descripcionColumn = grid.addColumn(Area::getDescripcion).setHeader("Descripción").setAutoWidth(true);
+            .setAutoWidth(true)
+            .setFlexGrow(1)
+            .setSortable(true);
+    private Grid.Column<Area> descripcionColumn = grid.addColumn(Area::getDescripcion)
+            .setHeader("Descripción")
+            .setAutoWidth(true)
+            .setSortable(true);
     private Grid.Column<Area> editColumn = grid.addComponentColumn(area -> {
         HorizontalLayout layout = new HorizontalLayout();
         Button editButton = new Button(VaadinIcon.EDIT.create());
@@ -143,6 +148,7 @@ public class AreaView extends VerticalLayout {
         grid.addClassNames("area-grid");
         grid.setAllRowsVisible(true);
         grid.setSizeFull();
+        grid.setWidthFull();
         grid.setHeightFull();
         grid.addThemeVariants(GridVariant.LUMO_COLUMN_BORDERS);
         grid.addThemeVariants(GridVariant.LUMO_COMPACT);
@@ -184,6 +190,9 @@ public class AreaView extends VerticalLayout {
         ConfirmDialog dialog = new ConfirmDialog();
         Icon icon = new Icon(VaadinIcon.WARNING);
         icon.setColor("red");
+        icon.getStyle().set("width", "var(--lumo-icon-size-l)");
+        icon.getStyle().set("height", "var(--lumo-icon-size-xl)");
+
         HorizontalLayout ly = new HorizontalLayout(icon, new H1("Error:"));
         ly.setDefaultVerticalComponentAlignment(Alignment.BASELINE);
         dialog.setHeader(ly);

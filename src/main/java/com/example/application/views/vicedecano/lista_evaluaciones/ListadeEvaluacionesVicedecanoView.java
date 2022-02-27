@@ -119,9 +119,13 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
 
     private void createGridComponent() {
         grid = new GridPro<>();
-//        grid.setSelectionMode(SelectionMode.MULTI);
-        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COLUMN_BORDERS);
-        grid.setHeight("100%");
+        grid.setAllRowsVisible(true);
+        grid.setSizeFull();
+        grid.setHeightFull();
+        grid.setWidthFull();
+        grid.addThemeVariants(GridVariant.LUMO_COLUMN_BORDERS);
+        grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
+        grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
 
         List<Evaluacion> evaluaciones = evaluacionService.findAllEvaluacion();
         gridListDataView = grid.setItems(evaluaciones);
@@ -136,11 +140,11 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
     }
 
     private void createNotaColumn() {
-        notaColumn = grid.addColumn(Evaluacion::getNota, "nota").setHeader("Nota").setWidth("120px").setFlexGrow(0);
+        notaColumn = grid.addColumn(Evaluacion::getNota, "nota").setHeader("Nota").setWidth("120px").setFlexGrow(0).setSortable(true);
     }
 
     private void createDescripcionColumn() {
-        descripcionColumn = grid.addColumn(Evaluacion::getDescripcion, "descripcion").setHeader("Descripción").setAutoWidth(true);
+        descripcionColumn = grid.addColumn(Evaluacion::getDescripcion, "descripcion").setHeader("Descripción").setAutoWidth(true).setSortable(true);
     }
 
     private void createEstudianteColumn() {
@@ -152,7 +156,8 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
             span.setText(evaluacion.getEstudiante().getStringNombreApellidos());
             hl.add(span);
             return hl;
-        })).setComparator(evaluacion -> evaluacion.getEstudiante().getStringNombreApellidos()).setHeader("Estudiante").setAutoWidth(true);
+        })).setComparator(evaluacion -> evaluacion.getEstudiante().getStringNombreApellidos())
+                .setHeader("Estudiante").setAutoWidth(true).setSortable(true);
     }
 
     private void createTareaColumn() {
@@ -164,7 +169,8 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
             span.setText(evaluacion.getTarea().getNombre());
             hl.add(span);
             return hl;
-        })).setComparator(evaluacion -> evaluacion.getTarea().getNombre()).setHeader("Tarea").setAutoWidth(true);
+        })).setComparator(evaluacion -> evaluacion.getTarea().getNombre())
+                .setHeader("Tarea").setAutoWidth(true).setSortable(true);
     }
 
     private void createStatusColumn() {
@@ -174,7 +180,8 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
             span.getElement().setAttribute("theme", "badge " + evaluacion.getStatus().toLowerCase());
             return span;
         })).select((item, newValue) -> item.setStatus(newValue), Arrays.asList("Pendiente", "Completado", "No Completado"))
-                .setComparator(evaluacion -> evaluacion.getStatus()).setHeader("Estatus").setAutoWidth(true);
+                .setComparator(evaluacion -> evaluacion.getStatus())
+                .setHeader("Estatus").setAutoWidth(true).setSortable(true);
     }
 
     private void addFiltersToGrid() {
@@ -228,7 +235,6 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
         });
         filterRow.getCell(tareaColumn).setComponent(filterTarea);
 
-        
         statusFilter.setItems(Arrays.asList("Pendiente", "Completada", "No Completada"));
         statusFilter.setPlaceholder("Filter");
         statusFilter.setClearButtonVisible(true);
@@ -270,11 +276,12 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
         addClassName("menu-items");
         Html total = new Html("<span>Total: <b>" + tareaService.countTarea() + "</b> tareas</span>");
 
-
         HorizontalLayout toolbar = new HorizontalLayout(total, ButtonReporte());
         toolbar.setAlignItems(FlexComponent.Alignment.BASELINE);
-        toolbar.setWidth("99%");
-        toolbar.setFlexGrow(1, total);
+        toolbar.setWidth("100%");
+        toolbar.expand(total);
+        toolbar.getStyle()
+                .set("padding", "var(--lumo-space-wide-xl)");
 
         return toolbar;
     }
@@ -286,9 +293,18 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
         icon.getStyle().set("height", "var(--lumo-icon-size-s)");
         icon.getStyle().set("marginRight", "var(--lumo-space-s)");
 
+        Span span = new Span("Reporte");
+        span.getStyle().set("width", "var(--lumo-size-l)");
+        span.getStyle().set("heigth", "var(--lumo-size-l)");
+        span.getStyle().set("font-size", "var(--lumo-font-size-m)");
+        span.getStyle().set("font-weight", "500");
+        span.getStyle().set("font-family", "var(--lumo-font-family)");
+        span.getStyle().set("color", "var(--_lumo-button-color, var(--lumo-primary-text-color))");
+
         Anchor rp = new Anchor();
         rp.setHref(ReportePDF());
-        rp.add(icon, new Span("Reporte"));
+        rp.add(icon, span);
+        rp.getStyle().set("border-radius", "var(--lumo-border-radius-l");
 
         MenuBar menuBar = new MenuBar();
         menuBar.addItem(rp);
@@ -451,33 +467,37 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
 
         List<Evaluacion> list = evaluacionService.findAllEvaluacion();
 
-         if( filterNota.getValue() != null)
-             list = list.stream()
-                     .filter(evaluacion -> StringUtils.containsIgnoreCase(evaluacion.getNota(), filterNota.getValue()))
-                     .collect(Collectors.toList());
-             
-         if( filterDescripcion.getValue() != null)
-             list = list.stream()
-                     .filter(evaluacion -> StringUtils.containsIgnoreCase(evaluacion.getDescripcion(), filterDescripcion.getValue()))
-                     .collect(Collectors.toList());
-         
-         if( filterEstudiante.getValue() != null)
-             list = list.stream()
-                     .filter(evaluacion -> evaluacion.getEstudiante().getSolapin().equals(filterEstudiante.getValue().getSolapin()))
-                     .collect(Collectors.toList());
-         
-         if( filterTarea.getValue() != null)
-             list = list.stream()
-                     .filter(evaluacion -> evaluacion.getTarea().getNombre().equals(filterTarea.getValue().getNombre()))
-                     .collect(Collectors.toList());
-         
-         if( statusFilter.getValue() != null)
-             list = list.stream()
-                     .filter(evaluacion -> evaluacion.getStatus().equals(statusFilter.getValue()))
-                     .collect(Collectors.toList());
-         
-         
-         return list;
+        if (filterNota.getValue() != null) {
+            list = list.stream()
+                    .filter(evaluacion -> StringUtils.containsIgnoreCase(evaluacion.getNota(), filterNota.getValue()))
+                    .collect(Collectors.toList());
+        }
+
+        if (filterDescripcion.getValue() != null) {
+            list = list.stream()
+                    .filter(evaluacion -> StringUtils.containsIgnoreCase(evaluacion.getDescripcion(), filterDescripcion.getValue()))
+                    .collect(Collectors.toList());
+        }
+
+        if (filterEstudiante.getValue() != null) {
+            list = list.stream()
+                    .filter(evaluacion -> evaluacion.getEstudiante().getSolapin().equals(filterEstudiante.getValue().getSolapin()))
+                    .collect(Collectors.toList());
+        }
+
+        if (filterTarea.getValue() != null) {
+            list = list.stream()
+                    .filter(evaluacion -> evaluacion.getTarea().getNombre().equals(filterTarea.getValue().getNombre()))
+                    .collect(Collectors.toList());
+        }
+
+        if (statusFilter.getValue() != null) {
+            list = list.stream()
+                    .filter(evaluacion -> evaluacion.getStatus().equals(statusFilter.getValue()))
+                    .collect(Collectors.toList());
+        }
+
+        return list;
     }
 
 };
