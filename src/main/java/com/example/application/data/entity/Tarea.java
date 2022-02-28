@@ -41,28 +41,28 @@ public class Tarea extends AbstractEntity{
 
     @NotEmpty
     @NotBlank(message = "El campo no debe estar vacío")
-    @Pattern(regexp = "^[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]+(\\s*[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]*)*[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]+$" ,message = "Solo letras") //0 combinaciones de letras 0 o mas veces incluyendo espacios
+    @Pattern(regexp = "^[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]+(\\s*[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]*)*[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]+$" ,message = "Datos incorrectos, solo letras y números") //0 combinaciones de letras 0 o mas veces incluyendo espacios
     @Size(message = "Mínimo 2 caracteres y máximo 50",min=2,max = 50)
     @Column(name = "nombre",nullable = false)
     private String nombre;
 
     @NotEmpty
     @NotBlank(message = "El campo no debe estar vacío")
-    @Pattern(regexp = "^[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]+(\\s*[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]*)*[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]+$", message = "Solo letras y numeros")
+    @Pattern(regexp = "^[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]+(\\s*[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]*)*[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]+$", message = "Datos incorrectos, solo letras y números")
     @Size(message = "Mínimo 3 caracteres, máximo 255",min = 3,max =255)
     @Column(name = "descripcion", nullable = true)
     private String descripcion;
     
-    @NotNull(message = "campo vacío")
+    @NotNull(message = "El campo no debe estar vacío")
     @Column(name = "fecha_inicio")
     private LocalDate fecha_inicio;
 
-    @NotNull(message = "campo vacío")
+    @NotNull(message = "El campo no debe estar vacío")
     @Column(name = "fecha_fin")
     private LocalDate fecha_fin;
     
-    @NotNull(message = "debe elegir un campo")
-    @ManyToOne
+    @NotNull(message = "El campo no debe estar vacío")
+    @ManyToOne(optional = false, cascade = CascadeType.ALL , fetch = FetchType.EAGER)
     private Estudiante e;
     
     @OneToMany(mappedBy = "tarea")

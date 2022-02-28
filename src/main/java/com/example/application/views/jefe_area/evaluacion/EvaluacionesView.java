@@ -304,7 +304,7 @@ public class EvaluacionesView extends VerticalLayout {
     private void deleteEvaluacion(Evaluacion evaluacion) {
 
         ConfirmDialog dialog = new ConfirmDialog();
-        dialog.setHeader(String.format("Eliminar %s?", evaluacion.getNota()));
+        dialog.setHeader(String.format("Eliminar %s", evaluacion.getNota()));
         dialog.setText("¿Está seguro/a de que quiere eliminar esta evaluación?");
 
         dialog.setCancelText("Cancelar");

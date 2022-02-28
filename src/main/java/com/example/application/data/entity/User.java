@@ -16,6 +16,8 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -49,12 +51,11 @@ public class User {
     @Column(nullable = false)
     private String name;
 
-    @NotBlank(message = "El usuario o contraseña son incorrectos")
-//    @Pattern(regexp = "^[a-z]+(\\w*[[:punct:]]*[a-z0-9\\u00f1]*)*$" ,message = "Usuario incorrecto")
+    @NotBlank(message = "Campo obligatorio")
     @Column(nullable = false, unique = true)
     private String username;
-
-    @NotBlank(message = "El usuario o contraseña son incorrectos")
+    
+    @NotBlank(message = "Campo obligatorio")
     @Column(nullable = false)
     private String password;
 

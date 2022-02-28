@@ -267,8 +267,8 @@ public class EstudiantesView extends VerticalLayout {
     private void deleteEstudiante(Estudiante estudiante) {
 
         ConfirmDialog dialog = new ConfirmDialog();
-        dialog.setHeader(String.format("Eliminar %s?", estudiante.getStringNombreApellidos()));
-        dialog.setText("Está seguro/a de que quiere eliminar a este estudiante?");
+        dialog.setHeader(String.format("Eliminar %s", estudiante.getStringNombreApellidos()));
+        dialog.setText("¿Está seguro/a de que quiere eliminar a este estudiante?");
 
         dialog.setCancelText("Cancelar");
         dialog.setCancelable(true);

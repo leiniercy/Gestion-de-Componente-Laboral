@@ -294,7 +294,7 @@ public class TareaView extends VerticalLayout {
     private void deleteTarea(Tarea tarea) {
 
         ConfirmDialog dialog = new ConfirmDialog();
-        dialog.setHeader(String.format("Eliminar %s?", tarea.getNombre()));
+        dialog.setHeader(String.format("Eliminar %s", tarea.getNombre()));
         dialog.setText("¿Está seguro/a de que quiere eliminar esta tarea?");
 
         dialog.setCancelText("Cancelar");

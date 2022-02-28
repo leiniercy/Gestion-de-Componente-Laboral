@@ -372,14 +372,14 @@ public class ListadeTareasVicedecanoView extends Div {
                 );
 
                 perosnalInfo.addCell(new Cell().add("Nombre:").setBorder(Border.NO_BORDER));
-                perosnalInfo.addCell(new Cell().add(".....").setBorder(Border.NO_BORDER));
+                perosnalInfo.addCell(new Cell().add("MSc. Yadira Ramírez Rodríguez").setBorder(Border.NO_BORDER));
                 perosnalInfo.addCell(new Cell().add("Categoría:").setBorder(Border.NO_BORDER));
-                perosnalInfo.addCell(new Cell().add(".....").setBorder(Border.NO_BORDER));
+                perosnalInfo.addCell(new Cell().add("Jefa de Departamento Informática").setBorder(Border.NO_BORDER));
 
                 perosnalInfo.addCell(new Cell().add("Departamento:").setBorder(Border.NO_BORDER));
-                perosnalInfo.addCell(new Cell().add(".....").setBorder(Border.NO_BORDER));
+                perosnalInfo.addCell(new Cell().add("Departamento Informática").setBorder(Border.NO_BORDER));
                 perosnalInfo.addCell(new Cell().add("Fecha:").setBorder(Border.NO_BORDER));
-                perosnalInfo.addCell(new Cell().add(".....").setBorder(Border.NO_BORDER));
+                perosnalInfo.addCell(new Cell().add(LocalDate.now().toString()).setBorder(Border.NO_BORDER));
 
                 //Tabla con el Reporte
                 float itemInfoColWidth[] = {140, 140, 140, 140, 140};

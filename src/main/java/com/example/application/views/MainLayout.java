@@ -107,7 +107,7 @@ public class MainLayout extends AppLayout {
 
             ContextMenu userMenu = new ContextMenu(avatar);
             userMenu.setOpenOnClick(true);
-            userMenu.addItem("Logout", e -> {
+            userMenu.addItem("Cerrar sesión", e -> {
                 authenticatedUser.logout();
             });
 

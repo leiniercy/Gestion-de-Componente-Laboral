@@ -53,7 +53,7 @@ public class Estudiante extends AbstractEntity {
 
 
     @NotNull(message = "El campo no debe estar vacío")
-    @OneToOne()
+    @OneToOne(optional = false, cascade = CascadeType.ALL)
     private User user;
 
     @Email
@@ -85,12 +85,12 @@ public class Estudiante extends AbstractEntity {
 
     @NotNull(message = "debe elegir un campo")
     @JoinColumn(name = "area_id")
-    @ManyToOne
+    @ManyToOne(optional = false, cascade = CascadeType.ALL , fetch = FetchType.EAGER)
     private Area area;
 
     @NotNull(message = "debe elegir un campo")
     @JoinColumn(name = "grupo_id")
-    @ManyToOne
+    @ManyToOne(optional = false, cascade = CascadeType.ALL , fetch = FetchType.EAGER)
     private Grupo grupo;
 
     @OneToMany(mappedBy = "estudiante")

@@ -239,8 +239,8 @@ public class AreaView extends VerticalLayout {
     private void deleteArea(Area area) {
 
         ConfirmDialog dialog = new ConfirmDialog();
-        dialog.setHeader(String.format("Eliminar %s?", area.getNombre()));
-        dialog.setText("Está seguro/a de que quiere eliminar esta área?");
+        dialog.setHeader(String.format("Eliminar %s", area.getNombre()));
+        dialog.setText("¿Está seguro/a de que quiere eliminar esta área?");
 
         dialog.setCancelText("Cancelar");
         dialog.setCancelable(true);

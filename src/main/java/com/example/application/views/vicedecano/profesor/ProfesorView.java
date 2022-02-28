@@ -255,8 +255,8 @@ public class ProfesorView extends VerticalLayout {
     private void deleteProfesor(Profesor profesor) {
 
         ConfirmDialog dialog = new ConfirmDialog();
-        dialog.setHeader(String.format("Eliminar %s?", profesor.getStringNombreApellidos()));
-        dialog.setText("Está seguro/a de que quiere eliminar a este profesor?");
+        dialog.setHeader(String.format("Eliminar %s", profesor.getStringNombreApellidos()));
+        dialog.setText("¿Está seguro/a de que quiere eliminar a este profesor?");
 
         dialog.setCancelText("Cancelar");
         dialog.setCancelable(true);
