@@ -55,11 +55,11 @@ public class Area extends AbstractEntity {
     @Column(name = "descripcion")
     private String descripcion;
 
-    @OneToMany(mappedBy = "area")
+    @OneToMany(mappedBy = "area",cascade = CascadeType.ALL)
     @ElementCollection(fetch = FetchType.EAGER)
     private List<Estudiante> estudiantes;
 
-    @OneToMany(mappedBy = "a")
+    @OneToMany(mappedBy = "a",cascade = CascadeType.ALL)
     @ElementCollection(fetch = FetchType.EAGER)
     private List<Profesor> profesores;
 

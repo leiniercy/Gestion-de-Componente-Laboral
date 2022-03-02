@@ -61,11 +61,6 @@ public class EstudianteService {
             System.err.println("This field is null. Are you sure you have connected your form to the application?");
             return;
         } 
-        if (estudiante.getId() == null) {
-            Notification.show("Estudiante añadido");
-        } else {
-            Notification.show("Estudiante modificado");
-        }
         estudianteRepository.save(estudiante);
     }
 }

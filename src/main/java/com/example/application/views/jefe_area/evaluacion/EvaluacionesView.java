@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
 @RolesAllowed("jefeArea")
 public class EvaluacionesView extends VerticalLayout {
 
-    private GridPro<Evaluacion> grid = new GridPro<Evaluacion>();
+    GridPro<Evaluacion> grid = new GridPro<Evaluacion>();
 
     EvaluacionForm form;
 
@@ -87,12 +87,12 @@ public class EvaluacionesView extends VerticalLayout {
     private Grid.Column<Evaluacion> descripcionColumn = grid.addColumn(Evaluacion::getDescripcion).setHeader("Descripción").setAutoWidth(true).setFlexGrow(0).setSortable(true);
     private Grid.Column<Evaluacion> estudianteColumn
             = grid.addColumn(evaluacion -> evaluacion.getEstudiante().getStringNombreApellidos())
-                    .setComparator(evaluacion -> evaluacion.getEstudiante().getStringNombreApellidos())
-                    .setHeader("Estudiante").setAutoWidth(true).setFlexGrow(0).setSortable(true);
+            .setComparator(evaluacion -> evaluacion.getEstudiante().getStringNombreApellidos())
+            .setHeader("Estudiante").setAutoWidth(true).setFlexGrow(0).setSortable(true);
     private Grid.Column<Evaluacion> tareaColumn
             = grid.addColumn(evaluacion -> evaluacion.getTarea().getNombre())
-                    .setComparator(evaluacion -> evaluacion.getTarea().getNombre())
-                    .setHeader("Tarea").setAutoWidth(true).setFlexGrow(0).setSortable(true);
+            .setComparator(evaluacion -> evaluacion.getTarea().getNombre())
+            .setHeader("Tarea").setAutoWidth(true).setFlexGrow(0).setSortable(true);
     private Grid.Column<Evaluacion> statusColumn
             = grid.addEditColumn(Evaluacion::getStatus, new ComponentRenderer<>(evaluacion -> {
                 Span span = new Span();
@@ -100,7 +100,7 @@ public class EvaluacionesView extends VerticalLayout {
                 span.getElement().setAttribute("theme", "badge" + evaluacion.getStatus().toLowerCase());
                 return span;
             })).select((item, newValue) -> item.setStatus(newValue), Arrays.asList("Pendiente", "Completado", "No Completado"))
-                    .setComparator(evaluacion -> evaluacion.getStatus()).setHeader("Estatus").setSortable(true);
+            .setComparator(evaluacion -> evaluacion.getStatus()).setHeader("Estatus").setSortable(true);
 
     private Grid.Column<Evaluacion> editColumn = grid.addComponentColumn(evaluacion -> {
         HorizontalLayout layout = new HorizontalLayout();
@@ -260,10 +260,10 @@ public class EvaluacionesView extends VerticalLayout {
 
         listEvaluaciones = listEvaluaciones.parallelStream()
                 .filter(eva -> eva.getNota().equals(event.getEvaluacion().getNota())
-                && eva.getDescripcion().equals(event.getEvaluacion().getDescripcion())
-                && eva.getTarea().equals(event.getEvaluacion().getTarea())
-                && eva.getEstudiante().equals(event.getEvaluacion().getEstudiante())
-                && eva.getStatus().equals(event.getEvaluacion().getStatus())
+                        && eva.getDescripcion().equals(event.getEvaluacion().getDescripcion())
+                        && eva.getTarea().equals(event.getEvaluacion().getTarea())
+                        && eva.getEstudiante().equals(event.getEvaluacion().getEstudiante())
+                        && eva.getStatus().equals(event.getEvaluacion().getStatus())
                 )
                 .collect(Collectors.toList());
 
@@ -288,9 +288,15 @@ public class EvaluacionesView extends VerticalLayout {
 
         if (listEvaluaciones.size() != 0) {
             dialog.open();
-            throw new RuntimeException("La evaluación ya existe");
         } else {
-            evaluacionService.saveEvaluacion(event.getEvaluacion());
+
+            if (event.getEvaluacion().getId() == null) {
+                Notification.show("Evaluación añadida");
+                evaluacionService.saveEvaluacion(event.getEvaluacion());
+            } else {
+                evaluacionService.saveEvaluacion(event.getEvaluacion());
+                Notification.show("Evaluación modificada");
+            }
             toolbar.remove(total);
             total = new Html("<span>Total: <b>" + listaEvaluaciones.size() + "</b> evaluaciones</span>");
             toolbar.addComponentAtIndex(0, total);

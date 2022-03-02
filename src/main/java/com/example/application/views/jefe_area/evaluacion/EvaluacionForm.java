@@ -36,14 +36,14 @@ public class EvaluacionForm extends FormLayout {
 
     private Evaluacion evaluacion;
 
-    private TextField nota = new TextField();
-    private TextArea descripcion = new TextArea();
-    private ComboBox<Estudiante> estudiante = new ComboBox<>("Estudiante");
-    private ComboBox<Tarea> tarea = new ComboBox<>("Tarea");
-    private ComboBox<String> status = new ComboBox<>("Status");
+    TextField nota = new TextField();
+    TextArea descripcion = new TextArea();
+    ComboBox<Estudiante> estudiante = new ComboBox<>("Estudiante");
+    ComboBox<Tarea> tarea = new ComboBox<>("Tarea");
+    ComboBox<String> status = new ComboBox<>("Status");
 
-    private Button save = new Button("Añadir", VaadinIcon.PLUS.create());
-    private Button close = new Button("Cancelar", VaadinIcon.REFRESH.create());
+    Button save = new Button("Añadir", VaadinIcon.PLUS.create());
+    Button close = new Button("Cancelar", VaadinIcon.REFRESH.create());
 
     private BeanValidationBinder<Evaluacion> binder = new BeanValidationBinder<>(Evaluacion.class);
 
@@ -74,7 +74,7 @@ public class EvaluacionForm extends FormLayout {
         descripcion.setMinHeight("100px");
         descripcion.setMaxHeight("150px");
 
-      //  descripcion.setPattern("^[a-zA-Z][a-zA-Z\\s]+$");
+        //  descripcion.setPattern("^[a-zA-Z][a-zA-Z\\s]+$");
         descripcion.setErrorMessage("Solo caracteres y numeros, mínimo 3 caracteres y  máximo 255");
         descripcion.setValueChangeMode(ValueChangeMode.EAGER);
         descripcion.addValueChangeListener(e -> {

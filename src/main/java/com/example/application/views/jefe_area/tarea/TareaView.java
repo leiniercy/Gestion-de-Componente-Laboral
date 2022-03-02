@@ -42,6 +42,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 
 import javax.annotation.security.RolesAllowed;
 import java.time.format.DateTimeFormatter;
@@ -52,13 +53,15 @@ import java.util.stream.Collectors;
 /**
  * @author Leinier
  */
+@org.springframework.stereotype.Component
+@Scope("prototype")
 @PageTitle("Tarea")
 @Route(value = "tarea-view", layout = MainLayout.class)
 @Uses(Icon.class)
 @RolesAllowed("jefeArea")
 public class TareaView extends VerticalLayout {
 
-    private Grid<Tarea> grid = new Grid<>(Tarea.class, false);
+    Grid<Tarea> grid = new Grid<>(Tarea.class, false);
 
     TareaForm form;
 
@@ -82,25 +85,25 @@ public class TareaView extends VerticalLayout {
 
     private GridListDataView<Tarea> gridListDataView;
 
-    private Grid.Column<Tarea> nombreColumn = grid.addColumn(Tarea::getNombre).setHeader("Nombre").setAutoWidth(true).setFlexGrow(0).setSortable(true);
-    private Grid.Column<Tarea> descripcionColumn = grid.addColumn(Tarea::getDescripcion).setHeader("Descripción").setAutoWidth(true).setFlexGrow(0).setSortable(true);
-    private Grid.Column<Tarea> fecha_inicioColumn
+    Grid.Column<Tarea> nombreColumn = grid.addColumn(Tarea::getNombre).setHeader("Nombre").setAutoWidth(true).setFlexGrow(0).setSortable(true);
+    Grid.Column<Tarea> descripcionColumn = grid.addColumn(Tarea::getDescripcion).setHeader("Descripción").setAutoWidth(true).setFlexGrow(0).setSortable(true);
+    Grid.Column<Tarea> fecha_inicioColumn
             = grid.addColumn(new LocalDateRenderer<>(tarea -> tarea.getFecha_inicio(), DateTimeFormatter.ofPattern("dd/MM/yyyy")))
-                    .setComparator(tarea -> tarea.getFecha_inicio())
-                    .setHeader("Fecha de inicio").setAutoWidth(true)
-                    .setFlexGrow(0).setSortable(true);
-    private Grid.Column<Tarea> fecha_finColumn
+            .setComparator(tarea -> tarea.getFecha_inicio())
+            .setHeader("Fecha de inicio").setAutoWidth(true)
+            .setFlexGrow(0).setSortable(true);
+    Grid.Column<Tarea> fecha_finColumn
             = grid.addColumn(new LocalDateRenderer<>(tarea -> tarea.getFecha_fin(), DateTimeFormatter.ofPattern("dd/MM/yyyy")))
-                    .setComparator(tarea -> tarea.getFecha_fin())
-                    .setHeader("Fecha de fin").setAutoWidth(true)
-                    .setSortable(true).setFlexGrow(0);
-    private Grid.Column<Tarea> estudianteColumn
+            .setComparator(tarea -> tarea.getFecha_fin())
+            .setHeader("Fecha de fin").setAutoWidth(true)
+            .setSortable(true).setFlexGrow(0);
+    Grid.Column<Tarea> estudianteColumn
             = grid.addColumn(tarea -> tarea.getE().getStringNombreApellidos())
-                    .setComparator(tarea -> tarea.getE().getStringNombreApellidos())
-                    .setHeader("Estudiante").setAutoWidth(true)
-                    .setSortable(true).setFlexGrow(0);
+            .setComparator(tarea -> tarea.getE().getStringNombreApellidos())
+            .setHeader("Estudiante").setAutoWidth(true)
+            .setSortable(true).setFlexGrow(0);
 
-    private Grid.Column<Tarea> editColumn = grid.addComponentColumn(tarea -> {
+    Grid.Column<Tarea> editColumn = grid.addComponentColumn(tarea -> {
         HorizontalLayout layout = new HorizontalLayout();
         Button editButton = new Button(VaadinIcon.EDIT.create());
         editButton.addClickShortcut(Key.F2);
@@ -251,10 +254,10 @@ public class TareaView extends VerticalLayout {
 
         listTareas = listTareas.parallelStream()
                 .filter(tarea -> tarea.getNombre().equals(event.getTarea().getNombre())
-                && tarea.getDescripcion().equals(event.getTarea().getDescripcion())
-                && tarea.getFecha_inicio().isEqual(event.getTarea().getFecha_inicio())
-                && tarea.getFecha_fin().isEqual(event.getTarea().getFecha_fin())
-                && tarea.getE().equals(event.getTarea().getE())
+                        && tarea.getDescripcion().equals(event.getTarea().getDescripcion())
+                        && tarea.getFecha_inicio().isEqual(event.getTarea().getFecha_inicio())
+                        && tarea.getFecha_fin().isEqual(event.getTarea().getFecha_fin())
+                        && tarea.getE().equals(event.getTarea().getE())
                 )
                 .collect(Collectors.toList());
 
@@ -279,9 +282,14 @@ public class TareaView extends VerticalLayout {
 
         if (listTareas.size() != 0) {
             dialog.open();
-            throw new RuntimeException("La tarea ya existe");
         } else {
-            tareaService.saveTarea(event.getTarea());
+            if (event.getTarea().getId() == null) {
+                tareaService.saveTarea(event.getTarea());
+                Notification.show("Tarea añadida");
+            } else {
+                tareaService.saveTarea(event.getTarea());
+                Notification.show("Tarea modificada");
+            }
             toolbar.remove(total);
             total = new Html("<span>Total: <b>" + listaTareas.size() + "</b> tareas</span>");
             toolbar.addComponentAtIndex(0, total);

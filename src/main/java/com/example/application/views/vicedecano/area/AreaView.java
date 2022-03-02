@@ -29,23 +29,28 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 
 import javax.annotation.security.RolesAllowed;
 
 /**
  * @author Leinier
  */
+@org.springframework.stereotype.Component
+@Scope("prototype")
 @PageTitle("Area")
 @Route(value = "area-view", layout = MainLayout.class)
 @RolesAllowed("vicedecano")
 public class AreaView extends VerticalLayout {
 
-    private Grid<Area> grid = new Grid<>(Area.class, false);
+    Grid<Area> grid = new Grid<>(Area.class, false);
 
     Editor<Area> editor = grid.getEditor();
 
@@ -59,18 +64,18 @@ public class AreaView extends VerticalLayout {
     private GrupoService grupoService;
     private TareaService tareaService;
 
-    private GridListDataView<Area> gridListDataView;
+    GridListDataView<Area> gridListDataView;
 
-    private Grid.Column<Area> nombreColumn = grid.addColumn(Area::getNombre)
+    Grid.Column<Area> nombreColumn = grid.addColumn(Area::getNombre)
             .setHeader("Nombre")
             .setAutoWidth(true)
             .setFlexGrow(1)
             .setSortable(true);
-    private Grid.Column<Area> descripcionColumn = grid.addColumn(Area::getDescripcion)
+    Grid.Column<Area> descripcionColumn = grid.addColumn(Area::getDescripcion)
             .setHeader("Descripción")
             .setAutoWidth(true)
             .setSortable(true);
-    private Grid.Column<Area> editColumn = grid.addComponentColumn(area -> {
+    Grid.Column<Area> editColumn = grid.addComponentColumn(area -> {
         HorizontalLayout layout = new HorizontalLayout();
         Button editButton = new Button(VaadinIcon.EDIT.create());
         editButton.addClickShortcut(Key.F2);
@@ -134,7 +139,8 @@ public class AreaView extends VerticalLayout {
         updateList();
         closeEditor();
         grid.asSingleSelect().addValueChangeListener(event
-                -> editArea(event.getValue()));
+                -> editArea(event.getValue())
+        );
 
     }
 
@@ -183,7 +189,7 @@ public class AreaView extends VerticalLayout {
 
         listArea = listArea.parallelStream()
                 .filter(area -> event.getArea().getNombre().equals(area.getNombre())
-                && event.getArea().getDescripcion().equals(area.getDescripcion())
+                        && event.getArea().getDescripcion().equals(area.getDescripcion())
                 )
                 .collect(Collectors.toList());
 
@@ -211,10 +217,15 @@ public class AreaView extends VerticalLayout {
         } else {
             if (listArea.size() != 0) {
                 dialog.open();
-                throw new RuntimeException("El área ya existe");
             } else {
+                if(event.getArea().getId() == null){
+                    areaService.saveArea(event.getArea());
+                    Notification.show("Área añadida");
+                }else{
+                    areaService.saveArea(event.getArea());
+                    Notification.show("Área modificada");
+                }
 
-                areaService.saveArea(event.getArea());
                 toolbar.remove(total);
                 total = new Html("<span>Total: <b>" + areaService.countArea() + "</b> areas</span>");
                 toolbar.addComponentAtIndex(0, total);

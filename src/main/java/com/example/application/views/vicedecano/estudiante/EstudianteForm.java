@@ -38,21 +38,21 @@ public class EstudianteForm extends FormLayout {
 
     private Estudiante estudiante;
 
-    private TextField nombre = new TextField();
-    private TextField apellidos = new TextField();
-    private ComboBox<User> user = new ComboBox<>("Usuario");
-    private EmailField email = new EmailField();
-    private TextField solapin = new TextField();
-    private IntegerField anno_repitencia = new IntegerField("Año de repitencia");
-    private IntegerField cantidad_asignaturas = new IntegerField("Cantidad de asignaturas");
-    private ComboBox<Area> area = new ComboBox<>("Area");
-    private ComboBox<Grupo> grupo = new ComboBox<>("Grupo");
+    TextField nombre = new TextField();
+    TextField apellidos = new TextField();
+    ComboBox<User> user = new ComboBox<>("Usuario");
+    EmailField email = new EmailField();
+    TextField solapin = new TextField();
+    IntegerField anno_repitencia = new IntegerField("Año de repitencia");
+    IntegerField cantidad_asignaturas = new IntegerField("Cantidad de asignaturas");
+    ComboBox<Area> area = new ComboBox<>("Area");
+    ComboBox<Grupo> grupo = new ComboBox<>("Grupo");
 
-    private Button save = new Button("Añadir", VaadinIcon.PLUS.create());
-    private Button close = new Button("Cancelar", VaadinIcon.ERASER.create());
+    Button save = new Button("Añadir", VaadinIcon.PLUS.create());
+    Button close = new Button("Cancelar", VaadinIcon.ERASER.create());
 
 
-    private BeanValidationBinder<Estudiante> binder = new BeanValidationBinder<>(Estudiante.class);
+    BeanValidationBinder<Estudiante> binder = new BeanValidationBinder<>(Estudiante.class);
 
     public EstudianteForm(List<User> users, List<Area> areas, List<Grupo> grupos) {
         addClassName("estudiante-form");

@@ -65,7 +65,7 @@ public class Tarea extends AbstractEntity{
     @ManyToOne(optional = false, cascade = CascadeType.ALL , fetch = FetchType.EAGER)
     private Estudiante e;
     
-    @OneToMany(mappedBy = "tarea")
+    @OneToMany(mappedBy = "tarea",cascade = CascadeType.ALL)
     @ElementCollection(fetch = FetchType.EAGER)
     private List<Evaluacion> evaluaciones; 
     

@@ -40,17 +40,21 @@ import javax.annotation.security.RolesAllowed;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 
 /**
  * @author Leinier
  */
+
+@org.springframework.stereotype.Component
+@Scope("prototype")
 @PageTitle("Profesor")
 @Route(value = "profesor-view", layout = MainLayout.class)
 @Uses(Icon.class)
 @RolesAllowed("vicedecano")
 public class ProfesorView extends VerticalLayout {
 
-    private Grid<Profesor> grid = new Grid<>(Profesor.class, false);
+    Grid<Profesor> grid = new Grid<>(Profesor.class, false);
 
     private UserService userService;
     private AreaService areaService;
@@ -242,7 +246,14 @@ public class ProfesorView extends VerticalLayout {
             dialog.open();
             throw new RuntimeException("El profesor ya existe");
         } else {
-            profesorService.saveProfesor(event.getProfesor());
+            if (event.getProfesor().getId() == null) {
+                profesorService.saveProfesor(event.getProfesor());
+                Notification.show("Profesor añadido");
+            } else {
+                profesorService.saveProfesor(event.getProfesor());
+                Notification.show("Profesor modificado");
+            }
+
             toolbar.remove(total);
             total = new Html("<span>Total: <b>" + profesorService.countProfesor() + "</b> profesores</span>");
             toolbar.addComponentAtIndex(0, total);

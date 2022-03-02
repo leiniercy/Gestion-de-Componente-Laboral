@@ -24,27 +24,27 @@ import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.shared.Registration;
+
 import java.util.List;
 
 /**
- *
  * @author Leinier
  */
 public class ProfesorForm extends FormLayout {
 
     private Profesor profesor;
 
-    private TextField nombre = new TextField("Nombre");
-    private TextField apellidos = new TextField("Apellidos");
-    private ComboBox<User> user = new ComboBox<>("Usuario");
-    private EmailField email = new EmailField("Correo");
-    private TextField solapin = new TextField("Solapin");
-    private ComboBox<Area> a = new ComboBox<>("Area");
+    TextField nombre = new TextField("Nombre");
+    TextField apellidos = new TextField("Apellidos");
+    ComboBox<User> user = new ComboBox<>("Usuario");
+    EmailField email = new EmailField("Correo");
+    TextField solapin = new TextField("Solapin");
+    ComboBox<Area> a = new ComboBox<>("Area");
 
-    private Button save = new Button("Añadir", VaadinIcon.PLUS.create());
-    private Button close = new Button("Cancelar", VaadinIcon.REFRESH.create());
+    Button save = new Button("Añadir", VaadinIcon.PLUS.create());
+    Button close = new Button("Cancelar", VaadinIcon.REFRESH.create());
 
-    private BeanValidationBinder<Profesor> binder = new BeanValidationBinder<>(Profesor.class);
+    BeanValidationBinder<Profesor> binder = new BeanValidationBinder<>(Profesor.class);
 
     public ProfesorForm(List<User> users, List<Area> areas) {
 
@@ -180,7 +180,7 @@ public class ProfesorForm extends FormLayout {
     }
 
     public <T extends ComponentEvent<?>> Registration addListener(Class<T> eventType,
-            ComponentEventListener<T> listener) {
+                                                                  ComponentEventListener<T> listener) {
         return getEventBus().addListener(eventType, listener);
     }
 

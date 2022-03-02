@@ -56,11 +56,6 @@ public class EvaluacionService {
             System.err.println("This field is null. Are you sure you have connected your form to the application?");
             return;
         }
-        if (evaluacion.getId() == null) {
-            Notification.show("Evaluación añadida");
-        } else {
-            Notification.show("Evaluación modificada");
-        }
         repository.save(evaluacion);
     }
 

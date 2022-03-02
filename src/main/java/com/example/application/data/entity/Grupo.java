@@ -36,7 +36,7 @@ public class Grupo extends AbstractEntity {
     @Size(message = "solo puede contener 4 numeros ",max = 4, min = 4)
     private String numero;
 
-    @OneToMany(mappedBy = "grupo")
+    @OneToMany(mappedBy = "grupo",cascade = CascadeType.ALL)
     @ElementCollection(fetch = FetchType.EAGER)
     List<Estudiante> estudiantes;
 

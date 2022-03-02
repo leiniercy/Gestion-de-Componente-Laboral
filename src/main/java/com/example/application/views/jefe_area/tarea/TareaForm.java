@@ -30,23 +30,22 @@ import java.time.ZoneId;
 import java.util.List;
 
 /**
- *
  * @author Leinier
  */
 public class TareaForm extends FormLayout {
 
     private Tarea tarea;
 
-    private TextField nombre = new TextField("Nombre");
-    private TextArea descripcion = new TextArea("Descripción");
-    private DatePicker fecha_inicio = new DatePicker("Fecha de Inicio");
-    private DatePicker fecha_fin = new DatePicker("Fecha de fin");
-    private ComboBox<Estudiante> e = new ComboBox<>("Estudiante");
+    TextField nombre = new TextField("Nombre");
+    TextArea descripcion = new TextArea("Descripción");
+    DatePicker fecha_inicio = new DatePicker("Fecha de Inicio");
+    DatePicker fecha_fin = new DatePicker("Fecha de fin");
+    ComboBox<Estudiante> e = new ComboBox<>("Estudiante");
 
-    private Button save = new Button("Añadir", VaadinIcon.PLUS.create());
-    private Button close = new Button("Cancelar", VaadinIcon.REFRESH.create());
+    Button save = new Button("Añadir", VaadinIcon.PLUS.create());
+    Button close = new Button("Cancelar", VaadinIcon.REFRESH.create());
 
-    private BeanValidationBinder<Tarea> binder = new BeanValidationBinder<>(Tarea.class);
+    BeanValidationBinder<Tarea> binder = new BeanValidationBinder<>(Tarea.class);
 
     public TareaForm(List<Estudiante> estudiantes) {
 
@@ -74,7 +73,6 @@ public class TareaForm extends FormLayout {
         descripcion.setMaxLength(255);
         descripcion.setMinHeight("100px");
         descripcion.setMaxHeight("150px");
-//        descripcion.setPattern("^[a-zA-Z][a-zA-Z0-9\\s]*$");
         descripcion.setErrorMessage("Solo caracteres y numeros, mínimo 3 caracteres y  máximo 255");
         descripcion.setValueChangeMode(ValueChangeMode.EAGER);
         descripcion.addValueChangeListener(e -> {
@@ -164,7 +162,7 @@ public class TareaForm extends FormLayout {
     }
 
     public <T extends ComponentEvent<?>> Registration addListener(Class<T> eventType,
-            ComponentEventListener<T> listener) {
+                                                                  ComponentEventListener<T> listener) {
         return getEventBus().addListener(eventType, listener);
     }
 

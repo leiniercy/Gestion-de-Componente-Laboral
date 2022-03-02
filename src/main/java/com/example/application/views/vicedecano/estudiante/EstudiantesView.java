@@ -39,16 +39,20 @@ import javax.annotation.security.RolesAllowed;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 
 /**
  * @author Leinier
  */
+
+@org.springframework.stereotype.Component
+@Scope("prototype")
 @PageTitle("Estudiante")
 @Route(value = "estudiantes-view", layout = MainLayout.class)
 @RolesAllowed("vicedecano")
 public class EstudiantesView extends VerticalLayout {
 
-    private Grid<Estudiante> grid = new Grid<>(Estudiante.class, false);
+    Grid<Estudiante> grid = new Grid<>(Estudiante.class, false);
 
     EstudianteForm form;
 
@@ -254,7 +258,13 @@ public class EstudiantesView extends VerticalLayout {
             dialog.open();
             throw new RuntimeException("El estudiante ya existe");
         } else {
-            estudianteService.saveEstudiante(event.getEstudiante());
+            if (event.getEstudiante().getId() == null) {
+                estudianteService.saveEstudiante(event.getEstudiante());
+                Notification.show("Estudiante añadido");
+            }else{
+                estudianteService.saveEstudiante(event.getEstudiante());
+                Notification.show("Estudiante modificado");
+            }
             toolbar.remove(total);
             total = new Html("<span>Total: <b>" + estudianteService.countEstudiante() + "</b> estudiantes</span>");
             toolbar.addComponentAtIndex(0, total);

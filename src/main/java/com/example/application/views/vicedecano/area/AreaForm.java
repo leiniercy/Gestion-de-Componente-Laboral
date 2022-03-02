@@ -30,13 +30,13 @@ public class AreaForm extends FormLayout {
 
     private Area area;
 
-    private TextField nombre = new TextField();
-    private TextArea descripcion = new TextArea();
+    TextField nombre = new TextField();
+    TextArea descripcion = new TextArea();
 
-    private Button save = new Button("Añadir", VaadinIcon.PLUS.create());
-    private Button close = new Button("Cancelar", VaadinIcon.REFRESH.create());
+    Button save = new Button("Añadir", VaadinIcon.PLUS.create());
+    Button close = new Button("Cancelar", VaadinIcon.REFRESH.create());
 
-    private BeanValidationBinder<Area> binder = new BeanValidationBinder<>(Area.class);
+    BeanValidationBinder<Area> binder = new BeanValidationBinder<>(Area.class);
 
     public AreaForm() {
 

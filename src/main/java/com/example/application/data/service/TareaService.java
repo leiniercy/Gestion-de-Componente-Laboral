@@ -57,11 +57,6 @@ public class TareaService {
             System.err.println("This field is null. Are you sure you have connected your form to the application?");
             return;
         }
-         if (tarea.getId() == null) {
-            Notification.show("Tarea añadida");
-        } else {
-            Notification.show("Tarea modificada");
-        }
         repository.save(tarea);
     }
 

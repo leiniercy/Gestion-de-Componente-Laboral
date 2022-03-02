@@ -93,11 +93,11 @@ public class Estudiante extends AbstractEntity {
     @ManyToOne(optional = false, cascade = CascadeType.ALL , fetch = FetchType.EAGER)
     private Grupo grupo;
 
-    @OneToMany(mappedBy = "estudiante")
+    @OneToMany(mappedBy = "estudiante",cascade = CascadeType.ALL)
     @ElementCollection(fetch = FetchType.EAGER)
     private List<Evaluacion> evaluaciones;
 
-    @OneToMany(mappedBy = "e")
+    @OneToMany(mappedBy = "e",cascade = CascadeType.ALL)
     @ElementCollection(fetch = FetchType.EAGER)
     private List<Tarea> tareas;
 

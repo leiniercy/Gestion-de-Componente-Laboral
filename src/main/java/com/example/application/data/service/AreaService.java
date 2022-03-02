@@ -56,11 +56,7 @@ public class AreaService {
             System.err.println("This field is null. Are you sure you have connected your form to the application?");
             return;
         }
-        if (area.getId() == null) {
-            Notification.show("Área añadida");
-        } else {
-            Notification.show("Área modificada");
-        }
         repository.save(area);
     }
+
 }
