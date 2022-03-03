@@ -59,7 +59,7 @@ public class Area extends AbstractEntity {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<Estudiante> estudiantes;
 
-    @OneToMany(mappedBy = "a",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "a", cascade = CascadeType.ALL)
     @ElementCollection(fetch = FetchType.EAGER)
     private List<Profesor> profesores;
 

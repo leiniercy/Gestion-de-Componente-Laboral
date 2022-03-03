@@ -51,7 +51,6 @@ public class EstudianteForm extends FormLayout {
     Button save = new Button("Añadir", VaadinIcon.PLUS.create());
     Button close = new Button("Cancelar", VaadinIcon.ERASER.create());
 
-
     BeanValidationBinder<Estudiante> binder = new BeanValidationBinder<>(Estudiante.class);
 
     public EstudianteForm(List<User> users, List<Area> areas, List<Grupo> grupos) {
@@ -60,7 +59,6 @@ public class EstudianteForm extends FormLayout {
         binder.bindInstanceFields(this);
 
         //Config form
-
         //nombre
         nombre.setLabel("Nombre");
         nombre.getElement().setAttribute("nombre", "Ejemplo: Daniel");
@@ -99,6 +97,7 @@ public class EstudianteForm extends FormLayout {
         email.setClearButtonVisible(true);
         //solapin
         solapin.setLabel("Solapín");
+        solapin.setPlaceholder("E1705587");
         solapin.getElement().setAttribute("solapin", "E1705587");
         solapin.setAutofocus(true);
         solapin.setRequired(true);
@@ -208,7 +207,7 @@ public class EstudianteForm extends FormLayout {
     }
 
     public <T extends ComponentEvent<?>> Registration addListener(Class<T> eventType,
-                                                                  ComponentEventListener<T> listener) {
+            ComponentEventListener<T> listener) {
         return getEventBus().addListener(eventType, listener);
     }
 

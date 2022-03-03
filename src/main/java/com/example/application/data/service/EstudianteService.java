@@ -32,18 +32,18 @@ public class EstudianteService {
 
     public EstudianteService(
             @Autowired EstudianteRepository estudianteRepository
-           ) {
+    ) {
         this.estudianteRepository = estudianteRepository;
     }
 
-     public List<Estudiante> findAllEstudiante() {
+    public List<Estudiante> findAllEstudiante() {
         return estudianteRepository.findAll();
     }
-    
-    public Estudiante findById(Integer id){
+
+    public Estudiante findById(Integer id) {
         return estudianteRepository.findById(id).get();
     }
-       
+
     public List<Estudiante> searchEstudiante(String searchTerm) {
         return estudianteRepository.searchEstudiante(searchTerm);
     }
@@ -60,7 +60,16 @@ public class EstudianteService {
         if (estudiante == null) {
             System.err.println("This field is null. Are you sure you have connected your form to the application?");
             return;
-        } 
-        estudianteRepository.save(estudiante);
+        }
+
+        if (estudiante.getId() == null) {
+            estudianteRepository.save(estudiante);
+            Notification.show("Estudiante añadido");
+
+        } else {
+            estudianteRepository.save(estudiante);
+            Notification.show("Estudiante modificado");
+        }
+
     }
 }

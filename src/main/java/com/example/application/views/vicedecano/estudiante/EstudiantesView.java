@@ -44,7 +44,6 @@ import org.springframework.context.annotation.Scope;
 /**
  * @author Leinier
  */
-
 @org.springframework.stereotype.Component
 @Scope("prototype")
 @PageTitle("Estudiante")
@@ -163,7 +162,7 @@ public class EstudiantesView extends VerticalLayout {
         grid.setHeightFull();
         grid.setWidthFull();
         grid.addThemeVariants(GridVariant.LUMO_COLUMN_BORDERS);
-       // grid.addThemeVariants(GridVariant.LUMO_COMPACT);
+        // grid.addThemeVariants(GridVariant.LUMO_COMPACT);
         grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
         grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
         //grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COLUMN_BORDERS);
@@ -224,14 +223,14 @@ public class EstudiantesView extends VerticalLayout {
 
         listEstudiantes = listEstudiantes.parallelStream()
                 .filter(est -> est.getNombre().equals(event.getEstudiante().getNombre())
-                        && est.getApellidos().equals(event.getEstudiante().getApellidos())
-                        && est.getUser().equals(event.getEstudiante().getUser())
-                        && est.getEmail().equals(event.getEstudiante().getEmail())
-                        && est.getSolapin().equals(event.getEstudiante().getSolapin())
-                        && est.getAnno_repitencia().equals(event.getEstudiante().getAnno_repitencia())
-                        && est.getCantidad_asignaturas().equals(event.getEstudiante().getCantidad_asignaturas())
-                        && est.getArea().equals(event.getEstudiante().getArea())
-                        && est.getGrupo().equals(event.getEstudiante().getGrupo())
+                && est.getApellidos().equals(event.getEstudiante().getApellidos())
+                && est.getUser().equals(event.getEstudiante().getUser())
+                && est.getEmail().equals(event.getEstudiante().getEmail())
+                && est.getSolapin().equals(event.getEstudiante().getSolapin())
+                && est.getAnno_repitencia().equals(event.getEstudiante().getAnno_repitencia())
+                && est.getCantidad_asignaturas().equals(event.getEstudiante().getCantidad_asignaturas())
+                && est.getArea().equals(event.getEstudiante().getArea())
+                && est.getGrupo().equals(event.getEstudiante().getGrupo())
                 )
                 .collect(Collectors.toList());
 
@@ -256,15 +255,8 @@ public class EstudiantesView extends VerticalLayout {
 
         if (listEstudiantes.size() != 0) {
             dialog.open();
-            throw new RuntimeException("El estudiante ya existe");
-        } else {
-            if (event.getEstudiante().getId() == null) {
-                estudianteService.saveEstudiante(event.getEstudiante());
-                Notification.show("Estudiante añadido");
-            }else{
-                estudianteService.saveEstudiante(event.getEstudiante());
-                Notification.show("Estudiante modificado");
-            }
+         } else {
+            estudianteService.saveEstudiante(event.getEstudiante());
             toolbar.remove(total);
             total = new Html("<span>Total: <b>" + estudianteService.countEstudiante() + "</b> estudiantes</span>");
             toolbar.addComponentAtIndex(0, total);

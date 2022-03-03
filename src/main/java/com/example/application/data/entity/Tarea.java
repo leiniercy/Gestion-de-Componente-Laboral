@@ -34,25 +34,25 @@ import lombok.ToString;
 @ToString(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "Tareas")
-public class Tarea extends AbstractEntity{
+public class Tarea extends AbstractEntity {
 
     @EqualsAndHashCode.Include
     @ToString.Include
 
     @NotEmpty
     @NotBlank(message = "El campo no debe estar vacío")
-    @Pattern(regexp = "^[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]+(\\s*[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]*)*[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]+$" ,message = "Datos incorrectos, solo letras y números") //0 combinaciones de letras 0 o mas veces incluyendo espacios
-    @Size(message = "Mínimo 2 caracteres y máximo 50",min=2,max = 50)
-    @Column(name = "nombre",nullable = false)
+    @Pattern(regexp = "^[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]+(\\s*[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]*)*[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]+$", message = "Datos incorrectos, solo letras y números") //0 combinaciones de letras 0 o mas veces incluyendo espacios
+    @Size(message = "Mínimo 2 caracteres y máximo 50", min = 2, max = 50)
+    @Column(name = "nombre", nullable = false)
     private String nombre;
 
     @NotEmpty
     @NotBlank(message = "El campo no debe estar vacío")
     @Pattern(regexp = "^[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]+(\\s*[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]*)*[a-zA-ZÀ-ÿ0-9\\u00f1\\u00d1]+$", message = "Datos incorrectos, solo letras y números")
-    @Size(message = "Mínimo 3 caracteres, máximo 255",min = 3,max =255)
+    @Size(message = "Mínimo 3 caracteres, máximo 255", min = 3, max = 255)
     @Column(name = "descripcion", nullable = true)
     private String descripcion;
-    
+
     @NotNull(message = "El campo no debe estar vacío")
     @Column(name = "fecha_inicio")
     private LocalDate fecha_inicio;
@@ -60,13 +60,14 @@ public class Tarea extends AbstractEntity{
     @NotNull(message = "El campo no debe estar vacío")
     @Column(name = "fecha_fin")
     private LocalDate fecha_fin;
-    
+
     @NotNull(message = "El campo no debe estar vacío")
-    @ManyToOne(optional = false, cascade = CascadeType.ALL , fetch = FetchType.EAGER)
+    @JoinColumn(name = "e_id", nullable = false, updatable = false)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Estudiante e;
-    
-    @OneToMany(mappedBy = "tarea",cascade = CascadeType.ALL)
+
+    @OneToMany(mappedBy = "tarea", cascade = CascadeType.ALL)
     @ElementCollection(fetch = FetchType.EAGER)
-    private List<Evaluacion> evaluaciones; 
-    
+    private List<Evaluacion> evaluaciones;
+
 }

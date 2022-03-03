@@ -53,19 +53,19 @@ public class Estudiante extends AbstractEntity {
 
 
     @NotNull(message = "El campo no debe estar vacío")
-    @OneToOne(optional = false, cascade = CascadeType.ALL)
+    @OneToOne(optional = false)
     private User user;
 
     @Email
     @NotEmpty
     @NotBlank(message = "El campo no debe estar vacío")
-    @Pattern(regexp = "^[a-zA-Z][a-zA-Z0-9_\\.][a-zA-Z0-9]+(@estudiantes\\.uci\\.cu)$" , message = "Por favor escriba un correo válido" )
+    @Pattern(regexp = "^([a-zA-Z]+[a-zA-Z0-9_\\.]+)*[a-zA-Z0-9]+(@estudiantes\\.uci\\.cu)$" , message = "Por favor escriba un correo válido" )
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @NotEmpty
     @NotBlank(message = "El campo no debe estar vacío")
-    @Pattern(regexp = "^[A-Z][0-9]+$" ,message = "Solo letras y numeros")
+    @Pattern(regexp = "^[A-Z][0-9]+$" ,message = "Solapín incorrecto")
     @Size(message = "Mínimo 7 caracteres y máximo 7 ", min=7, max = 7)
     @Column(name = "solapin", nullable = false, unique = true)
     private String solapin;
@@ -84,13 +84,13 @@ public class Estudiante extends AbstractEntity {
     private Integer cantidad_asignaturas;
 
     @NotNull(message = "debe elegir un campo")
-    @JoinColumn(name = "area_id")
-    @ManyToOne(optional = false, cascade = CascadeType.ALL , fetch = FetchType.EAGER)
+    @JoinColumn(name = "area_id",nullable = false, updatable = false)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Area area;
 
     @NotNull(message = "debe elegir un campo")
-    @JoinColumn(name = "grupo_id")
-    @ManyToOne(optional = false, cascade = CascadeType.ALL , fetch = FetchType.EAGER)
+    @JoinColumn(name = "grupo_id",nullable = false, updatable = false )
+    @ManyToOne(optional = false,fetch = FetchType.EAGER)
     private Grupo grupo;
 
     @OneToMany(mappedBy = "estudiante",cascade = CascadeType.ALL)

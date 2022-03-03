@@ -79,7 +79,7 @@ public class ProfesorForm extends FormLayout {
         });
         //usuario
         user.setItems(users);
-        user.setItemLabelGenerator(User::getName);
+        user.setItemLabelGenerator(User::getUsername);
         //email
         email.setLabel("Correo");
         email.setPlaceholder("usuario@uci.cu");
@@ -89,6 +89,7 @@ public class ProfesorForm extends FormLayout {
         email.setClearButtonVisible(true);
         //solapin
         solapin.setLabel("Solapín");
+        solapin.setPlaceholder("E1705587");
         solapin.getElement().setAttribute("solapin", "E1705587");
         solapin.setAutofocus(true);
         solapin.setRequired(true);

@@ -45,12 +45,12 @@ public class Evaluacion extends AbstractEntity {
 
     @NotNull(message = "El campo no debe estar vacío")
     @JoinColumn(name = "estudiante_id")
-    @ManyToOne(optional = false, cascade = CascadeType.ALL , fetch = FetchType.EAGER)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Estudiante estudiante;
 
     @NotNull(message = "El campo no debe estar vacío")
-    @JoinColumn(name = "tarea_id")
-    @ManyToOne(optional = false, cascade = CascadeType.ALL , fetch = FetchType.EAGER)
+    @JoinColumn(name = "tarea_id",nullable = false, updatable = false)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Tarea tarea;
 
     @NotEmpty

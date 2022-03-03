@@ -58,7 +58,14 @@ public class ProfesorService {
             System.err.println("This field is null. Are you sure you have connected your form to the application?");
             return;
         }
-        repository.save(profesor);
+        if (profesor.getId() == null) {
+            repository.save(profesor);
+            Notification.show("Profesor añadido");
+        } else {
+            repository.save(profesor);
+            Notification.show("Profesor modificado");
+        }
+
     }
 
 }

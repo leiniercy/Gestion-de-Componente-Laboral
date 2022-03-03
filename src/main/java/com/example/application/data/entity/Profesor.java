@@ -63,20 +63,20 @@ public class Profesor extends AbstractEntity {
     @Email
     @NotEmpty
     @NotBlank(message = "El campo no debe estar vacío")
-    @Pattern(regexp = "^[a-zA-Z][a-zA-Z0-9_\\.][a-zA-Z0-9]+(@uci\\.cu)$", message = "Por favor escriba un correo válido")
+    @Pattern(regexp = "^([a-zA-Z]+[a-zA-Z0-9_\\.]+)*[a-zA-Z0-9]+(@uci\\.cu)$", message = "Por favor escriba un correo válido")
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @NotEmpty
     @NotBlank(message = "El campo no debe estar vacío")
-    @Pattern(regexp = "^[A-Z][0-9]+$", message = "Solo letras y numeros")
+    @Pattern(regexp = "^[A-Z][0-9]+$", message = "Solapín incorrecto")
     @Size(message = "Mínimo 7 caracteres y máximo 7 ", min = 7, max = 7)
     @Column(name = "solapin", nullable = false, unique = true)
     private String solapin;
 
     @NotNull(message = "debe elegir un campo")
-    @JoinColumn(name = "a_id")
-    @ManyToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "a_id",nullable = false, updatable = false)
+    @ManyToOne()
     private Area a;
 
     public String getStringNombreApellidos() {

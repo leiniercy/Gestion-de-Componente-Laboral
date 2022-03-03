@@ -189,7 +189,7 @@ public class AreaView extends VerticalLayout {
 
         listArea = listArea.parallelStream()
                 .filter(area -> event.getArea().getNombre().equals(area.getNombre())
-                        && event.getArea().getDescripcion().equals(area.getDescripcion())
+                && event.getArea().getDescripcion().equals(area.getDescripcion())
                 )
                 .collect(Collectors.toList());
 
@@ -218,14 +218,7 @@ public class AreaView extends VerticalLayout {
             if (listArea.size() != 0) {
                 dialog.open();
             } else {
-                if(event.getArea().getId() == null){
-                    areaService.saveArea(event.getArea());
-                    Notification.show("Área añadida");
-                }else{
-                    areaService.saveArea(event.getArea());
-                    Notification.show("Área modificada");
-                }
-
+                areaService.saveArea(event.getArea());
                 toolbar.remove(total);
                 total = new Html("<span>Total: <b>" + areaService.countArea() + "</b> areas</span>");
                 toolbar.addComponentAtIndex(0, total);

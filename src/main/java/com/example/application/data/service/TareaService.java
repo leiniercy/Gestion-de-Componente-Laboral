@@ -1,4 +1,3 @@
-
 package com.example.application.data.service;
 
 import com.example.application.data.entity.Tarea;
@@ -35,14 +34,14 @@ public class TareaService {
     public List<Tarea> searchTarea(String searchTerm) {
         return repository.search(searchTerm);
     }
+
     public List<Tarea> searchTareaByFecha(LocalDate searchTerm) {
         return repository.searchFecha(searchTerm);
     }
-    
-       public Tarea findById(Integer id){
-       return repository.findById(id).get();
+
+    public Tarea findById(Integer id) {
+        return repository.findById(id).get();
     }
-    
 
     public long countTarea() {
         return repository.count();
@@ -57,7 +56,14 @@ public class TareaService {
             System.err.println("This field is null. Are you sure you have connected your form to the application?");
             return;
         }
-        repository.save(tarea);
+        if (tarea.getId() == null) {
+            repository.save(tarea);
+            Notification.show("Tarea añadida");
+        } else {
+            repository.save(tarea);
+            Notification.show("Tarea modificada");
+        }
+        
     }
 
 }

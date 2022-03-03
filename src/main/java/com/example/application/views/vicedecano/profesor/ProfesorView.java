@@ -45,7 +45,6 @@ import org.springframework.context.annotation.Scope;
 /**
  * @author Leinier
  */
-
 @org.springframework.stereotype.Component
 @Scope("prototype")
 @PageTitle("Profesor")
@@ -246,14 +245,7 @@ public class ProfesorView extends VerticalLayout {
             dialog.open();
             throw new RuntimeException("El profesor ya existe");
         } else {
-            if (event.getProfesor().getId() == null) {
-                profesorService.saveProfesor(event.getProfesor());
-                Notification.show("Profesor añadido");
-            } else {
-                profesorService.saveProfesor(event.getProfesor());
-                Notification.show("Profesor modificado");
-            }
-
+            profesorService.saveProfesor(event.getProfesor());
             toolbar.remove(total);
             total = new Html("<span>Total: <b>" + profesorService.countProfesor() + "</b> profesores</span>");
             toolbar.addComponentAtIndex(0, total);
