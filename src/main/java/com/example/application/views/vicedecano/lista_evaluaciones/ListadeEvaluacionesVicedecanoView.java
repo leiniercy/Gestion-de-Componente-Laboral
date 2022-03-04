@@ -283,7 +283,7 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
     private HorizontalLayout getToolbar() {
 
         addClassName("menu-items");
-        Html total = new Html("<span>Total: <b>" + tareaService.countTarea() + "</b> tareas</span>");
+        Html total = new Html("<span>Total: <b>" + evaluacionService.countEvaluacion() + "</b> evaluaciones</span>");
 
         HorizontalLayout toolbar = new HorizontalLayout(total, ButtonReporte());
         toolbar.setAlignItems(FlexComponent.Alignment.BASELINE);
