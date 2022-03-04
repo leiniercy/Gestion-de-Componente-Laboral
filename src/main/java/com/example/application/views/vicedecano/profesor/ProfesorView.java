@@ -211,6 +211,11 @@ public class ProfesorView extends VerticalLayout {
     private void saveProfesor(ProfesorForm.SaveEvent event) {
 
         List<Profesor> listProfesores = profesorService.findAllProfesor();
+        List<Estudiante> listEstudiantes = estudianteService.findAllEstudiante();
+
+        listEstudiantes = listEstudiantes.parallelStream()
+                .filter(est -> est.getUser().equals(event.getProfesor().getUser()))
+                .collect(Collectors.toList());
 
         listProfesores = listProfesores.parallelStream()
                 .filter(profe -> profe.getNombre().equals(event.getProfesor().getNombre())
@@ -231,7 +236,7 @@ public class ProfesorView extends VerticalLayout {
         HorizontalLayout ly = new HorizontalLayout(icon, new H1("Error:"));
         ly.setDefaultVerticalComponentAlignment(Alignment.BASELINE);
         dialog.setHeader(ly);
-        dialog.setText(new H3("El profesor ya existe"));
+
         dialog.setConfirmText("Aceptar");
         dialog.setConfirmButtonTheme("error primary");
         dialog.addConfirmListener(new ComponentEventListener<ConfirmDialog.ConfirmEvent>() {
@@ -241,9 +246,12 @@ public class ProfesorView extends VerticalLayout {
             }
         });
 
-        if (listProfesores.size() != 0) {
+        if (listEstudiantes.size() != 0) {
+            dialog.setText(new H3("El usuario pertenece a un estudiante"));
             dialog.open();
-            throw new RuntimeException("El profesor ya existe");
+        } else if (listProfesores.size() != 0) {
+            dialog.setText(new H3("El profesor ya existe"));
+            dialog.open();
         } else {
             profesorService.saveProfesor(event.getProfesor());
             toolbar.remove(total);

@@ -3,14 +3,16 @@ package com.example.application.views.vicedecano.area;
 import com.example.application.data.entity.Area;
 import com.example.application.data.service.AreaService;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.data.provider.ListDataProvider;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -20,10 +22,38 @@ import java.util.concurrent.atomic.AtomicReference;
 @SpringBootTest
 public class AreaViewTest {
 
-    @Autowired
-    private AreaView areaView;
     private Grid<Area> grid;
+    private AreaForm form;
 
+
+    private List<Area> areas;
+    private Area area1;
+    private Area area2;
+
+    /*
+    @Before
+    agrega datos ficticios que se utilizan para las pruebas
+    este metodo se ejecuta antes de cada metodo @Test
+     */
+    @Before
+    public void setupData() {
+
+        areas = new ArrayList<>();
+
+        area1 = new Area();
+        area1.setId(1);
+        area1.setNombre("Area 1");
+        area1.setDescripcion("Mi Area1");
+
+        area2 = new Area();
+        area2.setId(1);
+        area2.setNombre("Area 2");
+        area2.setDescripcion("Mi Area2");
+
+        areas.add(area1);
+        areas.add(area2);
+
+    }
 
     /*
      * afirmar que la formulario está inicialmente oculto
@@ -33,33 +63,18 @@ public class AreaViewTest {
      */
 
 
-    @Test
-    public void formShownWhenAreaSelected() {
-        grid = areaView.grid;
-        Area firstArea = getFirtsItemToGrid(grid);
-        AreaForm form = areaView.form;
-        Assert.assertFalse(form.isVisible());
-        grid.asSingleSelect().setValue(firstArea);
-        Assert.assertTrue(form.isVisible());
-        Assert.assertEquals(firstArea.getNombre(), form.nombre.getValue());
-
-    }
-
     //Hay que comentariar la  notificacion de area modificada xq da error
     //Area modificada
     @Test
     public void SetAreaSelected() {
 
-        grid = areaView.grid;
-        Area firstArea = getFirtsItemToGrid(grid);
-        AreaForm form = areaView.form;
-        Assert.assertFalse(form.isVisible());
-        grid.asSingleSelect().setValue(firstArea);
-        Assert.assertTrue(form.isVisible());
-        Assert.assertEquals(firstArea.getNombre(), form.nombre.getValue());
-        Assert.assertEquals(firstArea.getDescripcion(), form.descripcion.getValue());
+        grid = new Grid<>(Area.class);
+        grid.setItems(areas);
+        form = new AreaForm();
 
-        form.setArea(firstArea);
+        grid.asSingleSelect().setValue(area1);
+
+        form.setArea(area1);
         form.nombre.setValue("prueba");
 
         AtomicReference<Area> savAreaRef = new AtomicReference<>(null);
@@ -80,15 +95,17 @@ public class AreaViewTest {
     AreaService areaService;
     @Test
     public void DeleteAreaSelected() {
-        grid = areaView.grid;
-        Area firstArea = getFirtsItemToGrid(grid);
-        //si el primer area fue seleccionada elimninala
-        grid.asSingleSelect().setValue(firstArea);
-        areaService.deleteArea(firstArea);
-    }
 
-    private Area getFirtsItemToGrid(Grid<Area> grid) {
-        return ((ListDataProvider<Area>) grid.getDataProvider()).getItems().iterator().next();
+        grid = new Grid<>(Area.class);
+        grid.setItems(areas);
+        form = new AreaForm();
+
+        grid.asSingleSelect().setValue(area2);
+
+        AtomicReference<Area> DeleteAreaRef = new AtomicReference<>(null);
+        form.addListener(AreaForm.DeleteEvent.class, e -> {
+            DeleteAreaRef.set(e.getArea());
+        });
     }
 
 

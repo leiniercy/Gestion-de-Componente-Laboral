@@ -219,6 +219,7 @@ public class EstudiantesView extends VerticalLayout {
 
     private void saveEstudiante(EstudianteForm.SaveEvent event) {
 
+        List<Profesor> listProfesores = profesorService.findAllProfesor();
         List<Estudiante> listEstudiantes = estudianteService.findAllEstudiante();
 
         listEstudiantes = listEstudiantes.parallelStream()
@@ -234,6 +235,10 @@ public class EstudiantesView extends VerticalLayout {
                 )
                 .collect(Collectors.toList());
 
+        listProfesores = listProfesores.parallelStream()
+                .filter(profe -> profe.getUser().equals(event.getEstudiante().getUser()))
+                .collect(Collectors.toList());
+
         ConfirmDialog dialog = new ConfirmDialog();
         Icon icon = new Icon(VaadinIcon.WARNING);
         icon.setColor("red");
@@ -243,7 +248,6 @@ public class EstudiantesView extends VerticalLayout {
         HorizontalLayout ly = new HorizontalLayout(icon, new H1("Error:"));
         ly.setDefaultVerticalComponentAlignment(Alignment.BASELINE);
         dialog.setHeader(ly);
-        dialog.setText(new H3("El estudiante ya existe"));
         dialog.setConfirmText("Aceptar");
         dialog.setConfirmButtonTheme("error primary");
         dialog.addConfirmListener(new ComponentEventListener<ConfirmDialog.ConfirmEvent>() {
@@ -253,9 +257,13 @@ public class EstudiantesView extends VerticalLayout {
             }
         });
 
-        if (listEstudiantes.size() != 0) {
+        if (listProfesores.size() == 0) {
+            dialog.setText(new H3("El usuario pertenece a un jefe de área"));
             dialog.open();
-         } else {
+        } else if (listEstudiantes.size() != 0) {
+            dialog.setText(new H3("El estudiante ya existe"));
+            dialog.open();
+        } else {
             estudianteService.saveEstudiante(event.getEstudiante());
             toolbar.remove(total);
             total = new Html("<span>Total: <b>" + estudianteService.countEstudiante() + "</b> estudiantes</span>");

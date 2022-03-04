@@ -26,8 +26,6 @@ public class ProfesorFormTest {
     private Area a1;
     private Area a2;
 
-    private ProfesorForm form;
-
     @Before
     public void setupData() {
 
@@ -85,7 +83,7 @@ public class ProfesorFormTest {
 
     @Test
     public void formFieldsPopulated() {
-        form = new ProfesorForm(users,areas);
+        ProfesorForm form = new ProfesorForm(users,areas);
         form.setProfesor(profesor1);
         Assert.assertEquals("Leinier", form.nombre.getValue());
         Assert.assertEquals("Caraballo Yanes", form.apellidos.getValue());
@@ -97,13 +95,13 @@ public class ProfesorFormTest {
     //Añadir un Profesor
     @Test
     public void saveEventHasCorrectValues() {
-        form = new ProfesorForm(users,areas);
+        ProfesorForm form = new ProfesorForm(users,areas);
         Profesor a = new Profesor();
         form.setProfesor(a);
-        form.nombre.setValue("Perez Perez");
-        form.apellidos.setValue("El Animal");
+        form.nombre.setValue("juan");
+        form.apellidos.setValue("Perez");
         form.user.setValue(u2);
-        form.email.setValue("elegualdy@estudiantes.uci.cu");
+        form.email.setValue("juan@uci.cu");
         form.solapin.setValue("E170588");
         form.a.setValue(a2);
 
@@ -114,10 +112,10 @@ public class ProfesorFormTest {
         form.save.click();
 
         Profesor saveProfesor = saveProfesorRef.get();
-        Assert.assertEquals("Elegualdy", saveProfesor.getNombre());
-        Assert.assertEquals("Perez Perez", saveProfesor.getApellidos());
+        Assert.assertEquals("juan", saveProfesor.getNombre());
+        Assert.assertEquals("Perez", saveProfesor.getApellidos());
         Assert.assertEquals("elegualdy", saveProfesor.getUser().getUsername());
-        Assert.assertEquals("elegualdy@estudiantes.uci.cu", saveProfesor.getEmail());
+        Assert.assertEquals("juan@uci.cu", saveProfesor.getEmail());
         Assert.assertEquals("E170588", saveProfesor.getSolapin());
         Assert.assertEquals("Area 2", saveProfesor.getA().getNombre());
     }

@@ -31,8 +31,7 @@ public class EstudianteService {
     private EstudianteRepository estudianteRepository;
 
     public EstudianteService(
-            @Autowired EstudianteRepository estudianteRepository
-    ) {
+            @Autowired EstudianteRepository estudianteRepository) {
         this.estudianteRepository = estudianteRepository;
     }
 
@@ -64,11 +63,11 @@ public class EstudianteService {
 
         if (estudiante.getId() == null) {
             estudianteRepository.save(estudiante);
-            Notification.show("Estudiante añadido");
+            // Notification.show("Estudiante añadido");
 
         } else {
             estudianteRepository.save(estudiante);
-            Notification.show("Estudiante modificado");
+            // Notification.show("Estudiante modificado");
         }
 
     }

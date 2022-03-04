@@ -89,6 +89,7 @@ public class Application extends SpringBootServletInitializer implements AppShel
         User user = new User();
         user.setName(name);
         user.setUsername(username);
+        
         user.setPassword(passwordEncoder.encode(password));
         user.setRoles(Stream.of(Rol.ESTUDIANTE, Rol.JEFE_AREA, Rol.VICEDECANO, Rol.ADMIN).collect(Collectors.toSet()));
         userRepository.saveAndFlush(user);

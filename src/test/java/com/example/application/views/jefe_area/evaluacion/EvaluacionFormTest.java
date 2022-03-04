@@ -78,7 +78,7 @@ public class EvaluacionFormTest {
         //Estudiante 2
         estudiante2 = new Estudiante();
         estudiante2.setNombre("Elegualdy");
-        estudiante2.setApellidos("El Animal");
+        estudiante2.setApellidos("Perez Perez");
 
         u2 = new User();
         u2.setName("Elegualdy");
@@ -140,6 +140,7 @@ public class EvaluacionFormTest {
         evaluaciones.add(evaluacion2);
     }
 
+    //validar campos de evaluacion
     @Test
     public void formFieldsPopulated() {
         EvaluacionForm form = new EvaluacionForm(estudiantes,tareas);
@@ -151,7 +152,7 @@ public class EvaluacionFormTest {
         Assert.assertEquals("Completado", form.status.getValue());
     }
 
-    //Añadir una Tarea
+    //Añadir una Evaluacion
     @Test
     public void saveEventHasCorrectValues() {
         EvaluacionForm form = new EvaluacionForm(estudiantes,tareas);
@@ -170,11 +171,11 @@ public class EvaluacionFormTest {
         form.save.click();
 
         Evaluacion saveEvaluacion = saveEvaluacionRef.get();
-        Assert.assertEquals("B", saveEvaluacion.getNota());
-        Assert.assertEquals("Bien",saveEvaluacion.getDescripcion());
-        Assert.assertEquals("Tarea 1", saveEvaluacion.getTarea().getNombre());
-        Assert.assertEquals("Leinier", saveEvaluacion.getEstudiante().getNombre());
-        Assert.assertEquals("Completado", saveEvaluacion.getStatus());
+        Assert.assertEquals("R", saveEvaluacion.getNota());
+        Assert.assertEquals("Regular",saveEvaluacion.getDescripcion());
+        Assert.assertEquals("Tarea 2", saveEvaluacion.getTarea().getNombre());
+        Assert.assertEquals("Elegualdy", saveEvaluacion.getEstudiante().getNombre());
+        Assert.assertEquals("Completada", saveEvaluacion.getStatus());
     }
 
 

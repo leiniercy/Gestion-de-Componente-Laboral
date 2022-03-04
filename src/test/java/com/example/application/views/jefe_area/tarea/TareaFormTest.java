@@ -136,12 +136,13 @@ public class TareaFormTest {
     @Test
     public void saveEventHasCorrectValues() {
         TareaForm form = new TareaForm(estudiantes);
+        LocalDate date;
         Tarea a = new Tarea();
         form.setTarea(a);
         form.nombre.setValue("Nueva Tarea");
         form.descripcion.setValue("Mi nueva tarea");
-        form.fecha_inicio.setValue(LocalDate.ofEpochDay(2022-03-1));
-        form.fecha_inicio.setValue(LocalDate.ofEpochDay(2022-03-11));
+        form.fecha_inicio.setValue(tarea1.getFecha_inicio());
+        form.fecha_fin.setValue(tarea1.getFecha_fin()) ;
         form.e.setValue(estudiante2);
 
         AtomicReference<Tarea> saveTareaRef = new AtomicReference<>(null);
@@ -153,8 +154,8 @@ public class TareaFormTest {
         Tarea saveTarea = saveTareaRef.get();
         Assert.assertEquals("Nueva Tarea", saveTarea.getNombre());
         Assert.assertEquals("Mi nueva tarea", saveTarea.getDescripcion());
-        Assert.assertEquals("1975-07-02", saveTarea.getFecha_inicio());
-        Assert.assertEquals("1975-07-12", saveTarea.getFecha_fin());
+        Assert.assertEquals(LocalDate.parse("1975-07-12"), saveTarea.getFecha_inicio());
+        Assert.assertEquals(LocalDate.parse("1975-07-02"), saveTarea.getFecha_fin());
         Assert.assertEquals("Elegualdy", saveTarea.getE().getNombre());
     }
 

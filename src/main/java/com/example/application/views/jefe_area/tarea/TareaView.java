@@ -113,7 +113,7 @@ public class TareaView extends VerticalLayout {
         removeButton.addClickListener(e -> this.deleteTarea(tarea));
         layout.add(editButton, removeButton);
         return layout;
-    }).setFlexGrow(0);
+    }).setAutoWidth(true).setFlexGrow(0);
 
     private Html total;
     private HorizontalLayout toolbar;
@@ -270,7 +270,7 @@ public class TareaView extends VerticalLayout {
         HorizontalLayout ly = new HorizontalLayout(icon, new H1("Error:"));
         ly.setDefaultVerticalComponentAlignment(Alignment.BASELINE);
         dialog.setHeader(ly);
-        dialog.setText(new H3("La Tarea ya existe"));
+//        dialog.setText(new H3("La Tarea ya existe"));
         dialog.setConfirmText("Aceptar");
         dialog.setConfirmButtonTheme("error primary");
         dialog.addConfirmListener(new ComponentEventListener<ConfirmDialog.ConfirmEvent>() {
@@ -281,15 +281,21 @@ public class TareaView extends VerticalLayout {
         });
 
         if (listTareas.size() != 0) {
+            dialog.setText(new H3("La Tarea ya existe"));
             dialog.open();
         } else {
-            tareaService.saveTarea(event.getTarea());
-            toolbar.remove(total);
-            total = new Html("<span>Total: <b>" + listaTareas.size() + "</b> tareas</span>");
-            toolbar.addComponentAtIndex(0, total);
-            toolbar.expand(total);
-            updateList();
-            closeEditor();
+            if (event.getTarea().getFecha_fin().isBefore(event.getTarea().getFecha_inicio())) {
+                dialog.setText(new H3("Intervalo de tiempo incorrecto"));
+                dialog.open();
+            } else {
+                tareaService.saveTarea(event.getTarea());
+                toolbar.remove(total);
+                total = new Html("<span>Total: <b>" + listaTareas.size() + "</b> tareas</span>");
+                toolbar.addComponentAtIndex(0, total);
+                toolbar.expand(total);
+                updateList();
+                closeEditor();
+            }
         }
     }
 

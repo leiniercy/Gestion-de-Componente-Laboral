@@ -40,15 +40,20 @@ import javax.annotation.security.RolesAllowed;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+
 /**
  * @author Leinier
  */
+
+@org.springframework.stereotype.Component
+@Scope("prototype")
 @PageTitle("Evaluaciones")
 @Route(value = "evaluaciones-view", layout = MainLayout.class)
 @Uses(Icon.class)
@@ -100,7 +105,7 @@ public class EvaluacionesView extends VerticalLayout {
                 span.getElement().setAttribute("theme", "badge" + evaluacion.getStatus().toLowerCase());
                 return span;
             })).select((item, newValue) -> item.setStatus(newValue), Arrays.asList("Pendiente", "Completado", "No Completado"))
-                    .setComparator(evaluacion -> evaluacion.getStatus()).setHeader("Estatus").setSortable(true);
+                    .setComparator(evaluacion -> evaluacion.getStatus()).setHeader("Estatus").setAutoWidth(true).setSortable(true);
 
     private Grid.Column<Evaluacion> editColumn = grid.addComponentColumn(evaluacion -> {
         HorizontalLayout layout = new HorizontalLayout();
@@ -112,7 +117,7 @@ public class EvaluacionesView extends VerticalLayout {
         removeButton.addClickListener(e -> this.deleteEvaluacion(evaluacion));
         layout.add(editButton, removeButton);
         return layout;
-    }).setFlexGrow(0);
+    }).setAutoWidth(true).setFlexGrow(0);
 
     private Html total;
     private HorizontalLayout toolbar;
