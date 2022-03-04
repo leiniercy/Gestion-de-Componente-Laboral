@@ -59,10 +59,10 @@ public class AreaService {
 
         if (area.getId() == null) {
             repository.save(area);
-        //    Notification.show("Área añadida");
+          Notification.show("Área añadida");
         } else {
             repository.save(area);
-        //    Notification.show("Área modificada");
+            Notification.show("Área modificada");
         }
 
     }

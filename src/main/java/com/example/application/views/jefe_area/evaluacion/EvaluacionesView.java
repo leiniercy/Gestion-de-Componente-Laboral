@@ -92,12 +92,12 @@ public class EvaluacionesView extends VerticalLayout {
     private Grid.Column<Evaluacion> descripcionColumn = grid.addColumn(Evaluacion::getDescripcion).setHeader("Descripción").setAutoWidth(true).setFlexGrow(0).setSortable(true);
     private Grid.Column<Evaluacion> estudianteColumn
             = grid.addColumn(evaluacion -> evaluacion.getEstudiante().getStringNombreApellidos())
-                    .setComparator(evaluacion -> evaluacion.getEstudiante().getStringNombreApellidos())
-                    .setHeader("Estudiante").setAutoWidth(true).setFlexGrow(0).setSortable(true);
+            .setComparator(evaluacion -> evaluacion.getEstudiante().getStringNombreApellidos())
+            .setHeader("Estudiante").setAutoWidth(true).setFlexGrow(0).setSortable(true);
     private Grid.Column<Evaluacion> tareaColumn
             = grid.addColumn(evaluacion -> evaluacion.getTarea().getNombre())
-                    .setComparator(evaluacion -> evaluacion.getTarea().getNombre())
-                    .setHeader("Tarea").setAutoWidth(true).setFlexGrow(0).setSortable(true);
+            .setComparator(evaluacion -> evaluacion.getTarea().getNombre())
+            .setHeader("Tarea").setAutoWidth(true).setFlexGrow(0).setSortable(true);
     private Grid.Column<Evaluacion> statusColumn
             = grid.addEditColumn(Evaluacion::getStatus, new ComponentRenderer<>(evaluacion -> {
                 Span span = new Span();
@@ -105,7 +105,7 @@ public class EvaluacionesView extends VerticalLayout {
                 span.getElement().setAttribute("theme", "badge" + evaluacion.getStatus().toLowerCase());
                 return span;
             })).select((item, newValue) -> item.setStatus(newValue), Arrays.asList("Pendiente", "Completado", "No Completado"))
-                    .setComparator(evaluacion -> evaluacion.getStatus()).setHeader("Estatus").setAutoWidth(true).setSortable(true);
+            .setComparator(evaluacion -> evaluacion.getStatus()).setHeader("Estatus").setAutoWidth(true).setSortable(true);
 
     private Grid.Column<Evaluacion> editColumn = grid.addComponentColumn(evaluacion -> {
         HorizontalLayout layout = new HorizontalLayout();
@@ -155,44 +155,39 @@ public class EvaluacionesView extends VerticalLayout {
 
             LlenarListas();
 
-            if (listaEvaluaciones.size() != 0) {
 
-                configureGrid();
+            configureGrid();
 
-                form = new EvaluacionForm(listaEstudiantes, listaTareas);
-                form.setWidth("25em");
-                form.addListener(EvaluacionForm.SaveEvent.class, this::saveEvaluacion);
-                form.addListener(EvaluacionForm.CloseEvent.class, e -> closeEditor());
+            form = new EvaluacionForm(listaEstudiantes, listaTareas);
+            form.setWidth("25em");
+            form.addListener(EvaluacionForm.SaveEvent.class, this::saveEvaluacion);
+            form.addListener(EvaluacionForm.CloseEvent.class, e -> closeEditor());
 
-                Section section1 = new Section(grid);
-                Scroller scroller = new Scroller(new Div(section1));
-                scroller.setScrollDirection(Scroller.ScrollDirection.VERTICAL);
-                scroller.getStyle()
-                        .set("border-bottom", "1px solid var(--lumo-contrast-20pct)")
-                        .set("padding", "var(--lumo-space-m)");
+            Section section1 = new Section(grid);
+            Scroller scroller = new Scroller(new Div(section1));
+            scroller.setScrollDirection(Scroller.ScrollDirection.VERTICAL);
+            scroller.getStyle()
+                    .set("border-bottom", "1px solid var(--lumo-contrast-20pct)")
+                    .set("padding", "var(--lumo-space-m)");
 
-                FlexLayout content = new FlexLayout(scroller, form);
-                content.setFlexGrow(2, scroller);
-                content.setFlexGrow(1, form);
-                content.setFlexShrink(0, form);
-                content.addClassNames("content", "gap-m");
-                content.setSizeFull();
+            FlexLayout content = new FlexLayout(scroller, form);
+            content.setFlexGrow(2, scroller);
+            content.setFlexGrow(1, form);
+            content.setFlexShrink(0, form);
+            content.addClassNames("content", "gap-m");
+            content.setSizeFull();
 
-                HorizontalLayout ly = new HorizontalLayout(new Span(VaadinIcon.ACADEMY_CAP.create()), new H6("Universidad de Ciencias Informáticas"));
-                ly.setAlignItems(Alignment.BASELINE);
-                Footer footer = new Footer(ly);
-                footer.getStyle().set("padding", "var(--lumo-space-wide-m)");
+            HorizontalLayout ly = new HorizontalLayout(new Span(VaadinIcon.ACADEMY_CAP.create()), new H6("Universidad de Ciencias Informáticas"));
+            ly.setAlignItems(Alignment.BASELINE);
+            Footer footer = new Footer(ly);
+            footer.getStyle().set("padding", "var(--lumo-space-wide-m)");
 
-                add(getToolbar(), content, footer);
-                updateList();
-                closeEditor();
-                grid.asSingleSelect().addValueChangeListener(event
-                        -> editEvaluacion(event.getValue()));
-            } else {
+            add(getToolbar(), content, footer);
+            updateList();
+            closeEditor();
+            grid.asSingleSelect().addValueChangeListener(event
+                    -> editEvaluacion(event.getValue()));
 
-                add(new H1("No hay evaluaciones disponibles"));
-
-            }
 
         } else {
             add(new H1("Hola Mundo"));
@@ -265,10 +260,10 @@ public class EvaluacionesView extends VerticalLayout {
 
         listEvaluaciones = listEvaluaciones.parallelStream()
                 .filter(eva -> eva.getNota().equals(event.getEvaluacion().getNota())
-                && eva.getDescripcion().equals(event.getEvaluacion().getDescripcion())
-                && eva.getTarea().equals(event.getEvaluacion().getTarea())
-                && eva.getEstudiante().equals(event.getEvaluacion().getEstudiante())
-                && eva.getStatus().equals(event.getEvaluacion().getStatus())
+                        && eva.getDescripcion().equals(event.getEvaluacion().getDescripcion())
+                        && eva.getTarea().equals(event.getEvaluacion().getTarea())
+                        && eva.getEstudiante().equals(event.getEvaluacion().getEstudiante())
+                        && eva.getStatus().equals(event.getEvaluacion().getStatus())
                 )
                 .collect(Collectors.toList());
 

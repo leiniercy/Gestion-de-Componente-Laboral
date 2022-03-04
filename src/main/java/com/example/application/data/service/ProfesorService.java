@@ -60,10 +60,10 @@ public class ProfesorService {
         }
         if (profesor.getId() == null) {
             repository.save(profesor);
-         //   Notification.show("Profesor añadido");
+            Notification.show("Profesor añadido");
         } else {
             repository.save(profesor);
-        //    Notification.show("Profesor modificado");
+            Notification.show("Profesor modificado");
         }
 
     }

@@ -89,19 +89,19 @@ public class TareaView extends VerticalLayout {
     Grid.Column<Tarea> descripcionColumn = grid.addColumn(Tarea::getDescripcion).setHeader("Descripción").setAutoWidth(true).setFlexGrow(0).setSortable(true);
     Grid.Column<Tarea> fecha_inicioColumn
             = grid.addColumn(new LocalDateRenderer<>(tarea -> tarea.getFecha_inicio(), DateTimeFormatter.ofPattern("dd/MM/yyyy")))
-                    .setComparator(tarea -> tarea.getFecha_inicio())
-                    .setHeader("Fecha de inicio").setAutoWidth(true)
-                    .setFlexGrow(0).setSortable(true);
+            .setComparator(tarea -> tarea.getFecha_inicio())
+            .setHeader("Fecha de inicio").setAutoWidth(true)
+            .setFlexGrow(0).setSortable(true);
     Grid.Column<Tarea> fecha_finColumn
             = grid.addColumn(new LocalDateRenderer<>(tarea -> tarea.getFecha_fin(), DateTimeFormatter.ofPattern("dd/MM/yyyy")))
-                    .setComparator(tarea -> tarea.getFecha_fin())
-                    .setHeader("Fecha de fin").setAutoWidth(true)
-                    .setSortable(true).setFlexGrow(0);
+            .setComparator(tarea -> tarea.getFecha_fin())
+            .setHeader("Fecha de fin").setAutoWidth(true)
+            .setSortable(true).setFlexGrow(0);
     Grid.Column<Tarea> estudianteColumn
             = grid.addColumn(tarea -> tarea.getE().getStringNombreApellidos())
-                    .setComparator(tarea -> tarea.getE().getStringNombreApellidos())
-                    .setHeader("Estudiante").setAutoWidth(true)
-                    .setSortable(true).setFlexGrow(0);
+            .setComparator(tarea -> tarea.getE().getStringNombreApellidos())
+            .setHeader("Estudiante").setAutoWidth(true)
+            .setSortable(true).setFlexGrow(0);
 
     Grid.Column<Tarea> editColumn = grid.addComponentColumn(tarea -> {
         HorizontalLayout layout = new HorizontalLayout();
@@ -151,43 +151,39 @@ public class TareaView extends VerticalLayout {
 
             llenarLista();
 
-            if (listaTareas.size() != 0) {
 
-                configureGrid();
+            configureGrid();
 
-                form = new TareaForm(listaEstudiantes);
-                form.setWidth("25em");
-                form.addListener(TareaForm.SaveEvent.class, this::saveTarea);
-                form.addListener(TareaForm.CloseEvent.class, e -> closeEditor());
+            form = new TareaForm(listaEstudiantes);
+            form.setWidth("25em");
+            form.addListener(TareaForm.SaveEvent.class, this::saveTarea);
+            form.addListener(TareaForm.CloseEvent.class, e -> closeEditor());
 
-                Section section1 = new Section(grid);
-                Scroller scroller = new Scroller(new Div(section1));
-                scroller.setScrollDirection(Scroller.ScrollDirection.VERTICAL);
-                scroller.getStyle()
-                        .set("border-bottom", "1px solid var(--lumo-contrast-20pct)")
-                        .set("padding", "var(--lumo-space-m)");
+            Section section1 = new Section(grid);
+            Scroller scroller = new Scroller(new Div(section1));
+            scroller.setScrollDirection(Scroller.ScrollDirection.VERTICAL);
+            scroller.getStyle()
+                    .set("border-bottom", "1px solid var(--lumo-contrast-20pct)")
+                    .set("padding", "var(--lumo-space-m)");
 
-                FlexLayout content = new FlexLayout(scroller, form);
-                content.setFlexGrow(2, scroller);
-                content.setFlexGrow(1, form);
-                content.setFlexShrink(0, form);
-                content.addClassNames("content", "gap-m");
-                content.setSizeFull();
+            FlexLayout content = new FlexLayout(scroller, form);
+            content.setFlexGrow(2, scroller);
+            content.setFlexGrow(1, form);
+            content.setFlexShrink(0, form);
+            content.addClassNames("content", "gap-m");
+            content.setSizeFull();
 
-                HorizontalLayout ly = new HorizontalLayout(new Span(VaadinIcon.ACADEMY_CAP.create()), new H6("Universidad de Ciencias Informáticas"));
-                ly.setAlignItems(Alignment.BASELINE);
-                Footer footer = new Footer(ly);
-                footer.getStyle().set("padding", "var(--lumo-space-wide-m)");
+            HorizontalLayout ly = new HorizontalLayout(new Span(VaadinIcon.ACADEMY_CAP.create()), new H6("Universidad de Ciencias Informáticas"));
+            ly.setAlignItems(Alignment.BASELINE);
+            Footer footer = new Footer(ly);
+            footer.getStyle().set("padding", "var(--lumo-space-wide-m)");
 
-                add(getToolbar(), content, footer);
-                updateList();
-                closeEditor();
-                grid.asSingleSelect().addValueChangeListener(event
-                        -> editTarea(event.getValue()));
+            add(getToolbar(), content, footer);
+            updateList();
+            closeEditor();
+            grid.asSingleSelect().addValueChangeListener(event
+                    -> editTarea(event.getValue()));
 
-            } else {
-                add(new H1("No hay tareas disponibles"));
-            }
 
         } else {
             add(new H1("Hola Mundo"));
@@ -254,10 +250,10 @@ public class TareaView extends VerticalLayout {
 
         listTareas = listTareas.parallelStream()
                 .filter(tarea -> tarea.getNombre().equals(event.getTarea().getNombre())
-                && tarea.getDescripcion().equals(event.getTarea().getDescripcion())
-                && tarea.getFecha_inicio().isEqual(event.getTarea().getFecha_inicio())
-                && tarea.getFecha_fin().isEqual(event.getTarea().getFecha_fin())
-                && tarea.getE().equals(event.getTarea().getE())
+                        && tarea.getDescripcion().equals(event.getTarea().getDescripcion())
+                        && tarea.getFecha_inicio().isEqual(event.getTarea().getFecha_inicio())
+                        && tarea.getFecha_fin().isEqual(event.getTarea().getFecha_fin())
+                        && tarea.getE().equals(event.getTarea().getE())
                 )
                 .collect(Collectors.toList());
 
