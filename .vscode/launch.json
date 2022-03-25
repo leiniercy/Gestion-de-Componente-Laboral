@@ -24,7 +24,9 @@
             "pipeTransport": {
                 "debuggerPath": "/usr/bin/gdb",
                 "pipeProgram": "${env:windir}\\system32\\bash.exe",
-                "pipeArgs": ["-c"],
+                "pipeArgs": [
+                    "-c"
+                ],
                 "pipeCwd": ""
             },
             "setupCommands": [
@@ -48,7 +50,9 @@
             "pipeTransport": {
                 "debuggerPath": "/usr/bin/gdb",
                 "pipeProgram": "${env:windir}\\system32\\bash.exe",
-                "pipeArgs": ["-c"],
+                "pipeArgs": [
+                    "-c"
+                ],
                 "pipeCwd": ""
             },
             "setupCommands": [
@@ -59,26 +63,6 @@
                 }
             ]
         },
-    {
-        "name": "(gdb) Iniciar",
-        "type": "cppdbg",
-        "request": "launch",
-        "program": "Escriba el nombre del programa; por ejemplo, ${workspaceFolder}/a.exe.",
-        "args": [],
-        "stopAtEntry": false,
-        "cwd": "${fileDirname}",
-        "environment": [],
-        "externalConsole": false,
-        "MIMode": "gdb",
-        "miDebuggerPath": "/path/to/gdb",
-        "setupCommands": [
-            {
-                "description": "Habilitar la impresión con sangría para gdb",
-                "text": "-enable-pretty-printing",
-                "ignoreFailures": true
-            }
-        ]
-    },
         {
             "name": "(gdb) Iniciar",
             "type": "cppdbg",
@@ -98,6 +82,37 @@
                     "ignoreFailures": true
                 }
             ]
+        },
+        {
+            "name": "(gdb) Iniciar",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "Escriba el nombre del programa; por ejemplo, ${workspaceFolder}/a.exe.",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/path/to/gdb",
+            "setupCommands": [
+                {
+                    "description": "Habilitar la impresión con sangría para gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-Application<Gestion_Componente_Laboral>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "mainClass": "com.example.application.Application",
+            "projectName": "Gestion_Componente_Laboral",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }
