@@ -314,6 +314,7 @@ public class ListadeEvaluacionesVicedecanoView extends Div {
         rp.setHref(ReportePDF());
         rp.add(icon, span);
         rp.getStyle().set("border-radius", "var(--lumo-border-radius-l");
+        rp.setTarget("_BLANK");
 
         MenuBar menuBar = new MenuBar();
         menuBar.addItem(rp);

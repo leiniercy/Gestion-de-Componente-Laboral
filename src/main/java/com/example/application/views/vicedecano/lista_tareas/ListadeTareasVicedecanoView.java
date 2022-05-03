@@ -124,8 +124,8 @@ public class ListadeTareasVicedecanoView extends Div {
         ly.setAlignItems(Alignment.BASELINE);
         Footer footer = new Footer(ly);
         footer.getStyle().set("padding", "var(--lumo-space-wide-m)");
-        
-        add(getToolbar(), grid,footer);
+
+        add(getToolbar(), grid, footer);
     }
 
     private void createGrid() {
@@ -318,6 +318,7 @@ public class ListadeTareasVicedecanoView extends Div {
         rp.setHref(ReportePDF());
         rp.add(icon, span);
         rp.getStyle().set("border-radius", "var(--lumo-border-radius-l");
+        rp.setTarget("_BLANK");
 
         MenuBar menuBar = new MenuBar();
         menuBar.addItem(rp);
